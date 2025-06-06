@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* ในไฟล์ CSS ของคุณ เช่น App.css หรือ index.css */
+.ant-layout-header,
+.ant-layout-content {
+  font-family: 'Noto Sans Thai', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+/* .ant-layout-header {
+  padding: 0 !important;
+  width: 100%;
+} */
+
+/* Responsive */
+.header {
+  display: flex;
+  justify-content: space-between;
+  /* ซ้ายกับขวาแยกกัน */
+  align-items: center;
+  padding: 0 20px;
+  height: 64px;
+  /* ความสูงตาม Ant Design */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ฝั่งซ้าย */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+/* เพิ่มช่องว่างระหว่าง QA Room กับ Select */
+.header-left>span {
+  margin-right: 20px;
+}
+
+/* ฝั่งขวา */
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* เวลากับสวิตช์เว้นระยะ */
+.header-right>span {
+  margin-right: 20px;
+}
+
+
+
+/* สีพื้นหลังตอน toggle เปิด (checked) */
+.ant-switch-checked {
+  background-color: #5d5d5d !important;
+  /* สีฟ้า หรือสีที่ต้องการ */
+}
+
+/* สีพื้นหลังตอน toggle ปิด (unchecked) */
+.ant-switch {
+  background-color: #ccc;
+  /* สีเทา หรือสีที่ต้องการ */
+}
+
+
+/* Responsive: ถ้าจอเล็กกว่า 600px */
+@media (max-width: 600px) {
+  .header {
+    /* flex-wrap: nowrap; หรือเอาออกก็ได้ */
+    flex-direction: row;
+    /* ให้เรียงจากบนลงล่าง */
+    height: 60px;
+    align-items: center;
+    gap: 130px;
+    /* ระยะห่างระหว่าง .header-left กับ .header-right */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .time {
+    display: none;
+  }
+
+  .header-left,
+  .header-right {
+    width: 100%;
+    justify-content: center;
+    /* ให้แต่ละฝั่งจัดเรียงแนวนอน (ถ้าต้องการ) */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: medium;
+    
+  }
+
+
+
+  .room {
+    display:none;
+    font-size: 8px !important;
+    font-weight: 300;
+    margin-right: 0 !important;
+  }
+
+  .select {
+    width: 120px !important;
+  }
+
+}
