@@ -10,10 +10,31 @@ export const dataHelpers = {
   //   },
 
   formatTemperatureData: (data) =>
-    data.map((item) => [item.ts, Number(item.value).toFixed(2)]),
-
+    data.map((item) => {
+      let date = new Date(item.ts);
+      let minutes = Math.floor(date.getMinutes() / 5) * 5;
+      let newTs = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        minutes
+      ).getTime();
+      return [newTs, Number(item.value).toFixed(2)];
+    }),
   formatHumidityData: (data) =>
-    data.map((item) => [item.ts, Number(item.value).toFixed(2)]),
+    data.map((item) => {
+      let date = new Date(item.ts);
+      let minutes = Math.floor(date.getMinutes() / 5) * 5;
+      let newTs = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        minutes
+      ).getTime();
+      return [newTs, Number(item.value).toFixed(2)];
+    }),
 
   //   limitSeriesLength: (series, maxLength = CONFIG.MAX_SERIES_LENGTH) =>
   //     series.slice(-maxLength),

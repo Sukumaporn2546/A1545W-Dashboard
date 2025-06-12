@@ -1,5 +1,6 @@
 export const CONFIG = {
   THINGSBOARD_HOST: import.meta.env.VITE_THINGSBOARD_HOST,
+  THINGSBOARD_WEBSOCKET: import.meta.env.VITE_THINGSBOARD_HOST_WEBS0CKET,
   USERNAME: import.meta.env.VITE_USERNAME,
   PASSWORD: import.meta.env.VITE_PASSWORD,
   DEVICE_ID: import.meta.env.VITE_DEVICE_ID,

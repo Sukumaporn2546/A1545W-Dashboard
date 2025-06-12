@@ -1,5 +1,5 @@
 import { create } from "zustand";
-
+import { CONFIG } from "../configs/constants";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear.js";
 import isoWeek from "dayjs/plugin/isoWeek.js";
@@ -9,7 +9,6 @@ import { dateHelpers } from "../utils/dateHelper";
 import { dataHelpers } from "../utils/dataHelper";
 dayjs.extend(weekOfYear);
 dayjs.extend(isoWeek);
-
 
 export const useTemperatureStore = create((set, get) => ({
   currentData: {},
@@ -54,30 +53,28 @@ export const useTemperatureStore = create((set, get) => ({
     }
   },
 
-   //for ref graph
+  //for ref graph
   setMinTempLine: (value) => {
-    console.log('minTempLine:', value);
+    console.log("minTempLine:", value);
     set({ minTempLine: value });
   },
   setMaxTempLine: (value) => {
-    console.log('maxTempLine:', value);
+    console.log("maxTempLine:", value);
     set({ maxTempLine: value });
   },
   setMinHumidLine: (value) => {
-    console.log('minHumidLine:', value);
+    console.log("minHumidLine:", value);
     set({ minHumidLine: value });
   },
   setMaxHumidLine: (value) => {
-    console.log('maxHumidLine:', value);
+    console.log("maxHumidLine:", value);
     set({ maxHumidLine: value });
   },
 
-  setupWebSocket: () => {
-    const jwtToken =
-      "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtdWF1bndvbmd0dW1fc0BzaWxwYWtvcm4uZWR1IiwidXNlcklkIjoiMTMzMGFkZDAtMjk4Mi0xMWYwLTkwNWItNzE1MTg4YWQyY2Q4Iiwic2NvcGVzIjpbIlRFTkFOVF9BRE1JTiJdLCJzZXNzaW9uSWQiOiJlMTZiMmUwMy1lOGE1LTQ3OGQtYWZkYy1jYmEwNDIyOWFkNzciLCJleHAiOjE3NTA5ODQxMTIsImlzcyI6InRoaW5nc2JvYXJkLmlvIiwiaWF0IjoxNzQ5MTg0MTEyLCJmaXJzdE5hbWUiOiJTdWt1bWFwb3JuIiwibGFzdE5hbWUiOiJNdWF1bndvbmd0dW0iLCJlbmFibGVkIjp0cnVlLCJwcml2YWN5UG9saWN5QWNjZXB0ZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwidGVuYW50SWQiOiIxMzBmNDMyMC0yOTgyLTExZjAtOTA1Yi03MTUxODhhZDJjZDgiLCJjdXN0b21lcklkIjoiMTM4MTQwMDAtMWRkMi0xMWIyLTgwODAtODA4MDgwODA4MDgwIn0.n8WGVCWQdqg_1zTuRV3-GgbIRhWJnLDBp3ZntIkIhVT4ZLKJZ1bkojtZNt08Jo51t3SzsvoJudiQHoZNPIFfRA";
-
+  setupWebSocket: async () => {
+    const token = await get().api.login();
     const socket = new WebSocket(
-      `wss://demo.thingsboard.io/api/ws/plugins/telemetry?token=${jwtToken}`
+      `${CONFIG.THINGSBOARD_WEBSOCKET}/api/ws/plugins/telemetry?token=${token}`
     );
 
     socket.onopen = () => {
@@ -87,7 +84,7 @@ export const useTemperatureStore = create((set, get) => ({
         tsSubCmds: [
           {
             entityType: "DEVICE",
-            entityId: "f313ad90-3534-11f0-905b-715188ad2cd8",
+            entityId: CONFIG.DEVICE_ID,
             scope: "LATEST_TELEMETRY",
             cmdId: 1,
           },
@@ -106,8 +103,8 @@ export const useTemperatureStore = create((set, get) => ({
       const temperatureEntry = message.data.temperature?.[0];
       const humidityEntry = message.data.humidity?.[0];
       const timestamp = parseInt(temperatureEntry?.[0] ?? Date.now());
-      const temperature = parseFloat(temperatureEntry?.[1] ?? 0);
-      const humidity = parseFloat(humidityEntry?.[1] ?? 0);
+      const temperature = parseFloat(temperatureEntry?.[1] ?? 0).toFixed(2);
+      const humidity = parseFloat(humidityEntry?.[1] ?? 0).toFixed(2);
       const filterDuplicates = (arr) => {
         const seen = new Set();
         return arr.filter(([ts]) => {

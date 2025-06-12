@@ -17,7 +17,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
 
   useEffect(() => {
     clearGraphHumid();
-    if (!isRealtime) { 
+    if (!isRealtime) {
       fetchHistoricalHumid(pickerType, selectDate);
     }
   }, [pickerType, selectDate]);
@@ -55,36 +55,36 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
       yaxis: [
         minHumidLine !== null && {
           y: minHumidLine,
-          borderColor: '#e74c3c',
+          borderColor: "#e74c3c",
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
-            borderColor: '#e74c3c',
+            borderColor: "#e74c3c",
             text: `Min: ${minHumidLine}`,
             style: {
               background: "#e74c3c",
               fontSize: "13px",
               fontWeight: "bold",
-              color: "#fff"
+              color: "#fff",
             },
           },
         },
         maxHumidLine !== null && {
           y: maxHumidLine,
-          borderColor: '#27ae60',
+          borderColor: "#27ae60",
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
-            borderColor: '#27ae60',
+            borderColor: "#27ae60",
             text: `Max: ${maxHumidLine}`,
             style: {
-              background: '#27ae60',
-              fontSize: '13px',
-              fontWeight: 'bold',
-              color: "#fff"
+              background: "#27ae60",
+              fontSize: "13px",
+              fontWeight: "bold",
+              color: "#fff",
             },
           },
-        }
+        },
       ].filter(Boolean),
     },
     tooltip: {
@@ -129,7 +129,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#e58017"], // สีเส้น
+    colors: ["#667eea"], // สีเส้น
   };
 
   return (
