@@ -1,233 +1,207 @@
-import { create } from 'zustand';
-import axios from "axios";
-import dayjs from 'dayjs';
-import weekOfYear from 'dayjs/plugin/weekOfYear.js';
-import isoWeek from 'dayjs/plugin/isoWeek.js'
+import { create } from "zustand";
 
-const baseURL = 'http://localhost:3000';
-
+import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear.js";
+import isoWeek from "dayjs/plugin/isoWeek.js";
+import { ThingsBoardAPI } from "./api";
+import { getTimeConfiguration } from "../configs/timeConfigs";
+import { dateHelpers } from "../utils/dateHelper";
+import { dataHelpers } from "../utils/dataHelper";
 dayjs.extend(weekOfYear);
 dayjs.extend(isoWeek);
 
 
 export const useTemperatureStore = create((set, get) => ({
-    //for data { "type": "temperature", "timestamp": "2025-06-05T12:00:00Z", "value": 26.5 }
-    currentData: {},
-    // currentData: {
-    //     temperature: 0,
-    //     humidity: 0,
-    //     lastUpdate: '',
-    // },
-    seriesTemperature: [],
-    seriesHumidity: [],
-    socket: null, // ✅ define it
+  currentData: {},
+  seriesTemperature: [],
+  seriesHumidity: [],
+  token: null,
+  socket: null,
+  isLoading: false,
+  error: null,
+  api: new ThingsBoardAPI(),
+  minTempLine: null,
+  maxTempLine: null,
+  minHumidLine: null,
+  maxHumidLine: null,
 
-    clearGraphTemp: () =>
-        set({
-            seriesTemperature: [],
-        }),
-    clearGraphHumid: () =>
-        set({
-            seriesHumidity: [],
-        }),
+  setLoading: (loading) => set({ isLoading: loading }),
+  setError: (error) => set({ error }),
+  clearError: () => set({ error: null }),
 
-    setupWebSocket: () => {
+  clearGraphTemp: () =>
+    set({
+      seriesTemperature: [],
+    }),
+  clearGraphHumid: () =>
+    set({
+      seriesHumidity: [],
+    }),
 
-        const jwtToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtdWF1bndvbmd0dW1fc0BzaWxwYWtvcm4uZWR1IiwidXNlcklkIjoiMTMzMGFkZDAtMjk4Mi0xMWYwLTkwNWItNzE1MTg4YWQyY2Q4Iiwic2NvcGVzIjpbIlRFTkFOVF9BRE1JTiJdLCJzZXNzaW9uSWQiOiJlMTZiMmUwMy1lOGE1LTQ3OGQtYWZkYy1jYmEwNDIyOWFkNzciLCJleHAiOjE3NTA5ODQxMTIsImlzcyI6InRoaW5nc2JvYXJkLmlvIiwiaWF0IjoxNzQ5MTg0MTEyLCJmaXJzdE5hbWUiOiJTdWt1bWFwb3JuIiwibGFzdE5hbWUiOiJNdWF1bndvbmd0dW0iLCJlbmFibGVkIjp0cnVlLCJwcml2YWN5UG9saWN5QWNjZXB0ZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwidGVuYW50SWQiOiIxMzBmNDMyMC0yOTgyLTExZjAtOTA1Yi03MTUxODhhZDJjZDgiLCJjdXN0b21lcklkIjoiMTM4MTQwMDAtMWRkMi0xMWIyLTgwODAtODA4MDgwODA4MDgwIn0.n8WGVCWQdqg_1zTuRV3-GgbIRhWJnLDBp3ZntIkIhVT4ZLKJZ1bkojtZNt08Jo51t3SzsvoJudiQHoZNPIFfRA";
+  login: async () => {
+    const { api, setLoading, setError } = get();
 
-        const socket = new WebSocket(`wss://demo.thingsboard.io/api/ws/plugins/telemetry?token=${jwtToken}`);
-
-        socket.onopen = () => {
-            console.log('WebSocket connection opened');
-
-            const subscribeMessage = JSON.stringify({
-                tsSubCmds: [
-                    {
-                        entityType: "DEVICE",
-                        entityId: "f313ad90-3534-11f0-905b-715188ad2cd8",
-                        scope: "LATEST_TELEMETRY",
-                        cmdId: 1,
-                    },
-                ],
-                historyCmds: [],
-                attrSubCmds: [],
-            });
-
-            socket.send(subscribeMessage);
-            //console.log('sending subscribe message: ', subscribeMessage);
-        };
-
-        socket.onmessage = (event) => {
-
-            console.log('WebSocket message received:', event.data);
-            const message = JSON.parse(event.data);
-
-            if (!message.data) return;
-
-            const temperatureEntry = message.data.temperature?.[0];
-            const humidityEntry = message.data.humidity?.[0];
-
-            const timestamp = parseInt(temperatureEntry?.[0] ?? Date.now());
-            const temperature = parseFloat(temperatureEntry?.[1] ?? 0);
-            const humidity = parseFloat(humidityEntry?.[1] ?? 0);
-
-            // สร้างฟังก์ชัน helper
-            const filterDuplicates = (arr) => {
-                const seen = new Set();
-                return arr.filter(([ts]) => {
-                    if (seen.has(ts)) return false;
-                    seen.add(ts);
-                    return true;
-                });
-            };
-
-
-            set((state) => ({
-                currentData: {
-                    temperature,
-                    humidity,
-                },
-                seriesTemperature: filterDuplicates([
-                    ...state.seriesTemperature,
-                    [timestamp, temperature],
-                ]).slice(-288),
-                seriesHumidity: filterDuplicates([
-                    ...state.seriesHumidity,
-                    [timestamp, humidity],
-                ]).slice(-288),
-            }));
-        };
-
-        // ✅ store socket
-        set({ socket });
-
-        // socket.onclose = (event) => {  //event ตัวแปรที่รับข้อมูลเหตุการณ์ (Event Object) ที่เกิดขึ้น
-        //     console.log("🔌 WebSocket closed", event.code, event.reason);
-        // };
-
-
-    },
-
-
-    closeWebSocket: () => {
-        const socket = get().socket;
-        socket?.close();
-        set({ socket: null }); // clear it
-    },
-
-
-    fetchHistoricalTemp: async (pickerType, selectDate) => {
-        console.log("pickerType from fetchHistoricalTemp", pickerType);
-        console.log("selectDate from fetchHistoricalTemp", selectDate);
-
-        let start, end, range = pickerType;
-
-        if (pickerType === 'period' && Array.isArray(selectDate)) {
-            [start, end] = selectDate;
-        } else if (pickerType === 'date') {
-            start = end = selectDate; // single date
-        } else if (pickerType === 'week') {
-            // selectDate example: "2025-24th"
-            // extract year and week number:
-            const [yearStr, weekStr] = selectDate.split('-');
-            const year = parseInt(yearStr, 10);
-            const week = parseInt(weekStr.replace('th', ''), 10);
-
-            // get first day of week (week starts on Sunday)
-            start = dayjs().year(year).isoWeek(week).startOf('week').format('YYYY-MM-DD');
-            end = dayjs().year(year).isoWeek(week).endOf('week').format('YYYY-MM-DD');
-        } else if (pickerType === 'month') {
-            // selectDate example: "2025-05"
-            const date = dayjs(selectDate);
-            start = date.startOf('month').format('YYYY-MM-DD');
-            end = date.endOf('month').format('YYYY-MM-DD');
-        } else if (pickerType === 'year') {
-            // selectDate example: "2026"
-            const date = dayjs(selectDate, 'YYYY');
-            start = date.startOf('year').format('YYYY-MM-DD');
-            end = date.endOf('year').format('YYYY-MM-DD');
-        } else {
-            console.warn('Invalid pickerType or selectDate');
-            return;
-        }
-
-        try {
-            // const response = await axios.get(`${baseURL}/api/temperature`, {
-            //     params: { range, start, end },
-            // });
-
-            //mock data
-            const response = await axios.get('https://683e963c1cd60dca33dc446f.mockapi.io/api/temp/date');
-
-
-
-
-            console.log(response.data);
-            const json = await response.data;
-            const formatted = json.map(item => [new Date(item.timestamp).getTime(), item.value]);
-            console.log('formatted', formatted);
-            set({ seriesTemperature: formatted });
-        } catch (error) {
-            console.error('Error fetching temperature data:', error);
-        }
-    },
-
-    fetchHistoricalHumid: async (pickerType, selectDate) => {
-        console.log("pickerType from fetchHistoricalHumid", pickerType);
-        console.log("selectDate from fetchHistoricalHumid", selectDate);
-
-        let start, end, range = pickerType;
-
-        if (pickerType === 'period' && Array.isArray(selectDate)) {
-            [start, end] = selectDate;
-        } else if (pickerType === 'date') {
-            start = end = selectDate; // single date
-        } else if (pickerType === 'week') {
-            // selectDate example: "2025-24th"
-            // extract year and week number:
-            const [yearStr, weekStr] = selectDate.split('-');
-            const year = parseInt(yearStr, 10);
-            const week = parseInt(weekStr.replace('th', ''), 10);
-
-            // get first day of week (week starts on Sunday)
-            start = dayjs().year(year).isoWeek(week).startOf('week').format('YYYY-MM-DD');
-            end = dayjs().year(year).isoWeek(week).endOf('week').format('YYYY-MM-DD');
-        } else if (pickerType === 'month') {
-            // selectDate example: "2025-05"
-            const date = dayjs(selectDate);
-            start = date.startOf('month').format('YYYY-MM-DD');
-            end = date.endOf('month').format('YYYY-MM-DD');
-        } else if (pickerType === 'year') {
-            // selectDate example: "2026"
-            const date = dayjs(selectDate, 'YYYY');
-            start = date.startOf('year').format('YYYY-MM-DD');
-            end = date.endOf('year').format('YYYY-MM-DD');
-        } else {
-            console.warn('Invalid pickerType or selectDate');
-            return;
-        }
-
-        try {
-            // const response = await axios.get(`${baseURL}/api/humidity`, {
-            //     params: { range, start, end },
-            // });
-
-            //mock data
-            const response = await axios.get('https://683e963c1cd60dca33dc446f.mockapi.io/api/temp/humidityDate');
-
-
-
-
-
-
-            console.log(response.data);
-            const json = await response.data;
-            const formatted = json.map(item => [new Date(item.timestamp).getTime(), item.value]);
-            set({ seriesHumidity: formatted });
-        } catch (error) {
-            console.error('Error fetching temperature data:', error);
-        }
+    try {
+      setLoading(true);
+      const token = await api.login();
+      set({ token });
+      return token;
+    } catch (error) {
+      setError(error.message);
+      throw error;
+    } finally {
+      setLoading(false);
     }
+  },
 
+   //for ref graph
+  setMinTempLine: (value) => {
+    console.log('minTempLine:', value);
+    set({ minTempLine: value });
+  },
+  setMaxTempLine: (value) => {
+    console.log('maxTempLine:', value);
+    set({ maxTempLine: value });
+  },
+  setMinHumidLine: (value) => {
+    console.log('minHumidLine:', value);
+    set({ minHumidLine: value });
+  },
+  setMaxHumidLine: (value) => {
+    console.log('maxHumidLine:', value);
+    set({ maxHumidLine: value });
+  },
+
+  setupWebSocket: () => {
+    const jwtToken =
+      "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtdWF1bndvbmd0dW1fc0BzaWxwYWtvcm4uZWR1IiwidXNlcklkIjoiMTMzMGFkZDAtMjk4Mi0xMWYwLTkwNWItNzE1MTg4YWQyY2Q4Iiwic2NvcGVzIjpbIlRFTkFOVF9BRE1JTiJdLCJzZXNzaW9uSWQiOiJlMTZiMmUwMy1lOGE1LTQ3OGQtYWZkYy1jYmEwNDIyOWFkNzciLCJleHAiOjE3NTA5ODQxMTIsImlzcyI6InRoaW5nc2JvYXJkLmlvIiwiaWF0IjoxNzQ5MTg0MTEyLCJmaXJzdE5hbWUiOiJTdWt1bWFwb3JuIiwibGFzdE5hbWUiOiJNdWF1bndvbmd0dW0iLCJlbmFibGVkIjp0cnVlLCJwcml2YWN5UG9saWN5QWNjZXB0ZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwidGVuYW50SWQiOiIxMzBmNDMyMC0yOTgyLTExZjAtOTA1Yi03MTUxODhhZDJjZDgiLCJjdXN0b21lcklkIjoiMTM4MTQwMDAtMWRkMi0xMWIyLTgwODAtODA4MDgwODA4MDgwIn0.n8WGVCWQdqg_1zTuRV3-GgbIRhWJnLDBp3ZntIkIhVT4ZLKJZ1bkojtZNt08Jo51t3SzsvoJudiQHoZNPIFfRA";
+
+    const socket = new WebSocket(
+      `wss://demo.thingsboard.io/api/ws/plugins/telemetry?token=${jwtToken}`
+    );
+
+    socket.onopen = () => {
+      console.log("WebSocket connection opened");
+
+      const subscribeMessage = JSON.stringify({
+        tsSubCmds: [
+          {
+            entityType: "DEVICE",
+            entityId: "f313ad90-3534-11f0-905b-715188ad2cd8",
+            scope: "LATEST_TELEMETRY",
+            cmdId: 1,
+          },
+        ],
+        historyCmds: [],
+        attrSubCmds: [],
+      });
+
+      socket.send(subscribeMessage);
+    };
+
+    socket.onmessage = (event) => {
+      console.log("WebSocket message received:", event.data);
+      const message = JSON.parse(event.data);
+      if (!message.data) return;
+      const temperatureEntry = message.data.temperature?.[0];
+      const humidityEntry = message.data.humidity?.[0];
+      const timestamp = parseInt(temperatureEntry?.[0] ?? Date.now());
+      const temperature = parseFloat(temperatureEntry?.[1] ?? 0);
+      const humidity = parseFloat(humidityEntry?.[1] ?? 0);
+      const filterDuplicates = (arr) => {
+        const seen = new Set();
+        return arr.filter(([ts]) => {
+          if (seen.has(ts)) return false;
+          seen.add(ts);
+          return true;
+        });
+      };
+
+      set((state) => ({
+        currentData: {
+          temperature,
+          humidity,
+        },
+        seriesTemperature: filterDuplicates([
+          ...state.seriesTemperature,
+          [timestamp, temperature],
+        ]).slice(-288),
+        seriesHumidity: filterDuplicates([
+          ...state.seriesHumidity,
+          [timestamp, humidity],
+        ]).slice(-288),
+      }));
+    };
+    set({ socket });
+  },
+
+  closeWebSocket: () => {
+    const socket = get().socket;
+    socket?.close();
+    set({ socket: null }); // clear it
+  },
+
+  fetchHistoricalTemp: async (pickerType, selectDate) => {
+    const { api, setLoading, setError, clearError } = get();
+    try {
+      setLoading(true);
+      clearError();
+      const timeConfig = getTimeConfiguration(pickerType, selectDate);
+      if (!timeConfig) throw new Error("Invalid picker type or date");
+      const { start, end, interval, limit } = timeConfig;
+      const startTs = dateHelpers.createTimestamp(start);
+      const endTs = dateHelpers.createTimestamp(end, true);
+      console.log(`Fetching temperature data: ${start} to ${end}`);
+      const data = await api.fetchTelemetryData({
+        startTs,
+        endTs,
+        interval,
+        limit,
+        keys: "temperature",
+      });
+      if (!data.temperature) {
+        throw new Error("No temperature data received");
+      }
+      const formatted = dataHelpers.formatTemperatureData(data.temperature);
+      console.log("formatted", formatted);
+      set({ seriesTemperature: formatted });
+    } catch (error) {
+      console.error("Error fetching temperature data:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  },
+
+  fetchHistoricalHumid: async (pickerType, selectDate) => {
+    const { api, setLoading, setError, clearError } = get();
+    try {
+      setLoading(true);
+      clearError();
+      const timeConfig = getTimeConfiguration(pickerType, selectDate);
+      if (!timeConfig) throw new Error("Invalid picker type or date");
+      const { start, end, interval, limit } = timeConfig;
+      const startTs = dateHelpers.createTimestamp(start);
+      const endTs = dateHelpers.createTimestamp(end, true);
+      console.log(`Fetching temperature data: ${start} to ${end}`);
+      const data = await api.fetchTelemetryData({
+        startTs,
+        endTs,
+        interval,
+        limit,
+        keys: "humidity",
+      });
+      if (!data.humidity) {
+        throw new Error("No humidity data received");
+      }
+      const formatted = dataHelpers.formatHumidityData(data.humidity);
+      console.log("formatted", formatted);
+      set({ seriesHumidity: formatted });
+    } catch (error) {
+      console.error("Error fetching humidity data:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  },
 }));
-

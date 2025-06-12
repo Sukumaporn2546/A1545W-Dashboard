@@ -5,6 +5,7 @@ import { SunOutlined, MoonOutlined } from '@ant-design/icons';
 import { RealTimeCard } from '../components/RealTimeCard';
 import { TemperatureCard } from '../components/TemperatureCard';
 import { HumidityCard } from '../components/HumidityCard';
+import { AlertPanel } from '../components/AlertPanel';
 const { Header, Content } = Layout;
 
 const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
@@ -30,7 +31,7 @@ const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
     };
 
     const timeFormatted = now.toLocaleString('en-US', options);
-    console.log(timeFormatted);
+    //console.log(timeFormatted);
 
 
     return (
@@ -39,7 +40,7 @@ const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
                 <Header
                     className='header'
                     style={{
-                        backgroundColor: isDarkMode ? '#121212' : '#f1f1f1',
+                        backgroundColor: isDarkMode ? '#121212' : '#ffffff',
                         color: isDarkMode ? '#ffffff' : '#000000',
                         height: '50px',
                     }}
@@ -67,22 +68,23 @@ const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
                     <div className='header-right'>
 
                         <span className="time">{timeFormatted}</span>
-                        <Switch
+                        <AlertPanel />
+                        {/* <Switch
                             style={{ marginLeft: 20 }}
                             checked={isDarkMode}
                             checkedChildren={<MoonOutlined />}
                             unCheckedChildren={<SunOutlined />}
                             onChange={toggleTheme}
-                        />
+                        /> */}
                     </div>
 
                 </Header>
                 <Content style={{
-                    padding: 24, minHeight: 280, backgroundColor: isDarkMode ? '#252525' : '#ffffff',
-                    color: isDarkMode ? '#ffffff' : '#000000'
+                    padding: 24, minHeight: 280, 
                 }}>
                     {/* <span> <RealTimeCard /></span> */}
                     <span> <RealTimeCard /></span> 
+                    {/* <span> <AlertPanel /></span> */}
 
                     <div>
                         <Row gutter={16}>
