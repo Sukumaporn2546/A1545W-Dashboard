@@ -7,29 +7,22 @@ import { useTemperatureStore } from "../services/useTemperatureStore";
 export const HumidityChart = ({ pickerType, selectDate }) => {
   const {
     seriesHumidity,
-    setupWebSocket,
-    closeWebSocket,
     fetchHistoricalHumid,
     clearGraphHumid,
+    minHumidLine,
+    maxHumidLine,
   } = useTemperatureStore();
 
   const isRealtime = pickerType == null && selectDate == null;
 
   useEffect(() => {
     clearGraphHumid();
-    if (isRealtime) {
-      setupWebSocket();
-    } else if (pickerType != null && selectDate != null) {
-      closeWebSocket();
+    if (!isRealtime) { 
       fetchHistoricalHumid(pickerType, selectDate);
     }
-
-    return () => {
-      closeWebSocket(); // cleanup
-    };
   }, [pickerType, selectDate]);
 
-  console.log("HumidData", seriesHumidity);
+  //console.log("HumidData", seriesHumidity);
 
   const series = [
     {
@@ -58,6 +51,56 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
         enabled: true,
       },
     },
+    annotations: {
+      yaxis: [
+        minHumidLine !== null && {
+          y: minHumidLine,
+          borderColor: '#e74c3c',
+          borderWidth: 2,
+          strokeDashArray: 5,
+          label: {
+            borderColor: '#e74c3c',
+            text: `Min: ${minHumidLine}`,
+            style: {
+              background: "#e74c3c",
+              fontSize: "13px",
+              fontWeight: "bold",
+              color: "#fff"
+            },
+          },
+        },
+        maxHumidLine !== null && {
+          y: maxHumidLine,
+          borderColor: '#27ae60',
+          borderWidth: 2,
+          strokeDashArray: 5,
+          label: {
+            borderColor: '#27ae60',
+            text: `Max: ${maxHumidLine}`,
+            style: {
+              background: '#27ae60',
+              fontSize: '13px',
+              fontWeight: 'bold',
+              color: "#fff"
+            },
+          },
+        }
+      ].filter(Boolean),
+    },
+    tooltip: {
+      enabled: true,
+      x: {
+        format: getXAxisFormat(pickerType), // รูปแบบเวลา
+      },
+      y: {
+        formatter: function (val) {
+          return `${val.toFixed(2)} %`; // เพิ่มหน่วย %
+        },
+        title: {
+          formatter: () => "Humidity", // ชื่อ tooltip
+        },
+      },
+    },
     dataLabels: {
       enabled: false,
     },
@@ -76,8 +119,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
       },
     },
     yaxis: {
-      max: 100,
-      min: 0,
+      // max: 100,
+      // min: 0,
       title: {
         // text: 'Temperature (°C)',
         // style: { fontSize: '13px', color: '#666', fontWeight: 'semibold' }
@@ -86,7 +129,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#79a8e5"], // สีเส้น
+    colors: ["#e58017"], // สีเส้น
   };
 
   return (

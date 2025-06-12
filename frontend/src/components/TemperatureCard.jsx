@@ -1,26 +1,26 @@
-import { Card, DatePicker, Select } from 'antd';
+import { Card, DatePicker, Select, Button, Popconfirm, InputNumber } from 'antd';
 import { useState, useEffect } from 'react';
 import { TemperatureChart } from '../charts/TemperatureChart';
 import dayjs from 'dayjs';
+import { EditOutlined } from '@ant-design/icons';
+import { useTemperatureStore } from '../services/useTemperatureStore';
 
 export const TemperatureCard = () => {
-    const [pickerType, setPickerType] = useState(null); // เก็บ picker type
-    const [selectDate, setSelectDate] = useState(null)
+    const [pickerType, setPickerType] = useState(null);
+    const [selectDate, setSelectDate] = useState(null);
     const [value, setValue] = useState(null);
 
     const onDateChange = (date, dateString) => {
         setSelectDate(dateString);
-        (setValue(date))
-        // console.log('PickerType', pickerType);
+        setValue(date);
     };
+
     useEffect(() => {
-        // โค้ดในนี้จะทำงานเมื่อ selectDate มีการเปลี่ยนแปลง
         console.log('pickerType updated:', pickerType);
         console.log('selectDate updated:', selectDate);
-    }, [selectDate, pickerType]); // เพิ่ม selectDate เป็น dependency array    
+    }, [selectDate, pickerType]);
 
     const handlePickerTypeChange = (value) => {
-        console.log('value', value);
         setPickerType(value.value);
         setSelectDate(null);
     };
@@ -29,51 +29,92 @@ export const TemperatureCard = () => {
         return current && current > dayjs().endOf('day');
     };
 
+    const { setMinTempLine, setMaxTempLine } = useTemperatureStore();
+
+    const [tempMin, setMinTemp] = useState(null);
+    const [tempMax, setMaxTemp] = useState(null);
+
+    const onMinChange = (value) => {
+        setMinTemp(value);
+    };
+
+    const onMaxChange = (value) => {
+        setMaxTemp(value);
+    };
+
+    const confirm = () => {
+        setMinTempLine(tempMin);
+        setMaxTempLine(tempMax);
+    };
+
     return (
         <Card
             type="inner"
             title={
-                <div className="w-full flex justify-between items-center">
-                    <span>Temperature Chart (°C)</span>
-                    <div className="flex items-center gap-4">
-                        <Select
-                            labelInValue
-                            //defaultValue={{ value: 'date', label: 'Date' }}
-                            placeholder="Select type"
-                            style={{ width: 120 }}
-                            onChange={handlePickerTypeChange}
-                            options={[
-                                { value: 'date', label: 'Date' },
-                                { value: 'week', label: 'Week' },
-                                { value: 'month', label: 'Month' },
-                                { value: 'year', label: 'Year' },
-                                { value: 'period', label: 'Period' }, // ช่วงเวลาที่เลือกได้
-                                { value: 'realtime', label: 'Realtime' }, // ช่วงเวลาที่เลือกได้
-                            ]}
-                        />
+                <div className="w-full flex flex-col gap-2 pt-6 pb-4">
+                    <div className="flex justify-between items-center">
+                        <span>Temperature Chart (°C)</span>
+                        <div className="flex items-center gap-4">
+                            <Select
+                                labelInValue
+                                placeholder="Select type"
+                                //defaultValue={{ value: 'date', label: 'Date' }}
+                                style={{ width: 120 }}
+                                onChange={handlePickerTypeChange}
+                                options={[
+                                    { value: 'date', label: 'Date' },
+                                    { value: 'week', label: 'Week' },
+                                    { value: 'month', label: 'Month' },
+                                    { value: 'year', label: 'Year' },
+                                    { value: 'period', label: 'Period' },
+                                ]}
+                            />
+                            {pickerType === 'period' ? (
+                                <DatePicker.RangePicker
+                                    disabled={pickerType == null}
+                                    disabledDate={disableFutureDates}
+                                    onChange={onDateChange}
+                                    size="small"
+                                />
+                            ) : (
+                                <DatePicker
+                                    disabled={pickerType == null}
+                                    disabledDate={disableFutureDates}
+                                    onChange={onDateChange}
+                                    picker={pickerType}
+                                    size="small"
+                                />
+                            )}
 
-                        {pickerType === 'period' ? (
-                            <DatePicker.RangePicker
-                                disabledDate={disableFutureDates}
-                                onChange={onDateChange}
-                                size="small"
-                            />
-                        ) : (
-                            <DatePicker
-                                disabledDate={disableFutureDates}
-                                onChange={onDateChange}
-                                picker={pickerType} // date, week, month, year ตาม pickerType
-                                size="small"
-                            />
-                        )}
+                            {/* Popconfirm instead of Modal */}
+                            <Popconfirm
+                                title="Set Min and Max Temperature"
+                                description={
+                                    <div className="flex flex-col gap-2">
+                                        <div>
+                                            <span className="mr-2">Min</span>
+                                            <InputNumber value={tempMin} onChange={onMinChange} />
+                                        </div>
+                                        <div>
+                                            <span className="mr-2">Max</span>
+                                            <InputNumber value={tempMax} onChange={onMaxChange} />
+                                        </div>
+                                    </div>
+                                }
+                                onConfirm={confirm}
+                                okText="Save"
+                                cancelText="Cancel"
+                            >
+                                <Button type="primary" icon={<EditOutlined />}
+                                    disabled={!pickerType || !selectDate}
+                                />
+                            </Popconfirm>
+                        </div>
                     </div>
                 </div>
             }
         >
-            <TemperatureChart
-                pickerType={pickerType}
-                selectDate={selectDate}
-            />
+            <TemperatureChart pickerType={pickerType} selectDate={selectDate} />
         </Card>
     );
 };

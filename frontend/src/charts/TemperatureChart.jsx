@@ -6,33 +6,27 @@ import { useTemperatureStore } from "../services/useTemperatureStore";
 export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
     seriesTemperature,
-    setupWebSocket,
-    closeWebSocket,
     fetchHistoricalTemp,
     clearGraphTemp,
     login,
+    minTempLine,
+    maxTempLine,
   } = useTemperatureStore();
 
   const isRealtime =
-    pickerType == "realtime" || (pickerType == null && selectDate == null);
+    pickerType == null && selectDate == null;
 
   useEffect(() => {
     login();
     clearGraphTemp();
-
-    if (isRealtime) {
-      setupWebSocket();
-    } else if (pickerType != null && selectDate != null) {
-      closeWebSocket();
+    
+    if (!isRealtime) {
+      console.log("fetchHistoricalTemp");
       fetchHistoricalTemp(pickerType, selectDate);
     }
-
-    return () => {
-      closeWebSocket(); // cleanup
-    };
   }, [pickerType, selectDate, login]);
 
-  console.log("TempData", seriesTemperature);
+  //console.log("TempData", seriesTemperature);
 
   const series = [
     {
@@ -61,6 +55,42 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
         enabled: true,
       },
     },
+    annotations: {
+      yaxis: [
+        minTempLine !== null && {
+          y: minTempLine,
+          borderColor: '#e74c3c',
+          borderWidth: 2,
+          strokeDashArray: 5,
+          label: {
+            borderColor: '#e74c3c',
+            text: `Min: ${minTempLine}`,
+            style: {
+              background: "#e74c3c",
+              fontSize: "13px",
+              fontWeight: "bold",
+              color: "#fff"
+            },
+          },
+        },
+        maxTempLine !== null && {
+          y: maxTempLine,
+          borderColor: '#27ae60',
+          borderWidth: 2,
+          strokeDashArray: 5,
+          label: {
+            borderColor: '#27ae60',
+            text: `Max: ${maxTempLine}`,
+            style: {
+              background: '#27ae60',
+              fontSize: '13px',
+              fontWeight: 'bold',
+              color: "#fff"
+            },
+          },
+        }
+      ].filter(Boolean),
+    },
     tooltip: {
       enabled: true,
       x: {
@@ -79,8 +109,8 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
       enabled: false,
     },
     stroke: {
-      //curve: 'smooth',
-      curve: ["straight"],
+      curve: 'smooth',
+      //curve: ["straight"],
     },
     markers: {
       size: 0,
@@ -93,8 +123,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
       },
     },
     yaxis: {
-      max: 50,
-      min: 0,
+
       title: {
         // text: 'Temperature (°C)',
         // style: { fontSize: '13px', color: '#666', fontWeight: 'semibold' }
@@ -103,7 +132,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#63ba88"], // สีเส้น
+    colors: ["#667eea"], // สีเส้น
   };
 
   return (

@@ -35,7 +35,7 @@
 export const getXAxisFormat = (pickerType) => {
     switch (pickerType) {
         case 'date':
-            return 'HH:mm'; //02:00
+            return 'HH:mm:ss'; //02:00
         case 'week':
             return 'ddd dd'; //Mon Tue dddd Monday 
         case 'month':
@@ -45,6 +45,6 @@ export const getXAxisFormat = (pickerType) => {
         case 'period':
             return 'dd MMM HH:mm'; // หรือจะปรับแบบ dynamic ก็ได้
         default:
-            return 'HH:mm:ss'; // fallback: สำหรับ real-time
+            return 'HH:mm:ss'; 
     }
 };

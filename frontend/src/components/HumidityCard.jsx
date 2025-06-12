@@ -1,7 +1,9 @@
-import { Card, DatePicker, Select } from 'antd';
+import { Card, DatePicker, Select, Button, Popconfirm, InputNumber } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { HumidityChart } from '../charts/HumidityChart';
 import dayjs from 'dayjs';
+import { EditOutlined } from '@ant-design/icons';
+import { useTemperatureStore } from '../services/useTemperatureStore';
 
 export const HumidityCard = () => {
     const [pickerType, setPickerType] = useState(null); // เก็บ picker type
@@ -27,13 +29,37 @@ export const HumidityCard = () => {
         return current && current > dayjs().endOf('day');
     };
 
+    //for input
+    const { setMinHumidLine, setMaxHumidLine } = useTemperatureStore();
+
+
+
+
+    //for inputNumber
+
+    const [humidMin, setMinHumid] = useState(null);
+    const [humidMax, setMaxHumid] = useState(null);
+
+
+    const onMinChange = value => {
+        setMinHumid(value);
+    };
+
+    const onMaxChange = value => {
+        setMaxHumid(value);
+    };
+
+    const confirm = () => {
+        setMinHumidLine(humidMin);
+        setMaxHumidLine(humidMax);
+    };
 
     return (
         <Card
             type="inner"
             title={
-                <div className="w-full flex justify-between items-center">
-                    <span>Humidity Chart (%)</span>
+                <div className="w-full flex justify-between items-center  pt-6 pb-4">
+                    <span>Humidity Chart (%RH)</span>
                     <div className="flex items-center gap-4">
                         <Select
                             labelInValue
@@ -47,24 +73,50 @@ export const HumidityCard = () => {
                                 { value: 'month', label: 'Month' },
                                 { value: 'year', label: 'Year' },
                                 { value: 'period', label: 'Period' }, // ช่วงเวลาที่เลือกได้
-                                { value: null, label: 'Realtime' }, // ช่วงเวลาที่เลือกได้
                             ]}
                         />
 
                         {pickerType === 'period' ? (
                             <DatePicker.RangePicker
                                 disabledDate={disableFutureDates}
+                                disabled={pickerType == null}
                                 onChange={onDateChange}
                                 size="small"
                             />
                         ) : (
                             <DatePicker
                                 disabledDate={disableFutureDates}
+                                disabled={pickerType == null}
                                 onChange={onDateChange}
                                 picker={pickerType} // date, week, month, year ตาม pickerType
                                 size="small"
                             />
                         )}
+
+                        <Popconfirm
+                            title="Select Min Max Humidity"
+                            description={
+                                <div className="flex flex-col gap-2">
+                                    <div>
+                                        <span className="mr-2">Min</span>
+                                        <InputNumber value={humidMin} onChange={onMinChange} />
+                                    </div>
+                                    <div>
+                                        <span className="mr-2">Max</span>
+                                        <InputNumber value={humidMax} onChange={onMaxChange} />
+                                    </div>
+                                </div>
+                            }
+                            onConfirm={confirm}
+                            okText="Save"
+                            cancelText="Cancel"
+                        >
+                            <Button type="primary" icon={<EditOutlined />}
+                                disabled={!pickerType || !selectDate}
+                            />
+                        </Popconfirm>
+                        {/* button for select refLine max, min */}
+
                     </div>
                 </div>
             }

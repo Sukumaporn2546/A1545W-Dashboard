@@ -46,7 +46,7 @@ export const RealTimeCard = () => {
     };
 
     const StatCard = ({ title, value, unit, status }) => (
-        <div className={`rounded-xl shadow-lg p-6 border-l-8 ${getBorderColor(status)} hover:shadow-xl transition-shadow flex flex-col justify-between mb-8`}>
+        <div className={`bg-white rounded-xl p-6 border-l-8 ${getBorderColor(status)} transition-shadow flex flex-col justify-between mb-8`}>
             <p className="text-sm font-normal text-gray-400">{title}</p>
             <div className="flex flex-1 items-center justify-center">
                 <div className="flex items-center space-x-2">

@@ -13,10 +13,10 @@ function App() {
   useEffect(() => {
     const login = async () => {
       try {
-        const res = await axios.post(${THINGSBOARD_HOST}/api/auth/login, {
+        const res = await axios.post(`${THINGSBOARD_HOST}/api/auth/login, {
           username: USERNAME,
           password: PASSWORD,
-        });
+        }`);
         setToken(res.data.token);
       } catch (error) {
         console.error("Login failed", error);
@@ -33,13 +33,13 @@ function App() {
       try {
         const deviceId = "cd9547a0-271e-11f0-8357-f9dbaaabf457";
         const res = await axios.get(
-          ${THINGSBOARD_HOST}/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?keys=temperature,
+          `${THINGSBOARD_HOST}/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries?keys=temperature,
           {
             headers: {
               "X-Authorization": Bearer ${token},
             },
           }
-        );
+        `);
 
         const tempValue = res.data.temperature?.[0]?.value;
         if (tempValue !== undefined) {
@@ -67,7 +67,7 @@ function App() {
           <Statistic
             title="Temperature"
             value={
-              temperature !== null ? ${temperature} : "Waiting for data..."
+              temperature !== null ? `${temperature}` : "Waiting for data..."
             }
             precision={2}
             valueStyle={{ color: "#3f8600" }}

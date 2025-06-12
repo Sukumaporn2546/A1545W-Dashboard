@@ -9,6 +9,8 @@ import { dateHelpers } from "../utils/dateHelper";
 import { dataHelpers } from "../utils/dataHelper";
 dayjs.extend(weekOfYear);
 dayjs.extend(isoWeek);
+
+
 export const useTemperatureStore = create((set, get) => ({
   currentData: {},
   seriesTemperature: [],
@@ -18,6 +20,10 @@ export const useTemperatureStore = create((set, get) => ({
   isLoading: false,
   error: null,
   api: new ThingsBoardAPI(),
+  minTempLine: null,
+  maxTempLine: null,
+  minHumidLine: null,
+  maxHumidLine: null,
 
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
@@ -46,6 +52,24 @@ export const useTemperatureStore = create((set, get) => ({
     } finally {
       setLoading(false);
     }
+  },
+
+   //for ref graph
+  setMinTempLine: (value) => {
+    console.log('minTempLine:', value);
+    set({ minTempLine: value });
+  },
+  setMaxTempLine: (value) => {
+    console.log('maxTempLine:', value);
+    set({ maxTempLine: value });
+  },
+  setMinHumidLine: (value) => {
+    console.log('minHumidLine:', value);
+    set({ minHumidLine: value });
+  },
+  setMaxHumidLine: (value) => {
+    console.log('maxHumidLine:', value);
+    set({ maxHumidLine: value });
   },
 
   setupWebSocket: () => {
@@ -148,6 +172,7 @@ export const useTemperatureStore = create((set, get) => ({
       setLoading(false);
     }
   },
+
   fetchHistoricalHumid: async (pickerType, selectDate) => {
     const { api, setLoading, setError, clearError } = get();
     try {
