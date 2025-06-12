@@ -7,23 +7,15 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
     seriesTemperature,
     fetchHistoricalTemp,
-    clearGraphTemp,
-    login,
     minTempLine,
     maxTempLine,
+    clearGraphTemp,
   } = useTemperatureStore();
 
-  const isRealtime = pickerType == null && selectDate == null;
-
   useEffect(() => {
-    login();
     clearGraphTemp();
-
-    if (!isRealtime) {
-      console.log("fetchHistoricalTemp");
-      fetchHistoricalTemp(pickerType, selectDate);
-    }
-  }, [pickerType, selectDate, login]);
+    fetchHistoricalTemp(pickerType, selectDate);
+  }, [pickerType, selectDate]);
 
   //console.log("TempData", seriesTemperature);
 

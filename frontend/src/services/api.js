@@ -26,7 +26,7 @@ export class ThingsBoardAPI {
     const { startTs, endTs, interval, limit, keys = "temperature" } = params;
 
     if (!this.token) {
-      throw new Error("Not authenticated. Please login first.");
+      await this.login();
     }
 
     try {
