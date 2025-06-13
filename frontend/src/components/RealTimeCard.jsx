@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useTemperatureStore } from "../services/useTemperatureStore";
+import { min } from "lodash";
 
 export const RealTimeCard = () => {
-  const { currentData, setupWebSocket, closeWebSocket } = useTemperatureStore();
+  const { currentData, setupWebSocket, closeWebSocket, minTempLine, maxTempLine, minHumidLine, maxHumidLine } = useTemperatureStore();
 
   useEffect(() => {
     setupWebSocket(); // connect on mount
     return () => closeWebSocket(); // cleanup on unmount
   }, []);
-  // const [currentData, setCurrentData] = useState({
-  //     temperature: 25.35,
-  //     humidity: 39.28,
-  // });
 
   const getBorderColor = (status) => {
     switch (status) {
       case "normal":
+        return "border-green-500";
+      case "high":
         return "border-blue-400";
-      case "warning":
-        return "border-yellow-400";
-      case "critical":
-        return "border-red-500";
+      case "low":
+        return "border-yellow-500";
       default:
         return "border-gray-400";
     }
@@ -28,19 +25,15 @@ export const RealTimeCard = () => {
 
   const getTemperatureStatus = (temperature) => {
     if (temperature == 0 || temperature == null) return "default";
-    else if (temperature > 35) return "critical"; // อุณหภูมิสูงเกินไป
-    else if (temperature > 28) return "warning"; // เริ่มสูง
+    else if (temperature > maxTempLine) return "high"; // อุณหภูมิสูงเกินไป
+    else if (temperature < minTempLine) return "low"; // เริ่มสูง
     else return "normal";
   };
 
   const getHumidityStatus = (humidity) => {
-    // if (humidity < 30 || humidity > 85) return 'critical';
-    // else if (humidity < 40 || humidity > 80) return 'warning';
-    // else return 'normal';
-
     if (humidity == 0 || humidity == null) return "default";
-    else if (humidity < 30 || humidity > 85) return "critical";
-    else if (humidity < 40 || humidity > 80) return "warning";
+    else if (humidity < minHumidLine) return "low";
+    else if (humidity > maxHumidLine) return "high";
     else return "normal";
   };
 

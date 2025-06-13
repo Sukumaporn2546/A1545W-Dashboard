@@ -1,4 +1,4 @@
-import { Card, DatePicker, Select, Button, Popconfirm, InputNumber } from 'antd';
+import { Card, DatePicker, Select, Button, Popconfirm, InputNumber, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { HumidityChart } from '../charts/HumidityChart';
 import dayjs from 'dayjs';
@@ -7,7 +7,8 @@ import { useTemperatureStore } from '../services/useTemperatureStore';
 
 export const HumidityCard = () => {
     const [pickerType, setPickerType] = useState(null); // เก็บ picker type
-    const [selectDate, setSelectDate] = useState(null)
+    const [selectDate, setSelectDate] = useState(null);
+    const [messageApi, contextHolder] = message.useMessage();
 
     const onDateChange = (date, dateString) => {
         setSelectDate(dateString);
@@ -32,9 +33,6 @@ export const HumidityCard = () => {
     //for input
     const { setMinHumidLine, setMaxHumidLine } = useTemperatureStore();
 
-
-
-
     //for inputNumber
 
     const [humidMin, setMinHumid] = useState(null);
@@ -50,8 +48,20 @@ export const HumidityCard = () => {
     };
 
     const confirm = () => {
-        setMinHumidLine(humidMin);
-        setMaxHumidLine(humidMax);
+        if (humidMin !== null && humidMin > humidMax) {
+            messageApi.open({
+                type: 'error',
+                content: 'Max Humidity must be higher',
+            });
+        }
+        else {
+            messageApi.open({
+                type: 'success',
+                content: 'Saved',
+            });
+            setMinHumidLine(humidMin);
+            setMaxHumidLine(humidMax);
+        }
     };
 
     return (
@@ -97,6 +107,7 @@ export const HumidityCard = () => {
                             title="Select Min Max Humidity"
                             description={
                                 <div className="flex flex-col gap-2">
+                                    {contextHolder}
                                     <div>
                                         <span className="mr-2">Min</span>
                                         <InputNumber value={humidMin} onChange={onMinChange} />

@@ -23,6 +23,10 @@ export const useTemperatureStore = create((set, get) => ({
   maxTempLine: null,
   minHumidLine: null,
   maxHumidLine: null,
+  startPeriodTemp: null,
+  endPeriodTemp: null,
+  startPeriodHumid: null,
+  endPeriodHumid: null,
 
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
@@ -148,6 +152,7 @@ export const useTemperatureStore = create((set, get) => ({
       const { start, end, interval, limit } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);
       const endTs = dateHelpers.createTimestamp(end, true);
+      set({ startPeriodTemp: start, endPeriodTemp: end });
       console.log(`Fetching temperature data: ${start} to ${end}`);
       const data = await api.fetchTelemetryData({
         startTs,
@@ -180,7 +185,8 @@ export const useTemperatureStore = create((set, get) => ({
       const { start, end, interval, limit } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);
       const endTs = dateHelpers.createTimestamp(end, true);
-      console.log(`Fetching temperature data: ${start} to ${end}`);
+      set({ startPeriodHumid: start, endPeriodHumid: end });
+      console.log(`Fetching humidity data: ${start} to ${end}`);
       const data = await api.fetchTelemetryData({
         startTs,
         endTs,

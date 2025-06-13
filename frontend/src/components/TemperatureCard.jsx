@@ -1,4 +1,4 @@
-import { Card, DatePicker, Select, Button, Popconfirm, InputNumber } from 'antd';
+import { Card, DatePicker, Select, Button, Popconfirm, InputNumber, message } from 'antd';
 import { useState, useEffect } from 'react';
 import { TemperatureChart } from '../charts/TemperatureChart';
 import dayjs from 'dayjs';
@@ -9,6 +9,7 @@ export const TemperatureCard = () => {
     const [pickerType, setPickerType] = useState(null);
     const [selectDate, setSelectDate] = useState(null);
     const [value, setValue] = useState(null);
+    const [messageApi, contextHolder] = message.useMessage();
 
     const onDateChange = (date, dateString) => {
         setSelectDate(dateString);
@@ -43,8 +44,20 @@ export const TemperatureCard = () => {
     };
 
     const confirm = () => {
-        setMinTempLine(tempMin);
-        setMaxTempLine(tempMax);
+        if (tempMin !== null && tempMin > tempMax) {
+            messageApi.open({
+                type: 'error',
+                content: 'Max temperature must be higher',
+            });
+        }
+        else {
+            messageApi.open({
+                type: 'success',
+                content: 'Saved',
+            });
+            setMinTempLine(tempMin);
+            setMaxTempLine(tempMax);
+        }
     };
 
     return (
@@ -91,6 +104,7 @@ export const TemperatureCard = () => {
                                 title="Set Min and Max Temperature"
                                 description={
                                     <div className="flex flex-col gap-2">
+                                        {contextHolder}
                                         <div>
                                             <span className="mr-2">Min</span>
                                             <InputNumber value={tempMin} onChange={onMinChange} />
@@ -109,6 +123,9 @@ export const TemperatureCard = () => {
                                     disabled={!pickerType || !selectDate}
                                 />
                             </Popconfirm>
+
+
+
                         </div>
                     </div>
                 </div>

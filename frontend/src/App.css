@@ -18,10 +18,6 @@ body,
   font-style: normal;
 }
 
-/* .ant-layout-header {
-  padding: 0 !important;
-  width: 100%;
-} */
 
 /* Responsive */
 .header {
@@ -100,13 +96,13 @@ body,
     flex-direction: row;
     align-items: center;
     font-size: medium;
-    
+
   }
 
 
 
   .room {
-    display:none;
+    display: none;
     font-size: 8px !important;
     font-weight: 300;
     margin-right: 0 !important;
@@ -117,3 +113,19 @@ body,
   }
 
 }
+
+.custom-table .ant-table-cell,
+.custom-table .ant-table,
+.custom-table .ant-table-container,
+.custom-table .ant-table-cell,
+.custom-table .ant-table-thead > tr > th 
+.custom-table .ant-table-tbody > tr > td
+{
+  font-size: 20px;
+  /* ขอบเข้มขึ้นทั้งหมด */
+}
+
+/* #report-content {
+  width: 794px; 
+  max-width: 100%;
+} */
