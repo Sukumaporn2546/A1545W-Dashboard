@@ -1,14 +1,15 @@
-import { Layout, theme } from 'antd';
-import { Select, Switch } from 'antd';
+import { Layout, theme, Popover, Select } from 'antd';
 import { Col, Row } from 'antd';
-import { SunOutlined, MoonOutlined } from '@ant-design/icons';
 import { RealTimeCard } from '../components/RealTimeCard';
 import { TemperatureCard } from '../components/TemperatureCard';
 import { HumidityCard } from '../components/HumidityCard';
 import { AlertPanel } from '../components/AlertPanel';
+import { ReportButton } from '../components/ReportButton';
+import { ReportContent } from '../components/ReportContent';
 const { Header, Content } = Layout;
 
-const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
+
+const DashboardLayout = () => {
 
     const {
         token: { colorBgContainer },
@@ -32,6 +33,14 @@ const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
 
     const timeFormatted = now.toLocaleString('en-US', options);
     //console.log(timeFormatted);
+    const content = (
+        <div style={{ width: '300px', overflow: 'auto' }}>
+            <div style={{ transform: 'scale(0.5)', transformOrigin: 'top left' }}>
+                <ReportContent />
+            </div>
+        </div>
+    );
+
 
 
     return (
@@ -40,8 +49,8 @@ const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
                 <Header
                     className='header'
                     style={{
-                        backgroundColor: isDarkMode ? '#121212' : '#ffffff',
-                        color: isDarkMode ? '#ffffff' : '#000000',
+                        backgroundColor: '#ffffff',
+                        color: '#000000',
                         height: '50px',
                     }}
                 >
@@ -68,23 +77,17 @@ const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
                     <div className='header-right'>
 
                         <span className="time">{timeFormatted}</span>
+                        {/* <Popover content={content} title="Title" trigger="hover"> */}
+                        <span><ReportButton /></span>
+                        {/* </Popover> */}
                         <AlertPanel />
-                        {/* <Switch
-                            style={{ marginLeft: 20 }}
-                            checked={isDarkMode}
-                            checkedChildren={<MoonOutlined />}
-                            unCheckedChildren={<SunOutlined />}
-                            onChange={toggleTheme}
-                        /> */}
                     </div>
 
                 </Header>
                 <Content style={{
-                    padding: 24, minHeight: 280, 
+                    padding: 24, minHeight: 280,
                 }}>
-                    {/* <span> <RealTimeCard /></span> */}
-                    <span> <RealTimeCard /></span> 
-                    {/* <span> <AlertPanel /></span> */}
+                    <span> <RealTimeCard /></span>
 
                     <div>
                         <Row gutter={16}>
@@ -96,6 +99,18 @@ const DashboardLayout = ({ isDarkMode, toggleTheme }) => {
                             </Col>
                         </Row>
 
+                    </div>
+                    <br />
+                    <div id="report-content"
+                        style={{
+                            position: 'fixed',
+                            top: '-10000px',
+                            left: '-10000px',
+                            padding: '60px',
+                            backgroundColor: 'white',
+                        }}
+                    >
+                        <ReportContent />
                     </div>
                 </Content>
             </Layout>
