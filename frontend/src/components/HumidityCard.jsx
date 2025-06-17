@@ -15,7 +15,6 @@ import { useHumidityStore } from "../store/useHumidityStore";
 export const HumidityCard = () => {
   const [pickerType, setPickerType] = useState(null); // เก็บ picker type
   const [selectDate, setSelectDate] = useState(null);
-  const [messageApi, contextHolder] = message.useMessage();
 
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
@@ -48,21 +47,6 @@ export const HumidityCard = () => {
     setMaxHumid(value);
   };
 
-  const confirm = () => {
-    if (humidMin !== null && humidMin > humidMax) {
-      messageApi.open({
-        type: "error",
-        content: "Max Humidity must be higher",
-      });
-    } else {
-      messageApi.open({
-        type: "success",
-        content: "Saved",
-      });
-      setMinHumidLine(humidMin);
-      setMaxHumidLine(humidMax);
-    }
-  };
   const confirm = () => {
     setMinMaxHumidLine(humidMin, humidMax);
   };

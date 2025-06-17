@@ -19,7 +19,6 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
 
   //console.log("TempData", seriesTemperature);
 
-
   const series = [
     {
       name: "Temperature",
@@ -55,7 +54,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
-            borderColor: "transparent", 
+            borderColor: "transparent",
             text: `Min: ${minTempLine}`,
             style: {
               background: "rgba(255, 255, 255, 0)",
@@ -71,7 +70,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
-            borderColor: "transparent", 
+            borderColor: "transparent",
             text: `Max: ${maxTempLine}`,
             style: {
               background: "rgba(255, 255, 255, 0)",
@@ -125,7 +124,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#0b1957"], // สีเส้น
+    colors: ["#e58017"], // สีเส้น
   };
 
   return (

@@ -24,6 +24,8 @@ export const useTemperatureStore = create((set, get) => ({
   maxTempLine: null,
   selectedDate: dayjs().format("YYYY-MM-DD"),
   showMessage: useMessageStore.getState().showMessage,
+  startPeriodTemp: null,
+  endPeriodTemp: null,
 
   setSelectedDate: (date) => set({ selectedDate: date }),
   setLoading: (loading) => set({ isLoading: loading }),
@@ -147,12 +149,10 @@ export const useTemperatureStore = create((set, get) => ({
       set({ selectedDate: dayjs(selectDate).format("YYYY-MM-DD") });
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
       if (!timeConfig) throw new Error("Invalid picker type or date");
-
       const { start, end, interval, limit } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);
       const endTs = dateHelpers.createTimestamp(end, true);
-      console.log(`Fetching temperature data: ${start} to ${end}`);
-
+      set({ startPeriodTemp: start, endPeriodTemp: end });
       const data = await api.fetchTelemetryData({
         startTs,
         endTs,

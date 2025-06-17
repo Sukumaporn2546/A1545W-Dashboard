@@ -1,5 +1,4 @@
 import axios from "axios";
-import { message } from "antd";
 import { CONFIG } from "../configs/constants";
 import { dateHelpers } from "../utils/dateHelper";
 
@@ -72,7 +71,6 @@ export class ThingsBoardAPI {
         },
       });
       if (response.status == 200) {
-        message.success("✅ Alarm acknowledged successfully");
         return response;
       }
     } catch (error) {
@@ -98,7 +96,6 @@ export class ThingsBoardAPI {
         },
       });
       if (response.status == 200) {
-        message.success("✅ Alarm acknowledged successfully");
         return response;
       }
     } catch (error) {

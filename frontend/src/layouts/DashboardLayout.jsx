@@ -1,4 +1,4 @@
-import { Layout, theme, Select, Col, Row } from "antd";
+import { Layout, Select, Col, Row } from "antd";
 import { useState, useEffect } from "react";
 import { RealTimeCard } from "../components/RealTimeCard";
 import { TemperatureCard } from "../components/TemperatureCard";
@@ -11,9 +11,9 @@ import { ReportAlertHumid } from "../components/ReportAlertHumid";
 const { Header, Content } = Layout;
 
 const DashboardLayout = () => {
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+  // const {
+  //   token: { colorBgContainer },
+  // } = theme.useToken();
 
   // forSelect
   const handleChange = (value) => {

@@ -24,6 +24,8 @@ export const useHumidityStore = create((set, get) => ({
   minHumidLine: null,
   maxHumidLine: null,
   selectedDate: dayjs().format("YYYY-MM-DD"),
+  startPeriodHumid: null,
+  endPeriodHumid: null,
 
   setSelectedDate: (date) => set({ selectedDate: date }),
   setLoading: (loading) => set({ isLoading: loading }),
@@ -150,7 +152,7 @@ export const useHumidityStore = create((set, get) => ({
       const { start, end, interval, limit } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);
       const endTs = dateHelpers.createTimestamp(end, true);
-      console.log(`Fetching temperature data: ${start} to ${end}`);
+      set({ startPeriodHumid: start, endPeriodHumid: end });
       const data = await api.fetchTelemetryData({
         startTs,
         endTs,
