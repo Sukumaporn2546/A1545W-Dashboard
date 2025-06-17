@@ -13,13 +13,10 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     maxHumidLine,
   } = useTemperatureStore();
 
-  const isRealtime = pickerType == null && selectDate == null;
-
   useEffect(() => {
     clearGraphHumid();
-    if (!isRealtime) {
-      fetchHistoricalHumid(pickerType, selectDate);
-    }
+
+    fetchHistoricalHumid(pickerType, selectDate);
   }, [pickerType, selectDate]);
 
   //console.log("HumidData", seriesHumidity);
