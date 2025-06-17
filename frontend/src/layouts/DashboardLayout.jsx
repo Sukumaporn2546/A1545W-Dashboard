@@ -1,36 +1,46 @@
-import { Layout } from "antd";
-import { Select, Switch } from "antd";
-import { Col, Row } from "antd";
-import { SunOutlined, MoonOutlined } from "@ant-design/icons";
+import { Layout, theme, Select, Col, Row } from "antd";
+import { useState, useEffect } from "react";
 import { RealTimeCard } from "../components/RealTimeCard";
 import { TemperatureCard } from "../components/TemperatureCard";
 import { HumidityCard } from "../components/HumidityCard";
 import { AlertPanel } from "../components/AlertPanel";
-
+import { ReportContent } from "../components/ReportContent";
+import { DownloadReportButton } from "../components/DownloadReportButton";
+import { ReportAlertTemp } from "../components/ReportAlertTemp";
+import { ReportAlertHumid } from "../components/ReportAlertHumid";
 const { Header, Content } = Layout;
-const DashboardLayout = ({ isDarkMode }) => {
-  //   const {
-  //     token: { colorBgContainer },
-  //   } = theme.useToken();
+
+const DashboardLayout = () => {
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
 
   // forSelect
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
 
-  const now = new Date();
+  const [timeFormatted, setTimeFormatted] = useState("");
 
-  const options = {
-    year: "numeric",
-    month: "short", // ได้ May แทน May 31
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true, // เพื่อให้แสดง AM/PM
-  };
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      };
+      setTimeFormatted(now.toLocaleString("en-US", options));
+    };
 
-  const timeFormatted = now.toLocaleString("en-US", options);
-  //console.log(timeFormatted);
+    updateTime(); // ตั้งค่าครั้งแรก
+    const interval = setInterval(updateTime, 1000); // อัปเดตทุกวินาที
+
+    return () => clearInterval(interval); // ล้าง interval ตอน component ถูกถอด
+  }, []);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -38,8 +48,8 @@ const DashboardLayout = ({ isDarkMode }) => {
         <Header
           className="header"
           style={{
-            backgroundColor: isDarkMode ? "#121212" : "#ffffff",
-            color: isDarkMode ? "#ffffff" : "#000000",
+            backgroundColor: "#ffffff",
+            color: "#000000",
             height: "50px",
           }}
         >
@@ -67,15 +77,13 @@ const DashboardLayout = ({ isDarkMode }) => {
 
           <div className="header-right">
             <span className="time">{timeFormatted}</span>
-
+            {/* <Popover content={content} title="Title" trigger="hover"> */}
+            {/* <span><ReportButton /></span> */}
+            <span>
+              <DownloadReportButton />
+            </span>
+            {/* </Popover> */}
             <AlertPanel />
-            {/* <Switch
-                            style={{ marginLeft: 20 }}
-                            checked={isDarkMode}
-                            checkedChildren={<MoonOutlined />}
-                            unCheckedChildren={<SunOutlined />}
-                            onChange={toggleTheme}
-                        /> */}
           </div>
         </Header>
         <Content
@@ -84,20 +92,40 @@ const DashboardLayout = ({ isDarkMode }) => {
             minHeight: 280,
           }}
         >
-          {/* <span> <RealTimeCard /></span> */}
           <span>
             {" "}
             <RealTimeCard />
           </span>
-          {/* <span> <AlertPanel /></span> */}
 
-          <div>
+          <div className="mb-6">
             <Row gutter={16}>
               <Col span={12}>
                 <TemperatureCard />
               </Col>
               <Col span={12}>
                 <HumidityCard />
+              </Col>
+            </Row>
+          </div>
+          <div
+            id="report-content"
+            style={{
+              position: "fixed",
+              top: "-10000px",
+              left: "-10000px",
+              padding: "60px",
+              backgroundColor: "white",
+            }}
+          >
+            <ReportContent />
+          </div>
+          <div>
+            <Row gutter={16}>
+              <Col span={12}>
+                <ReportAlertTemp />
+              </Col>
+              <Col span={12}>
+                <ReportAlertHumid />
               </Col>
             </Row>
           </div>

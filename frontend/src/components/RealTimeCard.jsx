@@ -84,11 +84,11 @@ export const RealTimeCard = () => {
   const getBorderColor = (status) => {
     switch (status) {
       case "normal":
+        return "border-green-500";
+      case "high":
         return "border-blue-400";
-      case "warning":
-        return "border-yellow-400";
-      case "critical":
-        return "border-red-500";
+      case "low":
+        return "border-yellow-500";
       default:
         return "border-gray-400";
     }
@@ -103,8 +103,8 @@ export const RealTimeCard = () => {
 
   const getHumidityStatus = (humidity) => {
     if (humidity == 0 || humidity == null) return "default";
-    else if (humidity < 30 || humidity > 85) return "critical";
-    else if (humidity < 40 || humidity > 80) return "warning";
+    else if (humidity < 30) return "low";
+    else if (humidity > 65) return "high";
     else return "normal";
   };
 

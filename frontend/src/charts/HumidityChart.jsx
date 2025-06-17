@@ -56,13 +56,13 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
-            borderColor: "#e74c3c",
+            borderColor: "transparent",
             text: `Min: ${minHumidLine}`,
             style: {
-              background: "#e74c3c",
+              background: "rgba(255, 255, 255, 0)",
               fontSize: "13px",
               fontWeight: "bold",
-              color: "#fff",
+              color: "#e74c3c",
             },
           },
         },
@@ -72,15 +72,16 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
-            borderColor: "#27ae60",
+            borderColor: "transparent", 
             text: `Max: ${maxHumidLine}`,
             style: {
-              background: "#27ae60",
+              background: "rgba(255, 255, 255, 0)",
               fontSize: "13px",
               fontWeight: "bold",
-              color: "#fff",
+              color: "#27ae60",
             },
           },
+          zIndex: 0,
         },
       ].filter(Boolean),
     },
@@ -126,7 +127,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#667eea"], // สีเส้น
+    colors: ["#426bc2"], // สีเส้น
   };
 
   return (
