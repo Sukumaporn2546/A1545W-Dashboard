@@ -6,28 +6,20 @@ import {
   Popconfirm,
   InputNumber,
 } from "antd";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TemperatureChart } from "../charts/TemperatureChart";
 import dayjs from "dayjs";
 import { EditOutlined } from "@ant-design/icons";
-import { useTemperatureStore } from "../services/useTemperatureStore";
+import { useTemperatureStore } from "../store/useTemperatureStore";
 
 export const TemperatureCard = () => {
   const [pickerType, setPickerType] = useState("date");
   const [selectDate, setSelectDate] = useState(
     dayjs(new Date()).format("YYYY-MM-DD")
   );
-  const [value, setValue] = useState(null);
-
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
-    setValue(date);
   };
-
-  useEffect(() => {
-    console.log("pickerType updated:", pickerType);
-    console.log("selectDate updated:", selectDate);
-  }, [selectDate, pickerType]);
 
   const handlePickerTypeChange = (value) => {
     setPickerType(value.value);
@@ -38,7 +30,8 @@ export const TemperatureCard = () => {
     return current && current > dayjs().endOf("day");
   };
 
-  const { setMinTempLine, setMaxTempLine } = useTemperatureStore();
+  const { minTempLine, maxTempLine, setMinMaxTempLine, getMinMaxTempLine } =
+    useTemperatureStore();
 
   const [tempMin, setMinTemp] = useState(null);
   const [tempMax, setMaxTemp] = useState(null);
@@ -52,9 +45,11 @@ export const TemperatureCard = () => {
   };
 
   const confirm = () => {
-    setMinTempLine(tempMin);
-    setMaxTempLine(tempMax);
+    setMinMaxTempLine(tempMin, tempMax);
   };
+  useEffect(() => {
+    getMinMaxTempLine();
+  }, [tempMax, tempMin]);
 
   return (
     <Card
@@ -83,7 +78,7 @@ export const TemperatureCard = () => {
                   disabled={pickerType == null}
                   disabledDate={disableFutureDates}
                   onChange={onDateChange}
-                  size="small"
+                  size="middle"
                 />
               ) : (
                 <DatePicker
@@ -92,22 +87,32 @@ export const TemperatureCard = () => {
                   disabledDate={disableFutureDates}
                   onChange={onDateChange}
                   picker={pickerType}
-                  size="small"
+                  size="middle"
                 />
               )}
 
               {/* Popconfirm instead of Modal */}
               <Popconfirm
+                icon={null}
                 title="Set Min and Max Temperature"
                 description={
                   <div className="flex flex-col gap-2">
                     <div>
-                      <span className="mr-2">Min</span>
-                      <InputNumber value={tempMin} onChange={onMinChange} />
+                      <span className="mr-2">Max</span>
+                      <InputNumber
+                        value={tempMax}
+                        defaultValue={maxTempLine}
+                        onChange={onMaxChange}
+                      />
                     </div>
                     <div>
-                      <span className="mr-2">Max</span>
-                      <InputNumber value={tempMax} onChange={onMaxChange} />
+                      <span className="mr-2">Min</span>
+
+                      <InputNumber
+                        value={tempMin}
+                        defaultValue={minTempLine}
+                        onChange={onMinChange}
+                      />
                     </div>
                   </div>
                 }

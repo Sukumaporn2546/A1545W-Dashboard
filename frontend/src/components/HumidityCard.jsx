@@ -9,8 +9,8 @@ import {
 import React, { useState, useEffect } from "react";
 import { HumidityChart } from "../charts/HumidityChart";
 import dayjs from "dayjs";
-import { EditOutlined } from "@ant-design/icons";
-import { useTemperatureStore } from "../services/useTemperatureStore";
+import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { useHumidityStore } from "../store/useHumidityStore";
 
 export const HumidityCard = () => {
   const [pickerType, setPickerType] = useState("date"); // เก็บ picker type
@@ -21,12 +21,6 @@ export const HumidityCard = () => {
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
   };
-
-  useEffect(() => {
-    // โค้ดในนี้จะทำงานเมื่อ selectDate มีการเปลี่ยนแปลง
-    console.log("pickerTypeHumid updated:", pickerType);
-    console.log("selectDateHumid updated:", selectDate);
-  }, [selectDate, pickerType]); // เพิ่ม selectDate เป็น dependency array
 
   const handlePickerTypeChange = (value) => {
     console.log("value", value);
@@ -39,7 +33,8 @@ export const HumidityCard = () => {
   };
 
   //for input
-  const { setMinHumidLine, setMaxHumidLine } = useTemperatureStore();
+  const { minHumidLine, maxHumidLine, setMinMaxHumidLine, getMinMaxHumidLine } =
+    useHumidityStore();
 
   //for inputNumber
 
@@ -55,9 +50,11 @@ export const HumidityCard = () => {
   };
 
   const confirm = () => {
-    setMinHumidLine(humidMin);
-    setMaxHumidLine(humidMax);
+    setMinMaxHumidLine(humidMin, humidMax);
   };
+  useEffect(() => {
+    getMinMaxHumidLine();
+  }, [humidMax, humidMin]);
 
   return (
     <Card
@@ -86,7 +83,7 @@ export const HumidityCard = () => {
                 disabledDate={disableFutureDates}
                 disabled={pickerType == null}
                 onChange={onDateChange}
-                size="small"
+                size="middle"
               />
             ) : (
               <DatePicker
@@ -95,21 +92,31 @@ export const HumidityCard = () => {
                 disabled={pickerType == null}
                 onChange={onDateChange}
                 picker={pickerType} // date, week, month, year ตาม pickerType
-                size="small"
+                size="middle"
               />
             )}
 
             <Popconfirm
               title="Select Min Max Humidity"
+              icon={null}
               description={
                 <div className="flex flex-col gap-2">
                   <div>
-                    <span className="mr-2">Min</span>
-                    <InputNumber value={humidMin} onChange={onMinChange} />
+                    <span className="mr-2">Max</span>
+
+                    <InputNumber
+                      value={humidMax}
+                      defaultValue={maxHumidLine}
+                      onChange={onMaxChange}
+                    />
                   </div>
                   <div>
-                    <span className="mr-2">Max</span>
-                    <InputNumber value={humidMax} onChange={onMaxChange} />
+                    <span className="mr-2">Min</span>
+                    <InputNumber
+                      value={humidMin}
+                      defaultValue={minHumidLine}
+                      onChange={onMinChange}
+                    />
                   </div>
                 </div>
               }

@@ -2,7 +2,7 @@ import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
 
 import { useEffect } from "react";
-import { useTemperatureStore } from "../services/useTemperatureStore";
+import { useTemperatureStore } from "../store/useTemperatureStore";
 export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
     seriesTemperature,
@@ -11,9 +11,9 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     maxTempLine,
     clearGraphTemp,
   } = useTemperatureStore();
-
   useEffect(() => {
     clearGraphTemp();
+
     fetchHistoricalTemp(pickerType, selectDate);
   }, [pickerType, selectDate]);
 
@@ -85,11 +85,11 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     tooltip: {
       enabled: true,
       x: {
-        format: getXAxisFormat(pickerType), // รูปแบบเวลา
+        format: getXAxisFormat(pickerType),
       },
       y: {
         formatter: function (val) {
-          return `${val.toFixed(2)} °C`; // เพิ่มหน่วย °C
+          return `${val.toFixed(2)} °C`;
         },
         title: {
           formatter: () => "Temperature", // ชื่อ tooltip

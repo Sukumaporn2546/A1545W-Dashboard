@@ -1,6 +1,6 @@
 export const CONFIG = {
   THINGSBOARD_HOST: import.meta.env.VITE_THINGSBOARD_HOST,
-  THINGSBOARD_WEBSOCKET: import.meta.env.VITE_THINGSBOARD_HOST_WEBS0CKET,
+  THINGSBOARD_WEBSOCKET: import.meta.env.VITE_THINGSBOARD_HOST_WEBSOCKET,
   USERNAME: import.meta.env.VITE_USERNAME,
   PASSWORD: import.meta.env.VITE_PASSWORD,
   DEVICE_ID: import.meta.env.VITE_DEVICE_ID,
@@ -20,4 +20,9 @@ export const CONFIG = {
     MONTHLY: 30,
     YEARLY: 12,
   },
+  reconnectCycle: 5,
+  reconnectInterval: 5,
+  heartBeatInterval: 45 * 1000,
+  sleepInterval: 10 * 1000,
+  heartBeatMsg: JSON.stringify({ cmd: "keepAlive" }),
 };

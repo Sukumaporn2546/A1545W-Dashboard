@@ -35,6 +35,14 @@ export const dataHelpers = {
       ).getTime();
       return [newTs, Number(item.value).toFixed(2)];
     }),
+  filterDuplicates: (arr) => {
+    const seen = new Set();
+    return arr.filter(([ts]) => {
+      if (seen.has(ts)) return false;
+      seen.add(ts);
+      return true;
+    });
+  },
 
   //   limitSeriesLength: (series, maxLength = CONFIG.MAX_SERIES_LENGTH) =>
   //     series.slice(-maxLength),

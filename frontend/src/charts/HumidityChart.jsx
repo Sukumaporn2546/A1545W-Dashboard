@@ -3,7 +3,7 @@ import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
 
 import { useEffect } from "react";
-import { useTemperatureStore } from "../services/useTemperatureStore";
+import { useHumidityStore } from "../store/useHumidityStore";
 export const HumidityChart = ({ pickerType, selectDate }) => {
   const {
     seriesHumidity,
@@ -11,7 +11,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     clearGraphHumid,
     minHumidLine,
     maxHumidLine,
-  } = useTemperatureStore();
+  } = useHumidityStore();
 
   useEffect(() => {
     clearGraphHumid();

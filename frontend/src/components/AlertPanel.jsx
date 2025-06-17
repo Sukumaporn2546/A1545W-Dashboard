@@ -1,86 +1,228 @@
-import { Card } from 'antd';
-
-import { Button, Drawer, Badge, Alert } from 'antd';
-import { useState } from 'react';
-import { AlertOutlined, WarningOutlined } from '@ant-design/icons';
-import { has } from 'lodash';
+import {
+  Button,
+  Drawer,
+  Badge,
+  Alert,
+  Space,
+  Popover,
+  Radio,
+  Flex,
+  Skeleton,
+} from "antd";
+import { useEffect, useState } from "react";
+import {
+  AlertOutlined,
+  WarningOutlined,
+  SyncOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+import { useAlarmStore } from "../store/useAlarmStore";
+// import { response_alert } from "../constants/constants";
+// import { alarmHelper } from "../utils/alarmHelper";
 
 export const AlertPanel = () => {
-    const alerts = [
-        {
-            id: "1",                             // ไว้สำหรับระบุรายการแต่ละอัน
-            type: "temperature",                // ประเภทแจ้งเตือน
-            message: "High Temperature",  // ข้อความเตือนหลัก
-            value: 85,                          // ค่าที่ตรวจพบ
-            threshold: 80,                      // ค่ากำหนด (threshold)
-            unit: "°C",                         // หน่วย
-            time: "2025-06-10 14:30",           // เวลาที่เกิดเหตุ
-            deviceId: "sensor-01",              // อุปกรณ์ที่ตรวจพบ
-            resolved: false                     // แสดงว่ายังไม่ได้รับการยืนยันหรือแก้ไข
-        },
-        {
-            id: "2",                             // ไว้สำหรับระบุรายการแต่ละอัน
-            type: "temperature",                // ประเภทแจ้งเตือน
-            message: "Low Humidity",  // ข้อความเตือนหลัก
-            value: 12,                          // ค่าที่ตรวจพบ
-            threshold: 80,                      // ค่ากำหนด (threshold)
-            unit: "%",                         // หน่วย
-            time: "2025-06-10 14:30",           // เวลาที่เกิดเหตุ
-            deviceId: "sensor-01",              // อุปกรณ์ที่ตรวจพบ
-            resolved: false                     // แสดงว่ายังไม่ได้รับการยืนยันหรือแก้ไข
+  const {
+    alarm,
+    getAlarm,
+    acknowledgeAlarm,
+    clearAlarm,
+
+    isAckLoading,
+    isClearLoading,
+  } = useAlarmStore();
+  const [alerts, setAlerts] = useState([]);
+  const [open, setOpen] = useState(false);
+  // const alerts = alarmHelper.formatAlarmData(response_alert.data);
+
+  const hasAlerts = alerts && alerts.length > 0;
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+  const onClose = () => {
+    setOpen(false);
+  };
+  const handleAcknowledge = (alarmId) => {
+    acknowledgeAlarm(alarmId);
+  };
+  const handleClear = (alarmId) => {
+    clearAlarm(alarmId);
+  };
+  const handleSelected = async (event) => {
+    let selected = event.target.value;
+    switch (selected) {
+      case "temp":
+        setAlerts(alarm.filter((e) => e.message.includes("Temperature")));
+        break;
+      case "humid":
+        setAlerts(alarm.filter((e) => e.message.includes("Humidity")));
+        break;
+      case "all":
+        setAlerts(alarm);
+        break;
+      default:
+        setAlerts(alarm);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      getAlarm();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (alarm) {
+      setAlerts(alarm);
+    }
+  }, [alarm]);
+
+  return (
+    <>
+      <Badge dot={hasAlerts} size="default">
+        <Button shape="circle" onClick={showDrawer} icon={<AlertOutlined />} />
+      </Badge>
+      <Drawer
+        title={
+          <div>
+            <span className=" flex items-center">
+              {/* <span className="w-5 h-5 mx-2 text-yellow-500">
+                <WarningOutlined />
+              </span> */}
+              <span className="font-bold">Latest Alerts</span>
+            </span>
+            <div className="font-semibold text-slate-400">June 17,2025</div>
+          </div>
         }
-    ];
-
-    const hasAlerts = alerts.length > 0;
-
-    const [open, setOpen] = useState(false);
-    const showDrawer = () => {
-        setOpen(true);
-    };
-    const onClose = () => {
-        setOpen(false);
-    };
-
-    return (
+        closable={{ "aria-label": "Close Button" }}
+        onClose={onClose}
+        open={open}
+        extra={
+          <Space>
+            <Button type="primary" onClick={onClose}>
+              <EditOutlined />
+            </Button>
+          </Space>
+        }
+      >
         <>
-            <Badge dot={hasAlerts} size="default">
-                <Button shape="circle" onClick={showDrawer} icon={<AlertOutlined />} />
-            </Badge>
-            <Drawer
-                title={
-                    <span className=' flex items-center'>
-                        <span className='w-5 h-5 mx-2 text-yellow-500'><WarningOutlined /></span>
-                        <span className='font-bold'>Latest Alerts</span>
-                    </span>
-                }
-                closable={{ 'aria-label': 'Close Button' }}
-                onClose={onClose}
-                open={open}
-            >
-                {hasAlerts ? (
-                    alerts.map((alert) => (
-                        <Alert
-                            style={{ marginBottom: '10px' }}
-                            key={alert.id}
-                            message={alert.message}
-                            description={
-                                <span className="text-sm text-gray-500">
-                                    Detected: {alert.value}{alert.unit} <br />
-                                    Time: {alert.time}
-                                </span>
-                            }
-                            type="warning"
-                            showIcon
-                        />
-                    ))
-                ) :
-                    (
-                        <p className="text-gray-500">No alerts</p>
-                    )
-                }
+          <Radio.Group onChange={handleSelected} block defaultValue="all">
+            <Radio.Button value="all">All</Radio.Button>
+            <Radio.Button value="temp">Temperature</Radio.Button>
+            <Radio.Button value="humid">Humidity</Radio.Button>
+          </Radio.Group>
+          <br></br>
 
-            </Drawer>
+          <Flex vertical gap={"small"}>
+            {hasAlerts ? (
+              alerts.map((alert) => (
+                <Popover
+                  placement="left"
+                  title={alert.message}
+                  content={
+                    <div>
+                      <p>{alert.description} </p>
+                      <p>Detected : {alert.value}</p>
+                      {!alert.message.includes("Normal") ? (
+                        <p>threshold : {alert.threshold}</p>
+                      ) : (
+                        <>
+                          <p>min : {alert.min}</p>
+                          <p>max : {alert.max}</p>
+                        </>
+                      )}
+
+                      <p>Start : {alert.startAt}</p>
+
+                      <p>
+                        Clear : {alert.cleared ? "Yes" : "No"}
+                        {alert.cleared ? alert.clearAt : null}
+                      </p>
+                      <p>
+                        Acknowledge : {alert.acknowledged ? "Yes" : "No"}
+                        {alert.acknowledged ? alert.ackAt : null}
+                      </p>
+                    </div>
+                  }
+                >
+                  <Alert
+                    style={{ marginBottom: "10px" }}
+                    key={alert.id}
+                    message={alert.message}
+                    description={
+                      <span className="text-sm text-gray-500">
+                        Detected: {alert.value}
+                        {alert.unit} <br />
+                        Time: {alert.time}
+                      </span>
+                    }
+                    type={alert.type == "MINOR" ? "success" : "warning"}
+                    showIcon={!alert.cleared}
+                    action={
+                      alert.type == "MAJOR" ? (
+                        <Space direction="vertical">
+                          {alert.acknowledged == false ? (
+                            <Button
+                              loading={
+                                isAckLoading[alert.id] && {
+                                  icon: <SyncOutlined spin />,
+                                }
+                              }
+                              size="middle"
+                              type="primary"
+                              style={{ width: "100%" }}
+                              onClick={() => handleAcknowledge(alert.id)}
+                            >
+                              Accept
+                            </Button>
+                          ) : (
+                            <Button
+                              size="middle"
+                              type="primary"
+                              style={{ width: "100%" }}
+                              disabled
+                            >
+                              Accepted
+                            </Button>
+                          )}
+                          {alert.cleared == false ? (
+                            <Button
+                              size="middle"
+                              danger
+                              ghost
+                              style={{ width: "100%" }}
+                              loading={
+                                isClearLoading[alert.id] && {
+                                  icon: <SyncOutlined spin />,
+                                }
+                              }
+                              onClick={() => handleClear(alert.id)}
+                            >
+                              Clear
+                            </Button>
+                          ) : (
+                            <Button
+                              size="middle"
+                              danger
+                              ghost
+                              style={{ width: "100%" }}
+                              disabled
+                            >
+                              Cleared
+                            </Button>
+                          )}
+                        </Space>
+                      ) : null
+                    }
+                  />
+                </Popover>
+              ))
+            ) : (
+              <p className="text-gray-500">No alerts</p>
+            )}
+          </Flex>
         </>
-
-    );
-}
+      </Drawer>
+    </>
+  );
+};
