@@ -1,14 +1,85 @@
-import React, { useEffect, useState } from "react";
-import { useTemperatureStore } from "../services/useTemperatureStore";
-import { min } from "lodash";
+import React, { useEffect, useRef, useState } from "react";
+import { useTemperatureStore } from "../store/useTemperatureStore";
+import { useHumidityStore } from "../store/useHumidityStore";
+import { useAlarmStore } from "../store/useAlarmStore";
+import MessagePanel from "./MessageRanel";
+import AlertRealtime from "../components/AlertRealtime";
 
 export const RealTimeCard = () => {
-  const { currentData, setupWebSocket, closeWebSocket, minTempLine, maxTempLine, minHumidLine, maxHumidLine } = useTemperatureStore();
+  const { realtimeTemp, setupWebSocketTempTelemetry, closeWebSocketTemp } =
+    useTemperatureStore();
+  const { realtimeHumid, setupWebSocketHumid, closeWebSocketHumid } =
+    useHumidityStore();
+
+  // Use refs to track if WebSockets are initialized to prevent multiple setups
+  const tempSocketInitialized = useRef(false);
+  const humidSocketInitialized = useRef(false);
 
   useEffect(() => {
-    setupWebSocket(); // connect on mount
-    return () => closeWebSocket(); // cleanup on unmount
+    const setupConnections = async () => {
+      try {
+        if (!humidSocketInitialized.current) {
+          console.log("Setting up humidity WebSocket...");
+          await setupWebSocketHumid("telemetry");
+          humidSocketInitialized.current = true;
+        }
+        if (!tempSocketInitialized.current) {
+          console.log("Setting up temperature WebSocket...");
+          await setupWebSocketTempTelemetry();
+          tempSocketInitialized.current = true;
+        }
+      } catch (error) {
+        console.error("Error setting up WebSocket connections:", error);
+      }
+    };
+    setupConnections();
+    return () => {
+      console.log("Cleaning up WebSocket connections...");
+
+      if (humidSocketInitialized.current) {
+        closeWebSocketHumid();
+        humidSocketInitialized.current = false;
+      }
+
+      if (tempSocketInitialized.current) {
+        closeWebSocketTemp();
+        tempSocketInitialized.current = false;
+      }
+    };
   }, []);
+
+  const [alarm, setAlarm] = useState(null);
+  const { getLatestAlarm, latestAlerts } = useAlarmStore();
+
+  const prevAlarmRef = useRef(null);
+  const lastProcessedAlarmId = useRef(null);
+
+  useEffect(() => {
+    const checkAlarmChanges = async () => {
+      await getLatestAlarm();
+      if (latestAlerts && latestAlerts.id) {
+        const isNewAlarm = latestAlerts.id !== lastProcessedAlarmId.current;
+        const isAlarmChanged =
+          !prevAlarmRef.current ||
+          latestAlerts.id !== prevAlarmRef.current.id ||
+          latestAlerts.status !== prevAlarmRef.current.status ||
+          latestAlerts.message !== prevAlarmRef.current.message;
+
+        if (isNewAlarm && isAlarmChanged) {
+          setAlarm(latestAlerts);
+          prevAlarmRef.current = latestAlerts;
+          lastProcessedAlarmId.current = latestAlerts.id;
+        }
+      } else {
+        if (alarm !== null) {
+          setAlarm(null);
+        }
+      }
+    };
+    if (realtimeTemp !== undefined || realtimeHumid !== undefined) {
+      checkAlarmChanges();
+    }
+  }, [realtimeHumid || realtimeTemp]);
 
   const getBorderColor = (status) => {
     switch (status) {
@@ -25,8 +96,8 @@ export const RealTimeCard = () => {
 
   const getTemperatureStatus = (temperature) => {
     if (temperature == 0 || temperature == null) return "default";
-    else if (temperature > 26) return "high"; 
-    else if (temperature < 18) return "low"; 
+    else if (temperature > 35) return "critical";
+    else if (temperature > 28) return "warning";
     else return "normal";
   };
 
@@ -56,23 +127,20 @@ export const RealTimeCard = () => {
   return (
     <>
       {/* Current Values */}
-
+      <MessagePanel />
+      <AlertRealtime alarm={alarm} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         <StatCard
           title="Current Temperature"
-          value={currentData?.temperature ?? "--"}
-          //value={30}
+          value={realtimeTemp ?? "--"}
           unit="°C"
-          status={getTemperatureStatus(currentData.temperature)}
-          //status={getTemperatureStatus(30)}
+          status={getTemperatureStatus(realtimeTemp)}
         />
         <StatCard
           title="Current Humidity"
-          value={currentData?.humidity ?? "--"}
-          // value={62.35}
+          value={realtimeHumid ?? "--"}
           unit="%"
-          status={getHumidityStatus(currentData.humidity)}
-          // status={getHumidityStatus(62.35)}
+          status={getHumidityStatus(realtimeHumid)}
         />
       </div>
     </>

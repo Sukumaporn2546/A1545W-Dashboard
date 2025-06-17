@@ -42,4 +42,34 @@ export const dateHelpers = {
     const timeString = isEnd ? "23:59:59" : "00:00:00";
     return new Date(`${dateString}T${timeString}+07:00`).getTime();
   },
+  formatThaiDate: (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString("th-TH", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Bangkok",
+    });
+  },
+  getTodayTimestamp: () => {
+    const now = new Date();
+    const start = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0
+    ).getTime();
+    const end = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999
+    ).getTime();
+    return { start, end };
+  },
 };
