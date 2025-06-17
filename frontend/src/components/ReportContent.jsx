@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 
 
 export const ReportContent = () => {
-
     //real data
     const { startPeriodTemp, endPeriodTemp, startPeriodHumid, endPeriodHumid } = useTemperatureStore();
 
@@ -156,30 +155,17 @@ export const ReportContent = () => {
 
     return (
         <div>
-            <h2 className="text-4xl font-bold mb-6 text-center">Temperature and Humidity Report</h2>
-            <div className="mb-8 text-xl">
+            <h2 className="text-3xl font-bold mb-6 text-center">Temperature and Humidity Report</h2>
+            <div className="mb-8 text-base">
                 <p><strong>Temperature Period:</strong> {tempPeriod}</p>
                 <p><strong>Humidity Period:</strong> {humidPeriod}</p>
                 <p><strong>Generated:</strong> {timeFormatted}</p>
             </div>
 
-            <h3 className="text-3xl font-bold mb-4">
-                Summary Statistics</h3>
-            <div className="inline-block mb-8">
-                <Table
-                    pagination={false}
-                    tableLayout="auto"
-                    size="small"
-                    bordered
-                    columns={columns}
-                    dataSource={data}
-                    className="custom-table"
-                />
-            </div>
-            <h3 className="text-3xl font-bold mb-4">
+            <h3 className="text-xl font-bold mb-4">
                 Trend Graphs
             </h3>
-            <div className="mb-8">
+            <div className="mb-66">
                 <div className="mb-4">
                     <Card title={
                         <div className="py-4 text-xl">
@@ -201,8 +187,21 @@ export const ReportContent = () => {
                 </div>
             </div>
 
+            <h3 className="text-xl font-bold mb-4">
+                Summary Statistics</h3>
+            <div className="inline-block mb-8">
+                <Table
+                    pagination={false}
+                    tableLayout="auto"
+                    size="small"
+                    bordered
+                    columns={columns}
+                    dataSource={data}
+                    className="custom-table"
+                />
+            </div>
 
-            <h3 className="text-3xl font-bold mb-6">
+            <h3 className="text-xl font-bold mb-6">
                 Threshold Violations
             </h3>
 

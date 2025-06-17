@@ -130,7 +130,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#667eea"], // สีเส้น
+    colors: ["#426bc2"], // สีเส้น
   };
 
   return (

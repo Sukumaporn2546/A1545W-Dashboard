@@ -3,7 +3,6 @@ import { Card } from 'antd';
 import { Button, Drawer, Badge, Alert } from 'antd';
 import { useState } from 'react';
 import { AlertOutlined, WarningOutlined } from '@ant-design/icons';
-import { has } from 'lodash';
 
 export const AlertPanel = () => {
     const alerts = [

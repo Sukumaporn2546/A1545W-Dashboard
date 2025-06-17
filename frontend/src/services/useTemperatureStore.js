@@ -27,6 +27,7 @@ export const useTemperatureStore = create((set, get) => ({
   endPeriodTemp: null,
   startPeriodHumid: null,
   endPeriodHumid: null,
+  imageReport: null,
 
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),

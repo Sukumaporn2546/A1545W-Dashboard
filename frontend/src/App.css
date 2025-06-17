@@ -118,14 +118,21 @@ body,
 .custom-table .ant-table,
 .custom-table .ant-table-container,
 .custom-table .ant-table-cell,
-.custom-table .ant-table-thead > tr > th 
-.custom-table .ant-table-tbody > tr > td
-{
+.custom-table .ant-table-thead>tr>th .custom-table .ant-table-tbody>tr>td {
   font-size: 20px;
-  /* ขอบเข้มขึ้นทั้งหมด */
 }
 
-/* #report-content {
-  width: 794px; 
-  max-width: 100%;
-} */
+#report-content {
+  /* width: 794px; 
+  max-width: 100%; */
+  /* clip-path: inset(100%); */
+}
+
+.custom-collapse .ant-collapse-header {
+  background-color: #fafafa !important;
+  /* color: #f0b100 !important; */
+  border-top-left-radius: 7px !important;
+  border-top-right-radius: 7px !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}

@@ -1,12 +1,15 @@
-import { Layout, theme, Popover, Select } from 'antd';
-import { Col, Row } from 'antd';
+import { Layout, theme, Select, Col, Row } from 'antd';
+import { useState, useEffect } from 'react';
 import { RealTimeCard } from '../components/RealTimeCard';
 import { TemperatureCard } from '../components/TemperatureCard';
 import { HumidityCard } from '../components/HumidityCard';
 import { AlertPanel } from '../components/AlertPanel';
-import { ReportButton } from '../components/ReportButton';
 import { ReportContent } from '../components/ReportContent';
+import { DownloadReportButton } from '../components/DownloadReportButton';
+import { ReportAlertTemp } from '../components/ReportAlertTemp';
+import { ReportAlertHumid } from '../components/ReportAlertHumid';
 const { Header, Content } = Layout;
+
 
 
 const DashboardLayout = () => {
@@ -20,29 +23,29 @@ const DashboardLayout = () => {
         console.log(`selected ${value}`);
     };
 
-    const now = new Date();
+   const [timeFormatted, setTimeFormatted] = useState('');
 
-    const options = {
-        year: 'numeric',
-        month: 'short', // ได้ May แทน May 31
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true, // เพื่อให้แสดง AM/PM
-    };
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+            };
+            setTimeFormatted(now.toLocaleString('en-US', options));
+        };
 
-    const timeFormatted = now.toLocaleString('en-US', options);
-    //console.log(timeFormatted);
-    const content = (
-        <div style={{ width: '300px', overflow: 'auto' }}>
-            <div style={{ transform: 'scale(0.5)', transformOrigin: 'top left' }}>
-                <ReportContent />
-            </div>
-        </div>
-    );
+        updateTime(); // ตั้งค่าครั้งแรก
+        const interval = setInterval(updateTime, 1000); // อัปเดตทุกวินาที
 
+        return () => clearInterval(interval); // ล้าง interval ตอน component ถูกถอด
+    }, []);
 
-
+    
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Layout>
@@ -78,7 +81,8 @@ const DashboardLayout = () => {
 
                         <span className="time">{timeFormatted}</span>
                         {/* <Popover content={content} title="Title" trigger="hover"> */}
-                        <span><ReportButton /></span>
+                        {/* <span><ReportButton /></span> */}
+                        <span><DownloadReportButton /></span>
                         {/* </Popover> */}
                         <AlertPanel />
                     </div>
@@ -89,7 +93,7 @@ const DashboardLayout = () => {
                 }}>
                     <span> <RealTimeCard /></span>
 
-                    <div>
+                    <div className='mb-6'>
                         <Row gutter={16}>
                             <Col span={12}>
                                 <TemperatureCard />
@@ -100,7 +104,6 @@ const DashboardLayout = () => {
                         </Row>
 
                     </div>
-                    <br />
                     <div id="report-content"
                         style={{
                             position: 'fixed',
@@ -111,6 +114,17 @@ const DashboardLayout = () => {
                         }}
                     >
                         <ReportContent />
+                    </div>
+                    <div>
+                        <Row gutter={16}>
+                            <Col span={12}>     
+                                <ReportAlertTemp />
+                            </Col>
+                            <Col span={12}>
+                                <ReportAlertHumid />
+                            </Col>
+                        </Row>
+
                     </div>
                 </Content>
             </Layout>
