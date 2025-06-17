@@ -72,7 +72,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
-            borderColor: "transparent", 
+            borderColor: "transparent",
             text: `Max: ${maxHumidLine}`,
             style: {
               background: "rgba(255, 255, 255, 0)",
@@ -127,7 +127,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#426bc2"], // สีเส้น
+    colors: ["#667eea"], // สีเส้น
   };
 
   return (

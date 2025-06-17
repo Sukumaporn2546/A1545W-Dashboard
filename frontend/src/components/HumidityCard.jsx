@@ -13,8 +13,10 @@ import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
 
 export const HumidityCard = () => {
-  const [pickerType, setPickerType] = useState(null); // เก็บ picker type
-  const [selectDate, setSelectDate] = useState(null);
+  const [pickerType, setPickerType] = useState("date"); // เก็บ picker type
+  const [selectDate, setSelectDate] = useState(
+    dayjs(new Date()).format("YYYY-MM-DD")
+  );
 
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
@@ -63,7 +65,7 @@ export const HumidityCard = () => {
           <div className="flex items-center gap-4">
             <Select
               labelInValue
-              //defaultValue={{ value: 'date', label: 'Date' }}
+              defaultValue={{ value: "date", label: "Date" }}
               placeholder="Select type"
               style={{ width: 120 }}
               onChange={handlePickerTypeChange}
