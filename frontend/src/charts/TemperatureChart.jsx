@@ -125,7 +125,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#e58017"], // สีเส้น
+    colors: ["#0b1957"], // สีเส้น
   };
 
   return (

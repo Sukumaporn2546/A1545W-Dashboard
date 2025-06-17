@@ -25,15 +25,15 @@ export const RealTimeCard = () => {
 
   const getTemperatureStatus = (temperature) => {
     if (temperature == 0 || temperature == null) return "default";
-    else if (temperature > maxTempLine) return "high"; // อุณหภูมิสูงเกินไป
-    else if (temperature < minTempLine) return "low"; // เริ่มสูง
+    else if (temperature > 26) return "high"; 
+    else if (temperature < 18) return "low"; 
     else return "normal";
   };
 
   const getHumidityStatus = (humidity) => {
     if (humidity == 0 || humidity == null) return "default";
-    else if (humidity < minHumidLine) return "low";
-    else if (humidity > maxHumidLine) return "high";
+    else if (humidity < 30) return "low";
+    else if (humidity > 65) return "high";
     else return "normal";
   };
 
