@@ -34,20 +34,18 @@ export const HumidityCard = () => {
   };
 
   //for input
-<<<<<<< HEAD
   const {
     minHumidLine,
     maxHumidLine,
     setMinMaxHumidLine,
     getMinMaxHumidLine,
     setCompare_max_min_Line,
+    seriesHumidity
   } = useHumidityStore();
 
   //for inputNumber
   const { setCompareHumidMode } = useSystemStore();
-=======
-  const { minHumidLine, maxHumidLine, setMinMaxHumidLine, getMinMaxHumidLine, seriesHumidity } =
-    useHumidityStore();
+
 
   //for inputNumber
 
@@ -56,7 +54,6 @@ let maxHumid = 0
   let   minHumid = 0
   if (seriesHumidity.length > 0) minHumid = (Math.min(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
 
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
   const [humidMin, setMinHumid] = useState(null);
   const [humidMax, setMaxHumid] = useState(null);
   const [compareMax, setCompareMax] = useState(null);
@@ -94,11 +91,7 @@ let maxHumid = 0
           <div className="flex items-center gap-4">
             <Select
               labelInValue
-<<<<<<< HEAD
               defaultValue={{ value: "date", label: "Date" }}
-=======
-              defaultValue={{ value: 'date', label: 'Date' }}
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
               placeholder="Select type"
               style={{ width: 120 }}
               onChange={handlePickerTypeChange}

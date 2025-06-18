@@ -2,11 +2,11 @@ import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
 import { useEffect } from "react";
 import { useTemperatureStore } from "../store/useTemperatureStore";
-<<<<<<< HEAD
+
 import dayjs from "dayjs";
-=======
+
 import { max, min } from "lodash";
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
+
 export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
     seriesTemperature,
@@ -90,7 +90,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     },
     annotations: {
       yaxis: [
-<<<<<<< HEAD
+
         selectedDateTemp == Today
           ? minTempLine !== null && {
               y: minTempLine,
@@ -156,38 +156,8 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
                   color: "#27ae60",
                 },
               },
-=======
-        minTempLine !== null && {
-          y: minTempLine,
-          borderColor: "#0984e3",
-          borderWidth: 2,
-          strokeDashArray: 5,
-          label: {
-            borderColor: "transparent",
-            text: `Min: ${minTempLine}`,
-            style: {
-              background: "rgba(255, 255, 255, 0)",
-              fontSize: "13px",
-              fontWeight: "bold",
-              color: "#0984e3",
-            },
-          },
+
         },
-        maxTempLine !== null && {
-          y: maxTempLine,
-          borderColor: "#e74c3c ",
-          borderWidth: 2,
-          strokeDashArray: 5,
-          label: {
-            borderColor: "transparent",
-            text: `Max: ${maxTempLine}`,
-            style: {
-              background: "rgba(255, 255, 255, 0)",
-              fontSize: "13px",
-              fontWeight: "bold",
-              color: "#e74c3c ",
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
-            },
       ].filter(Boolean),
       //points: maxPoints,
       
