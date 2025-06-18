@@ -19,12 +19,10 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     fetchHistoricalHumid(pickerType, selectDate);
   }, [pickerType, selectDate]);
 
-  //console.log("HumidData", seriesHumidity);
-
   const series = [
     {
       name: "Humidity",
-      data: seriesHumidity ?? [], // fallback to empty array
+      data: seriesHumidity ?? [], 
     },
   ];
 
@@ -52,7 +50,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
       yaxis: [
         minHumidLine !== null && {
           y: minHumidLine,
-          borderColor: "#e74c3c",
+          borderColor: "#0984e3",
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
@@ -62,13 +60,13 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
               background: "rgba(255, 255, 255, 0)",
               fontSize: "13px",
               fontWeight: "bold",
-              color: "#e74c3c",
+              color: "#0984e3",
             },
           },
         },
         maxHumidLine !== null && {
           y: maxHumidLine,
-          borderColor: "#27ae60",
+          borderColor: "#e74c3c",
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
@@ -78,7 +76,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
               background: "rgba(255, 255, 255, 0)",
               fontSize: "13px",
               fontWeight: "bold",
-              color: "#27ae60",
+              color: "#e74c3c",
             },
           },
           zIndex: 0,
@@ -88,14 +86,14 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     tooltip: {
       enabled: true,
       x: {
-        format: getXAxisFormat(pickerType), // รูปแบบเวลา
+        format: getXAxisFormat(pickerType), 
       },
       y: {
         formatter: function (val) {
-          return `${val.toFixed(2)} %`; // เพิ่มหน่วย %
+          return `${val.toFixed(2)} %`; 
         },
         title: {
-          formatter: () => "Humidity", // ชื่อ tooltip
+          formatter: () => "Humidity", 
         },
       },
     },
@@ -127,7 +125,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
-    colors: ["#426bc2"], // สีเส้น
+    colors: ["#74b9ff"], // สีเส้น
   };
 
   return (

@@ -4,11 +4,16 @@ import { Table, Card } from "antd";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { useHumidityStore } from "../store/useHumidityStore";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const ReportContent = () => {
   //real data
-  const { startPeriodTemp, endPeriodTemp } = useTemperatureStore();
-  const { startPeriodHumid, endPeriodHumid } = useHumidityStore();
+  const { startPeriodTemp, endPeriodTemp, seriesTemperature } = useTemperatureStore();
+  const { startPeriodHumid, endPeriodHumid, seriesHumidity } = useHumidityStore();
   const convertDateTemp = () => {
     if (startPeriodTemp === endPeriodTemp) {
       return startPeriodTemp;
@@ -24,7 +29,14 @@ export const ReportContent = () => {
   const tempPeriod = convertDateTemp();
   const humidPeriod = convertDateHumid();
 
-  const timeFormatted = dayjs().format("YYYY-MM-DD, HH:mm A");
+  const timeFormatted = dayjs().tz('Asia/Bangkok').format("YYYY-MM-DD, hh:mm");
+
+  const maxTemp = (Math.max(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
+  const minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
+  const averageTemp = (seriesTemperature.reduce((acc, curr) => acc + parseFloat(curr[1]), 0) / seriesTemperature.length).toFixed(2);
+  const maxHumid = (Math.max(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
+  const minHumid = (Math.min(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
+  const averageHumid = (seriesHumidity.reduce((acc, curr) => acc + parseFloat(curr[1]), 0) / seriesHumidity.length).toFixed(2);
 
   //table for statistics mock data
 
@@ -56,20 +68,20 @@ export const ReportContent = () => {
     {
       key: "1",
       metrics: "Maximum",
-      temperature: "30.14",
-      humidity: "80.00",
+      temperature: maxTemp,
+      humidity: maxHumid,
     },
     {
       key: "2",
       metrics: "Minimum",
-      temperature: "20.00",
-      humidity: "60.25",
+      temperature: minTemp,
+      humidity: minHumid,
     },
     {
       key: "3",
       metrics: "Average",
-      temperature: "25.23",
-      humidity: "70.5",
+      temperature: averageTemp,
+      humidity: averageHumid,
     },
   ];
 
@@ -170,7 +182,7 @@ export const ReportContent = () => {
         </p>
       </div>
 
-      <h3 className="text-xl font-bold mb-4">Trend Graphs</h3>
+      <h3 className="text-xl font-bold mb-4">• Trend Graphs</h3>
       <div className="mb-66">
         <div className="mb-4">
           <Card
@@ -190,7 +202,7 @@ export const ReportContent = () => {
         </div>
       </div>
 
-      <h3 className="text-xl font-bold mb-4">Summary Statistics</h3>
+      <h3 className="text-xl font-bold mb-4">• Summary Statistics</h3>
       <div className="inline-block mb-8">
         <Table
           pagination={false}
@@ -203,8 +215,23 @@ export const ReportContent = () => {
         />
       </div>
 
-      <h3 className="text-xl font-bold mb-6">Threshold Violations</h3>
+      <h3 className="text-xl font-bold mb-6">• Threshold Violations</h3>
 
+      <p className="text-xl font-semibold mb-4">Temperature</p>
+
+      <div className="inline-block mb-4">
+        <Table
+          columns={columnAlerts}
+          size="small"
+          dataSource={alerts}
+          rowKey="id"
+          pagination={false}
+          tableLayout="auto"
+          bordered
+          className="custom-table"
+        />
+      </div>
+      <p className="text-xl font-semibold mb-4">Humidity</p>
       <div className="inline-block mb-4">
         <Table
           columns={columnAlerts}

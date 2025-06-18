@@ -30,8 +30,13 @@ export const TemperatureCard = () => {
     return current && current > dayjs().endOf("day");
   };
 
-  const { minTempLine, maxTempLine, setMinMaxTempLine, getMinMaxTempLine } =
+  const { minTempLine, maxTempLine, setMinMaxTempLine, getMinMaxTempLine, seriesTemperature } =
     useTemperatureStore();
+
+  let maxTemp = 0
+  if(seriesTemperature.length > 0)  maxTemp = (Math.max(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
+  let minTemp = 0
+  if(seriesTemperature.length > 0)  minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
 
   const [tempMin, setMinTemp] = useState(null);
   const [tempMax, setMaxTemp] = useState(null);
@@ -132,6 +137,16 @@ export const TemperatureCard = () => {
       }
     >
       <TemperatureChart pickerType={pickerType} selectDate={selectDate} />
+      <div className="flex flex-row gap-4 justify-center">
+        <p>
+          <span className="font-bold text-red-500">Maximum : </span>
+          <span className="font-semibold">{`${maxTemp} °C`}</span>
+        </p>
+        <p>
+          <span className="font-bold text-blue-500">Minimum : </span>
+          <span className="font-semibold">{`${minTemp} °C`}</span>
+        </p>
+      </div>
     </Card>
   );
 };
