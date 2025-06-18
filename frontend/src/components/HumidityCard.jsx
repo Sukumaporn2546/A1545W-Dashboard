@@ -13,8 +13,10 @@ import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
 
 export const HumidityCard = () => {
-  const [pickerType, setPickerType] = useState(null); // เก็บ picker type
-  const [selectDate, setSelectDate] = useState(null);
+  const [pickerType, setPickerType] = useState("date"); // เก็บ picker type
+  const [selectDate, setSelectDate] = useState(
+    dayjs(new Date()).format("YYYY-MM-DD")
+  );
 
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
@@ -31,10 +33,15 @@ export const HumidityCard = () => {
   };
 
   //for input
-  const { minHumidLine, maxHumidLine, setMinMaxHumidLine, getMinMaxHumidLine } =
+  const { minHumidLine, maxHumidLine, setMinMaxHumidLine, getMinMaxHumidLine, seriesHumidity } =
     useHumidityStore();
 
   //for inputNumber
+
+let maxHumid = 0
+  if (seriesHumidity.length > 0) maxHumid = (Math.max(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
+  let   minHumid = 0
+  if (seriesHumidity.length > 0) minHumid = (Math.min(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
 
   const [humidMin, setMinHumid] = useState(null);
   const [humidMax, setMaxHumid] = useState(null);
@@ -63,7 +70,7 @@ export const HumidityCard = () => {
           <div className="flex items-center gap-4">
             <Select
               labelInValue
-              //defaultValue={{ value: 'date', label: 'Date' }}
+              defaultValue={{ value: 'date', label: 'Date' }}
               placeholder="Select type"
               style={{ width: 120 }}
               onChange={handlePickerTypeChange}
@@ -85,9 +92,9 @@ export const HumidityCard = () => {
               />
             ) : (
               <DatePicker
-                disabledDate={disableFutureDates}
-                defaultValue={dayjs(new Date())}
                 disabled={pickerType == null}
+                defaultValue={dayjs(new Date())}
+                disabledDate={disableFutureDates}
                 onChange={onDateChange}
                 picker={pickerType} // date, week, month, year ตาม pickerType
                 size="middle"
@@ -134,6 +141,16 @@ export const HumidityCard = () => {
       }
     >
       <HumidityChart pickerType={pickerType} selectDate={selectDate} />
+        <div className="flex flex-row gap-4 justify-center">
+        <p>
+          <span className="font-bold text-red-500">Maximum : </span>
+          <span className="font-semibold">{`${maxHumid} %`}</span>
+        </p>
+        <p>
+          <span className="font-bold text-blue-500">Minimum : </span>
+          <span className="font-semibold">{`${minHumid} %`}</span>
+        </p>
+      </div>
     </Card>
   );
 };

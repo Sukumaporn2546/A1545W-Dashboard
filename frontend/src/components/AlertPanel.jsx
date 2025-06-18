@@ -15,6 +15,7 @@ import {
   WarningOutlined,
   SyncOutlined,
   EditOutlined,
+  InfoCircleOutlined
 } from "@ant-design/icons";
 import { useAlarmStore } from "../store/useAlarmStore";
 // import { response_alert } from "../constants/constants";
@@ -86,24 +87,24 @@ export const AlertPanel = () => {
         title={
           <div>
             <span className=" flex items-center">
-              {/* <span className="w-5 h-5 mx-2 text-yellow-500">
+              <span className="w-6 h-6 mx-2 text-yellow-500">
                 <WarningOutlined />
-              </span> */}
+              </span>
               <span className="font-bold">Latest Alerts</span>
             </span>
-            <div className="font-semibold text-slate-400">June 17,2025</div>
+            {/* <div className="font-semibold text-slate-400">June 17,2025</div> */}
           </div>
         }
         closable={{ "aria-label": "Close Button" }}
         onClose={onClose}
         open={open}
-        extra={
-          <Space>
-            <Button type="primary" onClick={onClose}>
-              <EditOutlined />
-            </Button>
-          </Space>
-        }
+      // extra={
+      //   <Space>
+      //     <Button type="primary" onClick={onClose}>
+      //       <EditOutlined />
+      //     </Button>
+      //   </Space>
+      // }
       >
         <>
           <Radio.Group onChange={handleSelected} block defaultValue="all">
@@ -118,30 +119,38 @@ export const AlertPanel = () => {
               alerts.map((alert) => (
                 <Popover
                   placement="left"
-                  title={alert.message}
+                  title={
+                    <>
+                      <span className="mr-2"><InfoCircleOutlined /></span>
+                      <span>{alert.message}</span>
+                    </>
+                  }
                   content={
                     <div>
                       <p>{alert.description} </p>
-                      <p>Detected : {alert.value}</p>
+                      <p>Detected : {alert.value} {alert.unit}
+                      </p>
                       {!alert.message.includes("Normal") ? (
-                        <p>threshold : {alert.threshold}</p>
+                        <>
+                          <p>Threshold : {alert.threshold} {alert.unit}</p>
+                          <p>Started : {alert.startAt}</p>
+                          <p>
+                            Clear : {alert.cleared ? "Yes " : "No"}
+                            {alert.cleared ? `(${alert.clearAt})` : null}
+                          </p>
+                          <p>
+                            Acknowledge : {alert.acknowledged ? "Yes " : "No"}
+                            {alert.acknowledged ? `(${alert.ackAt})` : null}
+                          </p>
+                        </>
                       ) : (
                         <>
-                          <p>min : {alert.min}</p>
-                          <p>max : {alert.max}</p>
+                          <p>Min : {alert.min} {alert.unit}</p>
+                          <p>Max : {alert.max} {alert.unit}</p>
+                          <p>Resolved : {alert.startAt}</p>
                         </>
                       )}
 
-                      <p>Start : {alert.startAt}</p>
-
-                      <p>
-                        Clear : {alert.cleared ? "Yes" : "No"}
-                        {alert.cleared ? alert.clearAt : null}
-                      </p>
-                      <p>
-                        Acknowledge : {alert.acknowledged ? "Yes" : "No"}
-                        {alert.acknowledged ? alert.ackAt : null}
-                      </p>
                     </div>
                   }
                 >

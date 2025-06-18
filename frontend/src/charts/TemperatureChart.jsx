@@ -3,6 +3,7 @@ import { getXAxisFormat } from "../utils/transformChartData";
 
 import { useEffect } from "react";
 import { useTemperatureStore } from "../store/useTemperatureStore";
+import { max, min } from "lodash";
 export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
     seriesTemperature,
@@ -17,6 +18,8 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     fetchHistoricalTemp(pickerType, selectDate);
   }, [pickerType, selectDate]);
 
+
+
   //console.log("TempData", seriesTemperature);
 
   const series = [
@@ -25,6 +28,39 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
       data: seriesTemperature ?? [], // fallback to empty array
     },
   ];
+
+  // const maxTemp = (Math.max(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
+  // const maxTimestamp = seriesTemperature
+  //   .filter(item => parseFloat(item[1]) == maxTemp)
+  //   .map(item => item[0]);
+
+  // console.log('maxTemp', maxTemp);
+  // console.log('maxTimestamp', maxTimestamp);
+
+  // const maxPoints = seriesTemperature
+  //   .filter(d => parseFloat(d[1]) == maxTemp)
+  //   .map(d => ({
+  //     x: d[0],           // ✅ timestamp เป็น number
+  //     y: maxTemp,        // ✅ ค่าตัวเลข
+  //     marker: {
+  //       size: 6,
+  //       fillColor: '#fff',
+  //       strokeColor: 'red',
+  //       radius: 2,
+  //     },
+  //     label: {
+  //       //text: `Max: ${maxTemp}`,
+  //       style: {
+  //         background: 'red',
+  //         color: '#fff',
+  //       },
+  //     },
+  //   }));
+
+
+  // const minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
+
+  // const minTimestamp = minTemp?.[0]
 
   const options = {
     chart: {
@@ -50,7 +86,7 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
       yaxis: [
         minTempLine !== null && {
           y: minTempLine,
-          borderColor: "#e74c3c",
+          borderColor: "#0984e3",
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
@@ -60,13 +96,13 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
               background: "rgba(255, 255, 255, 0)",
               fontSize: "13px",
               fontWeight: "bold",
-              color: "#e74c3c",
+              color: "#0984e3",
             },
           },
         },
         maxTempLine !== null && {
           y: maxTempLine,
-          borderColor: "#27ae60",
+          borderColor: "#e74c3c ",
           borderWidth: 2,
           strokeDashArray: 5,
           label: {
@@ -76,11 +112,13 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
               background: "rgba(255, 255, 255, 0)",
               fontSize: "13px",
               fontWeight: "bold",
-              color: "#27ae60",
+              color: "#e74c3c ",
             },
           },
         },
       ].filter(Boolean),
+      //points: maxPoints,
+      
     },
     tooltip: {
       enabled: true,
