@@ -2,33 +2,31 @@ import { Card, Table, Collapse } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
 import { useAlarmStore } from "../store/useAlarmStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 export const ReportAlertHumid = () => {
-  const { selectedDate } = useHumidityStore();
-  const { alarm, getAlarm } = useAlarmStore();
+  const { selectedDateHumid } = useHumidityStore();
+  const { alarmHistoricalHumid, getHistoricalAlarmHumid, tableHumidLoading } =
+    useAlarmStore();
   const [sortedInfo, setSortedInfo] = useState({});
-  const logs_data = [];
-
-  if (alarm?.length) {
-    alarm?.forEach((rn, index) => {
-      const { time, message, value, threshold, id } = rn;
-      if (message.includes("Humidity")) {
-        logs_data.push({
-          key: id || index,
-          time,
-          message,
-          value: typeof value === "number" ? value : Number(value),
-          threshold,
-        });
-      }
-    });
-  }
+  const logs_data = useMemo(() => {
+    if (!alarmHistoricalHumid?.length) return [];
+    return alarmHistoricalHumid
+      .filter((rn) => rn.message.includes("Humidity"))
+      .map((rn, index) => ({
+        key: rn.id || index,
+        time: rn.time,
+        message: rn.message,
+        value: typeof rn.value === "number" ? rn.value : Number(rn.value),
+        threshold: rn.threshold,
+      }));
+  }, [alarmHistoricalHumid]);
 
   useEffect(() => {
-    getAlarm();
-  }, []);
+    if (selectedDateHumid) {
+      getHistoricalAlarmHumid(selectedDateHumid);
+    }
+  }, [selectedDateHumid, getHistoricalAlarmHumid]);
 
-  //table for alerts
   const columnAlerts = [
     {
       title: <div className="text-center font-bold ">Time</div>,
@@ -69,7 +67,7 @@ export const ReportAlertHumid = () => {
   };
 
   return (
-    <div class=" border-l-8 text-indigo-400  rounded-xl">
+    <div className=" border-l-8 text-indigo-400  rounded-xl">
       <Collapse
         className="custom-collapse"
         collapsible="icon"
@@ -80,7 +78,7 @@ export const ReportAlertHumid = () => {
             label: (
               <div className=" font-semibold flex items-center">
                 <BellOutlined className="mr-2" />
-                Humidity Logs : {selectedDate}
+                Humidity Logs : {selectedDateHumid}
               </div>
             ),
             children: (
@@ -93,6 +91,7 @@ export const ReportAlertHumid = () => {
                   scroll={{ y: 66 * 5 }}
                   tableLayout="auto"
                   onChange={handleChange}
+                  loading={tableHumidLoading}
                 />
               </div>
             ),

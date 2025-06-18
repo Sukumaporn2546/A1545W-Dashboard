@@ -13,7 +13,6 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
   } = useTemperatureStore();
   useEffect(() => {
     clearGraphTemp();
-
     fetchHistoricalTemp(pickerType, selectDate);
   }, [pickerType, selectDate]);
 

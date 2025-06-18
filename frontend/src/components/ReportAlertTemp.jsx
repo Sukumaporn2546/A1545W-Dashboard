@@ -2,32 +2,31 @@ import { Card, Table, Collapse } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { useAlarmStore } from "../store/useAlarmStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export const ReportAlertTemp = () => {
-  const { selectedDate } = useTemperatureStore();
-  const { alarm, getAlarm } = useAlarmStore();
+  const { selectedDateTemp } = useTemperatureStore();
+  const { alarmHistoricalTemp, getHistoricalAlarmTemp, tableTempLoading } =
+    useAlarmStore();
   const [sortedInfo, setSortedInfo] = useState({});
-  const logs_data = [];
-
-  if (alarm?.length) {
-    alarm?.forEach((rn, index) => {
-      const { time, message, value, threshold, id } = rn;
-      if (message.includes("Temperature")) {
-        logs_data.push({
-          key: id || index,
-          time,
-          message,
-          value: typeof value === "number" ? value : Number(value),
-          threshold,
-        });
-      }
-    });
-  }
+  const logs_data = useMemo(() => {
+    if (!alarmHistoricalTemp?.length) return [];
+    return alarmHistoricalTemp
+      .filter((rn) => rn.message.includes("Temperature"))
+      .map((rn, index) => ({
+        key: rn.id || index,
+        time: rn.time,
+        message: rn.message,
+        value: typeof rn.value === "number" ? rn.value : Number(rn.value),
+        threshold: rn.threshold,
+      }));
+  }, [alarmHistoricalTemp]);
 
   useEffect(() => {
-    getAlarm();
-  }, []);
+    if (selectedDateTemp) {
+      getHistoricalAlarmTemp(selectedDateTemp);
+    }
+  }, [selectedDateTemp, getHistoricalAlarmTemp]);
 
   const columnAlerts = [
     {
@@ -81,7 +80,7 @@ export const ReportAlertTemp = () => {
             label: (
               <div className=" font-semibold flex items-center">
                 <BellOutlined className="mr-2" />
-                Temperature Logs : {selectedDate}
+                Temperature Logs : {selectedDateTemp}
               </div>
             ),
             children: (
@@ -94,6 +93,7 @@ export const ReportAlertTemp = () => {
                   scroll={{ y: 66 * 5 }}
                   tableLayout="auto"
                   onChange={handleChange}
+                  loading={tableTempLoading}
                 />
               </div>
             ),

@@ -23,11 +23,11 @@ export const useHumidityStore = create((set, get) => ({
   ws: null,
   minHumidLine: null,
   maxHumidLine: null,
-  selectedDate: dayjs().format("YYYY-MM-DD"),
+  selectedDateHumid: dayjs().format("YYYY-MM-DD"),
   startPeriodHumid: null,
   endPeriodHumid: null,
 
-  setSelectedDate: (date) => set({ selectedDate: date }),
+  setSelectedDate: (date) => set({ selectedDateHumid: date }),
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
@@ -147,6 +147,7 @@ export const useHumidityStore = create((set, get) => ({
     try {
       setLoading(true);
       clearError();
+
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
       if (!timeConfig) throw new Error("Invalid picker type or date");
       const { start, end, interval, limit } = timeConfig;
@@ -166,6 +167,7 @@ export const useHumidityStore = create((set, get) => ({
       const formatted = dataHelpers.formatHumidityData(data.humidity);
       console.log("formatted", formatted);
       set({ seriesHumidity: formatted });
+      set({ selectedDateHumid: dayjs(selectDate).format("YYYY-MM-DD") });
     } catch (error) {
       console.error("Error fetching humidity data:", error);
       setError(error.message);
