@@ -1,7 +1,7 @@
 // import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
-
+import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useHumidityStore } from "../store/useHumidityStore";
 export const HumidityChart = ({ pickerType, selectDate }) => {
@@ -11,6 +11,9 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     clearGraphHumid,
     minHumidLine,
     maxHumidLine,
+    selectedDateHumid,
+    compare_max_line,
+    compare_min_line,
   } = useHumidityStore();
 
   useEffect(() => {
@@ -20,7 +23,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
   }, [pickerType, selectDate]);
 
   //console.log("HumidData", seriesHumidity);
-
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
   const series = [
     {
       name: "Humidity",
@@ -50,39 +53,74 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     },
     annotations: {
       yaxis: [
-        minHumidLine !== null && {
-          y: minHumidLine,
-          borderColor: "#e74c3c",
-          borderWidth: 2,
-          strokeDashArray: 5,
-          label: {
-            borderColor: "transparent",
-            text: `Min: ${minHumidLine}`,
-            style: {
-              background: "rgba(255, 255, 255, 0)",
-              fontSize: "13px",
-              fontWeight: "bold",
-              color: "#e74c3c",
+        selectedDateHumid == Today
+          ? minHumidLine !== null && {
+              y: minHumidLine,
+              borderColor: "#e74c3c",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Min: ${minHumidLine}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#e74c3c",
+                },
+              },
+            }
+          : compare_min_line !== null && {
+              y: compare_min_line,
+              borderColor: "#e74c3c",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Compare Min: ${compare_min_line}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#e74c3c",
+                },
+              },
             },
-          },
-        },
-        maxHumidLine !== null && {
-          y: maxHumidLine,
-          borderColor: "#27ae60",
-          borderWidth: 2,
-          strokeDashArray: 5,
-          label: {
-            borderColor: "transparent",
-            text: `Max: ${maxHumidLine}`,
-            style: {
-              background: "rgba(255, 255, 255, 0)",
-              fontSize: "13px",
-              fontWeight: "bold",
-              color: "#27ae60",
+        selectedDateHumid == Today
+          ? maxHumidLine !== null && {
+              y: maxHumidLine,
+              borderColor: "#27ae60",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Max: ${maxHumidLine}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#27ae60",
+                },
+              },
+              zIndex: 0,
+            }
+          : compare_max_line !== null && {
+              y: compare_max_line,
+              borderColor: "#27ae60",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Compare Max: ${compare_max_line}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#27ae60",
+                },
+              },
+              zIndex: 0,
             },
-          },
-          zIndex: 0,
-        },
       ].filter(Boolean),
     },
     tooltip: {

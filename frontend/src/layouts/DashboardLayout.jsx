@@ -1,4 +1,4 @@
-import { Layout, Select, Col, Row } from "antd";
+import { Layout, Select, Col, Row, Radio } from "antd";
 import { useState, useEffect } from "react";
 import { RealTimeCard } from "../components/RealTimeCard";
 import { TemperatureCard } from "../components/TemperatureCard";
@@ -8,6 +8,9 @@ import { ReportContent } from "../components/ReportContent";
 import { DownloadReportButton } from "../components/DownloadReportButton";
 import { ReportAlertTemp } from "../components/ReportAlertTemp";
 import { ReportAlertHumid } from "../components/ReportAlertHumid";
+import { CompareTemp } from "../components/CompareTemp";
+import { CompareHumid } from "../components/CompareHumid";
+import { useSystemStore } from "../store/useSystemStore";
 const { Header, Content } = Layout;
 
 const DashboardLayout = () => {
@@ -16,11 +19,49 @@ const DashboardLayout = () => {
   // } = theme.useToken();
 
   // forSelect
+  const {
+    compareTemp_mode,
+    setCompareTempMode,
+    compareHumid_mode,
+    setCompareHumidMode,
+  } = useSystemStore();
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
 
+  const [selectedTableTemp, setSelectedTableTemp] = useState("tempLogs");
+  const [selectedTableHumid, setSelectedTableHumid] = useState("humidLogs");
   const [timeFormatted, setTimeFormatted] = useState("");
+  const handleSelectedTemp = async (event) => {
+    setSelectedTableTemp(event.target.value);
+    if (event.target.value == "tempCompare") {
+      setCompareTempMode(true);
+    } else {
+      setCompareTempMode(false);
+    }
+  };
+  const handleSelectedHumid = async (event) => {
+    setSelectedTableHumid(event.target.value);
+    if (event.target.value == "tempCompare") {
+      setCompareHumidMode(true);
+    } else {
+      setCompareHumidMode(false);
+    }
+  };
+  useEffect(() => {
+    if (compareTemp_mode) {
+      setSelectedTableTemp("tempCompare");
+    } else {
+      setSelectedTableTemp("tempLogs");
+    }
+  }, [compareTemp_mode]);
+  useEffect(() => {
+    if (compareHumid_mode) {
+      setSelectedTableHumid("humidCompare");
+    } else {
+      setSelectedTableHumid("humidLogs");
+    }
+  }, [compareHumid_mode]);
 
   useEffect(() => {
     const updateTime = () => {
@@ -120,13 +161,60 @@ const DashboardLayout = () => {
             <ReportContent />
           </div>
           <div>
-            <Row gutter={16}>
+            <Row gutter={[24, 24]}>
               <Col span={12}>
-                <ReportAlertTemp />
+                <Row justify="end">
+                  <Col>
+                    <Radio.Group
+                      onChange={handleSelectedTemp}
+                      value={selectedTableTemp}
+                    >
+                      <Radio.Button value="tempLogs">
+                        Temperature Logs
+                      </Radio.Button>
+                      <Radio.Button value="tempCompare">
+                        Comparison
+                      </Radio.Button>
+                    </Radio.Group>
+                  </Col>
+                </Row>
               </Col>
+
               <Col span={12}>
-                <ReportAlertHumid />
+                <Row justify="end">
+                  <Col>
+                    <Radio.Group
+                      onChange={handleSelectedHumid}
+                      value={selectedTableHumid}
+                    >
+                      <Radio.Button value="humidLogs">
+                        Humidity Logs
+                      </Radio.Button>
+                      <Radio.Button value="humidCompare">
+                        Comparison
+                      </Radio.Button>
+                    </Radio.Group>
+                  </Col>
+                </Row>
               </Col>
+              {selectedTableTemp == "tempLogs" ? (
+                <Col span={12}>
+                  <ReportAlertTemp />
+                </Col>
+              ) : (
+                <Col span={12}>
+                  <CompareTemp />
+                </Col>
+              )}
+              {selectedTableHumid == "humidLogs" ? (
+                <Col span={12}>
+                  <ReportAlertHumid />
+                </Col>
+              ) : (
+                <Col span={12}>
+                  <CompareHumid />
+                </Col>
+              )}
             </Row>
           </div>
         </Content>

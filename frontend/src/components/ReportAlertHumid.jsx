@@ -3,6 +3,7 @@ import { BellOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
 import { useAlarmStore } from "../store/useAlarmStore";
 import { useState, useEffect, useMemo } from "react";
+import { Car } from "lucide-react";
 export const ReportAlertHumid = () => {
   const { selectedDateHumid } = useHumidityStore();
   const { alarmHistoricalHumid, getHistoricalAlarmHumid, tableHumidLoading } =
@@ -68,36 +69,34 @@ export const ReportAlertHumid = () => {
 
   return (
     <div className=" border-l-8 text-indigo-400  rounded-xl">
-      <Collapse
-        className="custom-collapse"
-        collapsible="icon"
-        defaultActiveKey={["1"]}
-        items={[
-          {
-            key: "1",
-            label: (
+      <Card
+        type="inner"
+        size="small"
+        title={
+          <div className="w-full flex flex-col gap-2 pt-4 pb-2">
+            <div className="flex justify-between items-center">
               <div className=" font-semibold flex items-center">
                 <BellOutlined className="mr-2" />
                 Humidity Logs : {selectedDateHumid}
               </div>
-            ),
-            children: (
-              <div className="mb-4 overflow-auto">
-                <Table
-                  columns={columnAlerts}
-                  size="small"
-                  dataSource={logs_data}
-                  rowKey="key"
-                  scroll={{ y: 66 * 5 }}
-                  tableLayout="auto"
-                  onChange={handleChange}
-                  loading={tableHumidLoading}
-                />
-              </div>
-            ),
-          },
-        ]}
-      />
+            </div>
+          </div>
+        }
+        style={{ width: "100%" }}
+      >
+        <div className="mt-2 overflow-auto">
+          <Table
+            columns={columnAlerts}
+            size="small"
+            dataSource={logs_data}
+            rowKey="key"
+            scroll={{ y: 66 * 5 }}
+            tableLayout="auto"
+            onChange={handleChange}
+            loading={tableHumidLoading}
+          />
+        </div>
+      </Card>
     </div>
   );
 };

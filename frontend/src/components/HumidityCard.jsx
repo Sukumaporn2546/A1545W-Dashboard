@@ -7,11 +7,12 @@ import {
   InputNumber,
 } from "antd";
 import React, { useState, useEffect } from "react";
+import { ArrowLeftRight } from "lucide-react";
 import { HumidityChart } from "../charts/HumidityChart";
 import dayjs from "dayjs";
 import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
-
+import { useSystemStore } from "../store/useSystemStore";
 export const HumidityCard = () => {
   const [pickerType, setPickerType] = useState("date"); // เก็บ picker type
   const [selectDate, setSelectDate] = useState(
@@ -33,23 +34,38 @@ export const HumidityCard = () => {
   };
 
   //for input
-  const { minHumidLine, maxHumidLine, setMinMaxHumidLine, getMinMaxHumidLine } =
-    useHumidityStore();
+  const {
+    minHumidLine,
+    maxHumidLine,
+    setMinMaxHumidLine,
+    getMinMaxHumidLine,
+    setCompare_max_min_Line,
+  } = useHumidityStore();
 
   //for inputNumber
-
+  const { setCompareHumidMode } = useSystemStore();
   const [humidMin, setMinHumid] = useState(null);
   const [humidMax, setMaxHumid] = useState(null);
-
+  const [compareMax, setCompareMax] = useState(null);
+  const [compareMin, setCompareMin] = useState(null);
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
   const onMinChange = (value) => {
     setMinHumid(value);
   };
-
   const onMaxChange = (value) => {
     setMaxHumid(value);
   };
-
-  const confirm = () => {
+  const onMaxCompareChange = (value) => {
+    setCompareMax(value);
+  };
+  const onMinCompareChange = (value) => {
+    setCompareMin(value);
+  };
+  const confirmCompare = () => {
+    setCompare_max_min_Line(compareMax, compareMin);
+    setCompareHumidMode(true);
+  };
+  const confirmSetMaxMin = () => {
     setMinMaxHumidLine(humidMin, humidMax);
   };
   useEffect(() => {
@@ -96,41 +112,81 @@ export const HumidityCard = () => {
               />
             )}
 
-            <Popconfirm
-              title="Select Min Max Humidity"
-              icon={null}
-              description={
-                <div className="flex flex-col gap-2">
-                  <div>
-                    <span className="mr-2">Max</span>
+            {selectDate !== Today ? (
+              <Popconfirm
+                icon={null}
+                title="Set Min Max to Compare"
+                description={
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      <span className="mr-2">Max</span>
+                      <InputNumber
+                        value={compareMax}
+                        // defaultValue={maxTempLine}
+                        onChange={onMaxCompareChange}
+                      />
+                    </div>
+                    <div>
+                      <span className="mr-2">Min</span>
 
-                    <InputNumber
-                      value={humidMax}
-                      defaultValue={maxHumidLine}
-                      onChange={onMaxChange}
-                    />
+                      <InputNumber
+                        value={compareMin}
+                        // defaultValue={minTempLine}
+                        onChange={onMinCompareChange}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <span className="mr-2">Min</span>
-                    <InputNumber
-                      value={humidMin}
-                      defaultValue={minHumidLine}
-                      onChange={onMinChange}
-                    />
+                }
+                onConfirm={confirmCompare}
+                okText="Save"
+                cancelText="Cancel"
+              >
+                <Button
+                  type="primary"
+                  icon={<ArrowLeftRight size={16} />}
+                  disabled={!pickerType || !selectDate}
+                  style={{
+                    backgroundColor: "#F5C45E",
+                    borderColor: "#F5C45E",
+                  }}
+                />
+              </Popconfirm>
+            ) : (
+              <Popconfirm
+                icon={null}
+                title="Set Min and Max Temperature"
+                description={
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      <span className="mr-2">Max</span>
+                      <InputNumber
+                        value={humidMax}
+                        defaultValue={maxHumidLine}
+                        onChange={onMaxChange}
+                      />
+                    </div>
+                    <div>
+                      <span className="mr-2">Min</span>
+
+                      <InputNumber
+                        value={humidMin}
+                        defaultValue={minHumidLine}
+                        onChange={onMinChange}
+                      />
+                    </div>
                   </div>
-                </div>
-              }
-              onConfirm={confirm}
-              okText="Save"
-              cancelText="Cancel"
-            >
-              <Button
-                type="primary"
-                icon={<EditOutlined />}
-                disabled={!pickerType || !selectDate}
-              />
-            </Popconfirm>
-            {/* button for select refLine max, min */}
+                }
+                onConfirm={confirmSetMaxMin}
+                okText="Save"
+                cancelText="Cancel"
+              >
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  disabled={!pickerType || !selectDate}
+                />
+              </Popconfirm>
+            )}
           </div>
         </div>
       }

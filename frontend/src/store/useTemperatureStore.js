@@ -22,10 +22,15 @@ export const useTemperatureStore = create((set, get) => ({
   ws: null,
   minTempLine: null,
   maxTempLine: null,
+  compare_max_line: null,
+  compare_min_line: null,
   selectedDateTemp: dayjs().format("YYYY-MM-DD"),
   showMessage: useMessageStore.getState().showMessage,
   startPeriodTemp: null,
   endPeriodTemp: null,
+
+  setCompare_max_min_Line: (max, min) =>
+    set({ compare_max_line: max, compare_min_line: min }),
 
   setSelectedDate: (date) => set({ selectedDateTemp: date }),
   setLoading: (loading) => set({ isLoading: loading }),
@@ -168,6 +173,7 @@ export const useTemperatureStore = create((set, get) => ({
       const formatted = dataHelpers.formatTemperatureData(data.temperature);
       console.log("Formatted:", formatted);
       set({ seriesTemperature: formatted });
+
       set({ selectedDateTemp: dayjs(selectDate).format("YYYY-MM-DD") });
       return formatted;
     } catch (error) {
