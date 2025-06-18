@@ -1,7 +1,7 @@
 // import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
-
+import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useHumidityStore } from "../store/useHumidityStore";
 export const HumidityChart = ({ pickerType, selectDate }) => {
@@ -11,6 +11,9 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     clearGraphHumid,
     minHumidLine,
     maxHumidLine,
+    selectedDateHumid,
+    compare_max_line,
+    compare_min_line,
   } = useHumidityStore();
 
   useEffect(() => {
@@ -19,6 +22,11 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     fetchHistoricalHumid(pickerType, selectDate);
   }, [pickerType, selectDate]);
 
+<<<<<<< HEAD
+  //console.log("HumidData", seriesHumidity);
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
+=======
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
   const series = [
     {
       name: "Humidity",
@@ -48,6 +56,75 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     },
     annotations: {
       yaxis: [
+<<<<<<< HEAD
+        selectedDateHumid == Today
+          ? minHumidLine !== null && {
+              y: minHumidLine,
+              borderColor: "#e74c3c",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Min: ${minHumidLine}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#e74c3c",
+                },
+              },
+            }
+          : compare_min_line !== null && {
+              y: compare_min_line,
+              borderColor: "#e74c3c",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Compare Min: ${compare_min_line}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#e74c3c",
+                },
+              },
+            },
+        selectedDateHumid == Today
+          ? maxHumidLine !== null && {
+              y: maxHumidLine,
+              borderColor: "#27ae60",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Max: ${maxHumidLine}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#27ae60",
+                },
+              },
+              zIndex: 0,
+            }
+          : compare_max_line !== null && {
+              y: compare_max_line,
+              borderColor: "#27ae60",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Compare Max: ${compare_max_line}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#27ae60",
+                },
+              },
+              zIndex: 0,
+=======
         minHumidLine !== null && {
           y: minHumidLine,
           borderColor: "#0984e3",
@@ -77,10 +154,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
               fontSize: "13px",
               fontWeight: "bold",
               color: "#e74c3c",
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
             },
-          },
-          zIndex: 0,
-        },
       ].filter(Boolean),
     },
     tooltip: {
@@ -125,7 +200,11 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
+<<<<<<< HEAD
+    colors: ["#667eea"], // สีเส้น
+=======
     colors: ["#74b9ff"], // สีเส้น
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
   };
 
   return (

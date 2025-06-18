@@ -86,9 +86,9 @@ export const RealTimeCard = () => {
       case "normal":
         return "border-green-500";
       case "high":
-        return "border-blue-400";
-      case "low":
         return "border-yellow-500";
+      case "low":
+        return "border-blue-400";
       default:
         return "border-gray-400";
     }

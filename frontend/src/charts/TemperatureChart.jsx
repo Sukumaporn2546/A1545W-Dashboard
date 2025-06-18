@@ -1,9 +1,12 @@
 import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
-
 import { useEffect } from "react";
 import { useTemperatureStore } from "../store/useTemperatureStore";
+<<<<<<< HEAD
+import dayjs from "dayjs";
+=======
 import { max, min } from "lodash";
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
 export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
     seriesTemperature,
@@ -11,17 +14,20 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     minTempLine,
     maxTempLine,
     clearGraphTemp,
+    selectedDateTemp,
+    compare_max_line,
+    compare_min_line,
   } = useTemperatureStore();
   useEffect(() => {
     clearGraphTemp();
-
     fetchHistoricalTemp(pickerType, selectDate);
+    console.log(compare_max_line, compare_min_line);
   }, [pickerType, selectDate]);
 
 
 
   //console.log("TempData", seriesTemperature);
-
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
   const series = [
     {
       name: "Temperature",
@@ -84,6 +90,73 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     },
     annotations: {
       yaxis: [
+<<<<<<< HEAD
+        selectedDateTemp == Today
+          ? minTempLine !== null && {
+              y: minTempLine,
+              borderColor: "#e74c3c",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Min: ${minTempLine}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#e74c3c",
+                },
+              },
+            }
+          : compare_min_line !== null && {
+              y: compare_min_line,
+              borderColor: "#e74c3c",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Compare Min: ${compare_min_line}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#e74c3c",
+                },
+              },
+            },
+        selectedDateTemp == Today
+          ? maxTempLine !== null && {
+              y: maxTempLine,
+              borderColor: "#27ae60",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Max: ${maxTempLine}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#27ae60",
+                },
+              },
+            }
+          : compare_max_line !== null && {
+              y: compare_max_line,
+              borderColor: "#27ae60",
+              borderWidth: 2,
+              strokeDashArray: 5,
+              label: {
+                borderColor: "transparent",
+                text: `Compare Max: ${compare_max_line}`,
+                style: {
+                  background: "rgba(255, 255, 255, 0)",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  color: "#27ae60",
+                },
+              },
+=======
         minTempLine !== null && {
           y: minTempLine,
           borderColor: "#0984e3",
@@ -113,9 +186,8 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
               fontSize: "13px",
               fontWeight: "bold",
               color: "#e74c3c ",
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
             },
-          },
-        },
       ].filter(Boolean),
       //points: maxPoints,
       

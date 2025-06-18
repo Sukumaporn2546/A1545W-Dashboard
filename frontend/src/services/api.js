@@ -171,13 +171,33 @@ export class ThingsBoardAPI {
           "X-Authorization": `Bearer ${this.token}`,
         },
       });
-      console.log(response);
+
       if (response.status == 200) {
         return response.data.data;
       }
     } catch (error) {
       console.error("Error get Alarm", error.message);
       throw Error(`Failed to get Alarm: ${error.message}`);
+    }
+  }
+  async getHistoricalAlarm(params) {
+    try {
+      const { startTs, endTs } = params;
+      const url = `${CONFIG.THINGSBOARD_HOST}/api/alarm/DEVICE/${CONFIG.DEVICE_ID}?pageSize=200&page=0&sortProperty=endTs&sortOrder=DESC&startTime=${startTs}&endTime=${endTs}`;
+      if (!this.token) {
+        await this.login();
+      }
+      const response = await axios.get(url, {
+        headers: {
+          "X-Authorization": `Bearer ${this.token}`,
+        },
+      });
+      if (response.status == 200) {
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("Error fetching Historical Alarm : ", error);
+      throw Error(`Failed to get historical alarm : ${error.message}`);
     }
   }
   async acknowledgeAlarm(alarmId) {

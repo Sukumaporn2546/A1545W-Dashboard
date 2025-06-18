@@ -53,6 +53,7 @@ export const dateHelpers = {
   },
   getTodayTimestamp: () => {
     const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const start = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -70,6 +71,7 @@ export const dateHelpers = {
       59,
       999
     ).getTime();
-    return { start, end };
+
+    return { start, end, today };
   },
 };

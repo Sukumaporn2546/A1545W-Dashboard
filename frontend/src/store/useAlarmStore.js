@@ -6,19 +6,27 @@ import isoWeek from "dayjs/plugin/isoWeek.js";
 import { ThingsBoardAPI } from "../services/api";
 import { alarmHelper } from "../utils/alarmHelper";
 import { useMessageStore } from "./useMessageStore";
+import { getTimeConfiguration } from "../configs/timeConfigs";
+import { dateHelpers } from "../utils/dateHelper";
+
 dayjs.extend(weekOfYear);
 dayjs.extend(isoWeek);
 
 export const useAlarmStore = create((set, get) => ({
   alarm: [],
+  alarmHistoricalTemp: [],
+  alarmHistoricalHumid: [],
   latestAlerts: [],
   isLoading: null,
+  tableTempLoading: null,
+  tableHumidLoading: null,
   isAckLoading: {},
   isClearLoading: {},
   error: null,
   api: new ThingsBoardAPI(),
   showMessage: useMessageStore.getState().showMessage,
-
+  setTableTempLoading: (loading) => set({ tableTempLoading: loading }),
+  setTableHumidLoading: (loading) => set({ tableHumidLoading: loading }),
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
@@ -45,6 +53,59 @@ export const useAlarmStore = create((set, get) => ({
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  },
+  getHistoricalAlarmTemp: async (selectedDate) => {
+    const { api, setError, clearError, setTableTempLoading } = get();
+    try {
+      setTableTempLoading(true);
+      clearError();
+      if (!selectedDate) {
+        throw new Error("No selected date provided");
+      }
+      const timeConfig = getTimeConfiguration("date", selectedDate);
+      if (!timeConfig) throw new Error("Invalid data");
+      const { start, end } = timeConfig;
+      const startTs = dateHelpers.createTimestamp(start);
+      const endTs = dateHelpers.createTimestamp(end, true);
+      console.log(start, end);
+      const alarmHistoricalData = await api.getHistoricalAlarm({
+        startTs,
+        endTs,
+      });
+      console.log(alarmHistoricalData);
+      const formatted = alarmHelper.formatAlarmData(alarmHistoricalData);
+      set({ alarmHistoricalTemp: formatted });
+    } catch (error) {
+      console.error("get historical alarm error : ", error);
+      setError(error.message);
+    } finally {
+      setTableTempLoading(false);
+    }
+  },
+  getHistoricalAlarmHumid: async (selectedDate) => {
+    const { api, setError, clearError, setTableHumidLoading } = get();
+    try {
+      setTableHumidLoading(true);
+      clearError();
+      const timeConfig = getTimeConfiguration("date", selectedDate);
+      if (!timeConfig) throw new Error("Invalid data");
+      const { start, end } = timeConfig;
+      const startTs = dateHelpers.createTimestamp(start);
+      const endTs = dateHelpers.createTimestamp(end, true);
+      console.log(start, end);
+      const alarmHistoricalData = await api.getHistoricalAlarm({
+        startTs,
+        endTs,
+      });
+      console.log(alarmHistoricalData);
+      const formatted = alarmHelper.formatAlarmData(alarmHistoricalData);
+      set({ alarmHistoricalHumid: formatted });
+    } catch (error) {
+      console.error("get historical alarm error : ", error);
+      setError(error.message);
+    } finally {
+      setTableHumidLoading(false);
     }
   },
   acknowledgeAlarm: async (alarmId) => {

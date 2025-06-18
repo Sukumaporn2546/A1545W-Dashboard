@@ -7,11 +7,12 @@ import {
   InputNumber,
 } from "antd";
 import { useEffect, useState } from "react";
+import { ArrowLeftRight } from "lucide-react";
 import { TemperatureChart } from "../charts/TemperatureChart";
 import dayjs from "dayjs";
 import { EditOutlined } from "@ant-design/icons";
 import { useTemperatureStore } from "../store/useTemperatureStore";
-
+import { useSystemStore } from "../store/useSystemStore";
 export const TemperatureCard = () => {
   const [pickerType, setPickerType] = useState("date");
   const [selectDate, setSelectDate] = useState(
@@ -30,6 +31,16 @@ export const TemperatureCard = () => {
     return current && current > dayjs().endOf("day");
   };
 
+<<<<<<< HEAD
+  const {
+    minTempLine,
+    maxTempLine,
+    setMinMaxTempLine,
+    setCompare_max_min_Line,
+    getMinMaxTempLine,
+  } = useTemperatureStore();
+  const { setCompareTempMode } = useSystemStore();
+=======
   const { minTempLine, maxTempLine, setMinMaxTempLine, getMinMaxTempLine, seriesTemperature } =
     useTemperatureStore();
 
@@ -38,18 +49,29 @@ export const TemperatureCard = () => {
   let minTemp = 0
   if(seriesTemperature.length > 0)  minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
 
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
   const [tempMin, setMinTemp] = useState(null);
   const [tempMax, setMaxTemp] = useState(null);
-
+  const [compareMax, setCompareMax] = useState(null);
+  const [compareMin, setCompareMin] = useState(null);
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
   const onMinChange = (value) => {
     setMinTemp(value);
   };
-
   const onMaxChange = (value) => {
     setMaxTemp(value);
   };
-
-  const confirm = () => {
+  const onMaxCompareChange = (value) => {
+    setCompareMax(value);
+  };
+  const onMinCompareChange = (value) => {
+    setCompareMin(value);
+  };
+  const confirmCompare = () => {
+    setCompare_max_min_Line(compareMax, compareMin);
+    setCompareTempMode(true);
+  };
+  const confirmSetMaxMin = () => {
     setMinMaxTempLine(tempMin, tempMax);
   };
   useEffect(() => {
@@ -96,41 +118,81 @@ export const TemperatureCard = () => {
                 />
               )}
 
-              {/* Popconfirm instead of Modal */}
-              <Popconfirm
-                icon={null}
-                title="Set Min and Max Temperature"
-                description={
-                  <div className="flex flex-col gap-2">
-                    <div>
-                      <span className="mr-2">Max</span>
-                      <InputNumber
-                        value={tempMax}
-                        defaultValue={maxTempLine}
-                        onChange={onMaxChange}
-                      />
-                    </div>
-                    <div>
-                      <span className="mr-2">Min</span>
+              {selectDate !== Today ? (
+                <Popconfirm
+                  icon={null}
+                  title="Set Min Max to Compare"
+                  description={
+                    <div className="flex flex-col gap-2">
+                      <div>
+                        <span className="mr-2">Max</span>
+                        <InputNumber
+                          // value={compareMax}
+                          // defaultValue={maxTempLine}
+                          onChange={onMaxCompareChange}
+                        />
+                      </div>
+                      <div>
+                        <span className="mr-2">Min</span>
 
-                      <InputNumber
-                        value={tempMin}
-                        defaultValue={minTempLine}
-                        onChange={onMinChange}
-                      />
+                        <InputNumber
+                          // value={compareMin}
+                          // defaultValue={minTempLine}
+                          onChange={onMinCompareChange}
+                        />
+                      </div>
                     </div>
-                  </div>
-                }
-                onConfirm={confirm}
-                okText="Save"
-                cancelText="Cancel"
-              >
-                <Button
-                  type="primary"
-                  icon={<EditOutlined />}
-                  disabled={!pickerType || !selectDate}
-                />
-              </Popconfirm>
+                  }
+                  onConfirm={confirmCompare}
+                  okText="Save"
+                  cancelText="Cancel"
+                >
+                  <Button
+                    type="primary"
+                    icon={<ArrowLeftRight size={16} />}
+                    disabled={!pickerType || !selectDate}
+                    style={{
+                      backgroundColor: "#F5C45E",
+                      borderColor: "#F5C45E",
+                    }}
+                  />
+                </Popconfirm>
+              ) : (
+                <Popconfirm
+                  icon={null}
+                  title="Set Min and Max Temperature"
+                  description={
+                    <div className="flex flex-col gap-2">
+                      <div>
+                        <span className="mr-2">Max</span>
+                        <InputNumber
+                          value={tempMax}
+                          defaultValue={maxTempLine}
+                          onChange={onMaxChange}
+                        />
+                      </div>
+                      <div>
+                        <span className="mr-2">Min</span>
+
+                        <InputNumber
+                          value={tempMin}
+                          defaultValue={minTempLine}
+                          onChange={onMinChange}
+                        />
+                      </div>
+                    </div>
+                  }
+                  onConfirm={confirmSetMaxMin}
+                  okText="Save"
+                  cancelText="Cancel"
+                >
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    disabled={!pickerType || !selectDate}
+                  />
+                </Popconfirm>
+              )}
             </div>
           </div>
         </div>

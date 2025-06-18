@@ -18,6 +18,7 @@ import {
   InfoCircleOutlined
 } from "@ant-design/icons";
 import { useAlarmStore } from "../store/useAlarmStore";
+import { useSystemStore } from "../store/useSystemStore";
 // import { response_alert } from "../constants/constants";
 // import { alarmHelper } from "../utils/alarmHelper";
 
@@ -27,14 +28,16 @@ export const AlertPanel = () => {
     getAlarm,
     acknowledgeAlarm,
     clearAlarm,
-
     isAckLoading,
     isClearLoading,
   } = useAlarmStore();
+  const { openAlertPanel, setOpenAlertPanel } = useSystemStore();
   const [alerts, setAlerts] = useState([]);
   const [open, setOpen] = useState(false);
   // const alerts = alarmHelper.formatAlarmData(response_alert.data);
-
+  useEffect(() => {
+    setOpen(openAlertPanel);
+  }, [openAlertPanel]);
   const hasAlerts = alerts && alerts.length > 0;
 
   const showDrawer = () => {
@@ -42,6 +45,7 @@ export const AlertPanel = () => {
   };
   const onClose = () => {
     setOpen(false);
+    setOpenAlertPanel(false);
   };
   const handleAcknowledge = (alarmId) => {
     acknowledgeAlarm(alarmId);

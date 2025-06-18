@@ -9,7 +9,9 @@ export const alarmHelper = {
       value: item.details.value ?? 0,
       max: item.details.max ?? 0,
       min: item.details.min ?? 0,
-      threshold: parseInt(item.details.threshold) ?? 0,
+      threshold: item.name.includes("Normal")
+        ? `${item.details.min},${item.details.max}`
+        : parseInt(item.details.threshold),
       unit: item.name.includes("Humidity") ? " %" : " °C",
       time: dateHelpers.formatThaiDate(item.createdTime),
       acknowledged: item.acknowledged,
