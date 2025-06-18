@@ -72,11 +72,11 @@ export const useTemperatureStore = create((set, get) => ({
         realtimeTemp: temperature,
         seriesTemperature: isToday
           ? dataHelpers
-              .filterDuplicates([
-                ...state.seriesTemperature,
-                [timestamp, temperature],
-              ])
-              .slice(-288)
+            .filterDuplicates([
+              ...state.seriesTemperature,
+              [timestamp, temperature],
+            ])
+            .slice(-288)
           : state.seriesTemperature,
       }));
     } catch (error) {
@@ -107,16 +107,27 @@ export const useTemperatureStore = create((set, get) => ({
       setLoading,
       setError,
       clearError,
+      minTempLine,
+      maxTempLine,
     } = get();
+
+    //console.log("min", min, "max", max);
+    const finalMin = min ?? minTempLine;
+    const finalMax = max ?? maxTempLine;
+    console.log("finalMin", finalMin, "finalMax", finalMax);
     try {
       setLoading(true);
       clearError();
-      const response = await api.postAttributeMaxMinTemp(min, max);
-      if (response.status === 200) {
-        await getMinMaxTempLine();
-        showMessage("success", "Set Min and Max Temperature successfully!");
+      if (finalMax <= finalMin ) {
+        showMessage("error", "Max temperature should be greater than min temperature!");
       } else {
-        console.error("Can't post attribute:", response.status);
+        const response = await api.postAttributeMaxMinTemp(min, max);
+        if (response.status === 200) {
+          await getMinMaxTempLine();
+          showMessage("success", "Set Min and Max Temperature successfully!");
+        } else {
+          console.error("Can't post attribute:", response.status);
+        }
       }
     } catch (error) {
       console.error("Error posting attribute data:", error);

@@ -22,12 +22,15 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     fetchHistoricalHumid(pickerType, selectDate);
   }, [pickerType, selectDate]);
 
+<<<<<<< HEAD
   //console.log("HumidData", seriesHumidity);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
+=======
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
   const series = [
     {
       name: "Humidity",
-      data: seriesHumidity ?? [], // fallback to empty array
+      data: seriesHumidity ?? [], 
     },
   ];
 
@@ -53,6 +56,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     },
     annotations: {
       yaxis: [
+<<<<<<< HEAD
         selectedDateHumid == Today
           ? minHumidLine !== null && {
               y: minHumidLine,
@@ -120,20 +124,51 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
                 },
               },
               zIndex: 0,
+=======
+        minHumidLine !== null && {
+          y: minHumidLine,
+          borderColor: "#0984e3",
+          borderWidth: 2,
+          strokeDashArray: 5,
+          label: {
+            borderColor: "transparent",
+            text: `Min: ${minHumidLine}`,
+            style: {
+              background: "rgba(255, 255, 255, 0)",
+              fontSize: "13px",
+              fontWeight: "bold",
+              color: "#0984e3",
+            },
+          },
+        },
+        maxHumidLine !== null && {
+          y: maxHumidLine,
+          borderColor: "#e74c3c",
+          borderWidth: 2,
+          strokeDashArray: 5,
+          label: {
+            borderColor: "transparent", 
+            text: `Max: ${maxHumidLine}`,
+            style: {
+              background: "rgba(255, 255, 255, 0)",
+              fontSize: "13px",
+              fontWeight: "bold",
+              color: "#e74c3c",
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
             },
       ].filter(Boolean),
     },
     tooltip: {
       enabled: true,
       x: {
-        format: getXAxisFormat(pickerType), // รูปแบบเวลา
+        format: getXAxisFormat(pickerType), 
       },
       y: {
         formatter: function (val) {
-          return `${val.toFixed(2)} %`; // เพิ่มหน่วย %
+          return `${val.toFixed(2)} %`; 
         },
         title: {
-          formatter: () => "Humidity", // ชื่อ tooltip
+          formatter: () => "Humidity", 
         },
       },
     },
@@ -165,7 +200,11 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     legend: {
       show: false,
     },
+<<<<<<< HEAD
     colors: ["#667eea"], // สีเส้น
+=======
+    colors: ["#74b9ff"], // สีเส้น
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
   };
 
   return (

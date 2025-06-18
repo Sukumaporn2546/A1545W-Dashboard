@@ -8,9 +8,14 @@ import { ReportContent } from "../components/ReportContent";
 import { DownloadReportButton } from "../components/DownloadReportButton";
 import { ReportAlertTemp } from "../components/ReportAlertTemp";
 import { ReportAlertHumid } from "../components/ReportAlertHumid";
+<<<<<<< HEAD
 import { CompareTemp } from "../components/CompareTemp";
 import { CompareHumid } from "../components/CompareHumid";
 import { useSystemStore } from "../store/useSystemStore";
+=======
+import { dateHelpers } from "../utils/dateHelper";
+import { set } from "lodash";
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
 const { Header, Content } = Layout;
 
 const DashboardLayout = () => {
@@ -32,6 +37,7 @@ const DashboardLayout = () => {
   const [selectedTableTemp, setSelectedTableTemp] = useState("tempLogs");
   const [selectedTableHumid, setSelectedTableHumid] = useState("humidLogs");
   const [timeFormatted, setTimeFormatted] = useState("");
+<<<<<<< HEAD
   const handleSelectedTemp = async (event) => {
     setSelectedTableTemp(event.target.value);
     if (event.target.value == "tempCompare") {
@@ -62,25 +68,32 @@ const DashboardLayout = () => {
       setSelectedTableHumid("humidLogs");
     }
   }, [compareHumid_mode]);
+=======
+  const [dateFormatted, setDateFormatted] = useState("");
+>>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const options = {
+      const dateOptions = {
         year: "numeric",
         month: "short",
         day: "numeric",
+      };
+      const timeOptions = {
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true,
+        second: "2-digit",
+        hour12: false,
       };
-      setTimeFormatted(now.toLocaleString("en-US", options));
+      setDateFormatted(now.toLocaleString("en-US", dateOptions));
+      setTimeFormatted(now.toLocaleString("th-TH", timeOptions));
     };
 
-    updateTime(); // ตั้งค่าครั้งแรก
-    const interval = setInterval(updateTime, 1000); // อัปเดตทุกวินาที
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
 
-    return () => clearInterval(interval); // ล้าง interval ตอน component ถูกถอด
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -117,6 +130,7 @@ const DashboardLayout = () => {
           </div>
 
           <div className="header-right">
+            <span className="time">{dateFormatted}</span>
             <span className="time">{timeFormatted}</span>
             {/* <Popover content={content} title="Title" trigger="hover"> */}
             {/* <span><ReportButton /></span> */}

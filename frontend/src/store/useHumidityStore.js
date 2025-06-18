@@ -110,13 +110,17 @@ export const useHumidityStore = create((set, get) => ({
     try {
       setLoading(true);
       clearError();
-      const response = await api.postAttributeMaxMinHumid(min, max);
-      if (response.status == 200) {
-        await getMinMaxHumidLine();
-        showMessage("success", "Set Min and Max Humidity successfully!");
-        console.log("post attribute successfully");
-      } else {
-        console.error("can't post attribute  : ", response.status);
+      if(max<min){
+        showMessage("error", "Max humidity should be greater than min humidity!");
+      }else{
+        const response = await api.postAttributeMaxMinHumid(min, max);
+        if (response.status == 200) {
+          await getMinMaxHumidLine();
+          showMessage("success", "Set Min and Max Humidity successfully!");
+          console.log("post attribute successfully");
+        } else {
+          console.error("can't post attribute  : ", response.status);
+        }
       }
     } catch (error) {
       console.error("Error post attribute data:", error);
