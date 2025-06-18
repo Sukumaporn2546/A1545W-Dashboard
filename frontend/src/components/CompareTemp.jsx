@@ -46,9 +46,7 @@ export const CompareTemp = () => {
       }));
   }, [seriesTemperature, compare_max_line, compare_min_line]);
 
-  useEffect(() => {
-    // This effect currently does nothing, consider removing if not needed
-  }, [compare_max_line, compare_min_line, seriesTemperature]);
+  useEffect(() => {}, [compare_max_line, compare_min_line, seriesTemperature]);
 
   const columnAlerts = [
     {
