@@ -195,6 +195,8 @@ export const useTemperatureStore = create((set, get) => ({
         selectedDateTemp:
           pickerType == "week"
             ? selectDate
+            : pickerType == "period"
+            ? selectDate
             : dayjs(selectDate).format("YYYY-MM-DD"),
       });
       return formatted;

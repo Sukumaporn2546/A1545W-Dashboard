@@ -13,19 +13,26 @@ import dayjs from "dayjs";
 import { EditOutlined } from "@ant-design/icons";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { useSystemStore } from "../store/useSystemStore";
+
 export const TemperatureCard = () => {
   const [pickerType, setPickerType] = useState("date");
   const [selectDate, setSelectDate] = useState(
     dayjs(new Date()).format("YYYY-MM-DD")
   );
+  const [datePickerValue, setDatePickerValue] = useState(dayjs()); // เพิ่ม state สำหรับ DatePicker value
+
   const [open, setOpen] = useState(true);
+
   const onDateChange = (date, dateString) => {
+    console.log(dateString);
     setSelectDate(dateString);
+    setDatePickerValue(date); // อัพเดต DatePicker value
   };
 
   const handlePickerTypeChange = (value) => {
     setPickerType(value.value);
     setSelectDate(null);
+    setDatePickerValue(null); // ล้างค่า DatePicker เมื่อเปลี่ยน pickerType
   };
 
   const disableFutureDates = (current) => {
@@ -79,14 +86,18 @@ export const TemperatureCard = () => {
   const confirmSetMaxMin = () => {
     setMinMaxTempLine(tempMin, tempMax);
   };
+
   useEffect(() => {
     getMinMaxTempLine();
   }, [tempMax, tempMin]);
+
   useEffect(() => {
-    if (selectedDateTemp !== Today) {
+    if (selectedDateTemp !== Today && selectDate && pickerType) {
       setOpen(true);
+    } else {
+      setOpen(false);
     }
-  }, [selectedDateTemp, Today]);
+  }, [selectedDateTemp, Today, selectDate, pickerType]);
 
   return (
     <Card
@@ -115,13 +126,14 @@ export const TemperatureCard = () => {
                   disabled={pickerType == null}
                   disabledDate={disableFutureDates}
                   onChange={onDateChange}
+                  value={datePickerValue}
                   size="middle"
                 />
               ) : (
                 <DatePicker
                   disabled={pickerType == null}
-                  defaultValue={dayjs(new Date())}
                   disabledDate={disableFutureDates}
+                  value={datePickerValue}
                   onChange={onDateChange}
                   picker={pickerType}
                   size="middle"

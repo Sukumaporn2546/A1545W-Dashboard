@@ -161,7 +161,7 @@ export const useHumidityStore = create((set, get) => ({
     try {
       setFetchLoading(true);
       clearError();
-
+      console.log(pickerType, selectDate);
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
       if (!timeConfig) throw new Error("Invalid picker type or date");
       const { start, end, interval, limit } = timeConfig;
@@ -184,6 +184,8 @@ export const useHumidityStore = create((set, get) => ({
       set({
         selectedDateHumid:
           pickerType == "week"
+            ? selectDate
+            : pickerType == "period"
             ? selectDate
             : dayjs(selectDate).format("YYYY-MM-DD"),
       });
