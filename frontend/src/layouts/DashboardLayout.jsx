@@ -8,14 +8,11 @@ import { ReportContent } from "../components/ReportContent";
 import { DownloadReportButton } from "../components/DownloadReportButton";
 import { ReportAlertTemp } from "../components/ReportAlertTemp";
 import { ReportAlertHumid } from "../components/ReportAlertHumid";
-<<<<<<< HEAD
 import { CompareTemp } from "../components/CompareTemp";
 import { CompareHumid } from "../components/CompareHumid";
 import { useSystemStore } from "../store/useSystemStore";
-=======
-import { dateHelpers } from "../utils/dateHelper";
-import { set } from "lodash";
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
+// import { dateHelpers } from "../utils/dateHelper";
+// import { set } from "lodash";
 const { Header, Content } = Layout;
 
 const DashboardLayout = () => {
@@ -37,7 +34,6 @@ const DashboardLayout = () => {
   const [selectedTableTemp, setSelectedTableTemp] = useState("tempLogs");
   const [selectedTableHumid, setSelectedTableHumid] = useState("humidLogs");
   const [timeFormatted, setTimeFormatted] = useState("");
-<<<<<<< HEAD
   const handleSelectedTemp = async (event) => {
     setSelectedTableTemp(event.target.value);
     if (event.target.value == "tempCompare") {
@@ -68,9 +64,7 @@ const DashboardLayout = () => {
       setSelectedTableHumid("humidLogs");
     }
   }, [compareHumid_mode]);
-=======
   const [dateFormatted, setDateFormatted] = useState("");
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
 
   useEffect(() => {
     const updateTime = () => {

@@ -34,7 +34,6 @@ export const HumidityCard = () => {
   };
 
   //for input
-<<<<<<< HEAD
   const {
     minHumidLine,
     maxHumidLine,
@@ -45,18 +44,16 @@ export const HumidityCard = () => {
 
   //for inputNumber
   const { setCompareHumidMode } = useSystemStore();
-=======
-  const { minHumidLine, maxHumidLine, setMinMaxHumidLine, getMinMaxHumidLine, seriesHumidity } =
-    useHumidityStore();
+  // const { minHumidLine, maxHumidLine, setMinMaxHumidLine, getMinMaxHumidLine, seriesHumidity } =
+  //   useHumidityStore();
 
   //for inputNumber
 
-let maxHumid = 0
-  if (seriesHumidity.length > 0) maxHumid = (Math.max(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
-  let   minHumid = 0
-  if (seriesHumidity.length > 0) minHumid = (Math.min(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
+  // let maxHumid = 0
+  //   if (seriesHumidity.length > 0) maxHumid = (Math.max(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
+  //   let   minHumid = 0
+  //   if (seriesHumidity.length > 0) minHumid = (Math.min(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
 
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
   const [humidMin, setMinHumid] = useState(null);
   const [humidMax, setMaxHumid] = useState(null);
   const [compareMax, setCompareMax] = useState(null);
@@ -94,11 +91,7 @@ let maxHumid = 0
           <div className="flex items-center gap-4">
             <Select
               labelInValue
-<<<<<<< HEAD
               defaultValue={{ value: "date", label: "Date" }}
-=======
-              defaultValue={{ value: 'date', label: 'Date' }}
->>>>>>> d237641e27df5c2bb586073c999314ffabf41f91
               placeholder="Select type"
               style={{ width: 120 }}
               onChange={handlePickerTypeChange}
@@ -209,7 +202,7 @@ let maxHumid = 0
       }
     >
       <HumidityChart pickerType={pickerType} selectDate={selectDate} />
-        <div className="flex flex-row gap-4 justify-center">
+      {/* <div className="flex flex-row gap-4 justify-center">
         <p>
           <span className="font-bold text-red-500">Maximum : </span>
           <span className="font-semibold">{`${maxHumid} %`}</span>
@@ -218,7 +211,7 @@ let maxHumid = 0
           <span className="font-bold text-blue-500">Minimum : </span>
           <span className="font-semibold">{`${minHumid} %`}</span>
         </p>
-      </div>
+      </div> */}
     </Card>
   );
 };
