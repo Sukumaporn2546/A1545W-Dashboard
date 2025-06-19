@@ -55,15 +55,16 @@ export const useAlarmStore = create((set, get) => ({
       setLoading(false);
     }
   },
-  getHistoricalAlarmTemp: async (selectedDate) => {
+  getHistoricalAlarmTemp: async (pickerType, selectedDate) => {
     const { api, setError, clearError, setTableTempLoading } = get();
     try {
       setTableTempLoading(true);
       clearError();
-      if (!selectedDate) {
-        throw new Error("No selected date provided");
+      if (!selectedDate && !pickerType) {
+        throw new Error("No selected and pickerType date provided");
       }
-      const timeConfig = getTimeConfiguration("date", selectedDate);
+      console.log(pickerType, selectedDate);
+      const timeConfig = getTimeConfiguration(pickerType, selectedDate);
       if (!timeConfig) throw new Error("Invalid data");
       const { start, end } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);
@@ -83,12 +84,16 @@ export const useAlarmStore = create((set, get) => ({
       setTableTempLoading(false);
     }
   },
-  getHistoricalAlarmHumid: async (selectedDate) => {
+  getHistoricalAlarmHumid: async (pickerType, selectedDate) => {
     const { api, setError, clearError, setTableHumidLoading } = get();
     try {
       setTableHumidLoading(true);
       clearError();
-      const timeConfig = getTimeConfiguration("date", selectedDate);
+      if (!selectedDate && pickerType) {
+        throw new Error("No selected and pickerType date provided");
+      }
+      console.log(pickerType, selectedDate);
+      const timeConfig = getTimeConfiguration(pickerType, selectedDate);
       if (!timeConfig) throw new Error("Invalid data");
       const { start, end } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);

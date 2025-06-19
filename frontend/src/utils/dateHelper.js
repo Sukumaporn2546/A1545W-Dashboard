@@ -42,7 +42,7 @@ export const dateHelpers = {
     const timeString = isEnd ? "23:59:59" : "00:00:00";
     return new Date(`${dateString}T${timeString}+07:00`).getTime();
   },
-  formatThaiDate: (timestamp) => {
+  formatThaiDate_day: (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleString("th-TH", {
       hour: "2-digit",
@@ -50,6 +50,15 @@ export const dateHelpers = {
       hour12: false,
       timeZone: "Asia/Bangkok",
     });
+  },
+  formatThaiDate_weekDay: (timestamp) => {
+    return dayjs(timestamp).locale("en").format("ddd DD, HH:mm"); // ➜ Sun 15, 12:30
+  },
+  formatThaiDate_month: (timestamp) => {
+    return dayjs(timestamp).locale("en").format("ddd DD"); // ➜ Sun 15, 12:30
+  },
+  formatThaiDate_year: (timestamp) => {
+    return dayjs(timestamp).locale("en").format("MMMM");
   },
   getTodayTimestamp: () => {
     const now = new Date();

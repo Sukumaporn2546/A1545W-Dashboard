@@ -20,7 +20,6 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
   useEffect(() => {
     clearGraphTemp();
     fetchHistoricalTemp(pickerType, selectDate);
-    console.log(compare_max_line, compare_min_line);
   }, [pickerType, selectDate]);
 
   //console.log("TempData", seriesTemperature);

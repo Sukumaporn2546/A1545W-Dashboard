@@ -58,7 +58,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
       annotations: {
         yaxis: [
           selectedDateHumid == Today
-            ? minHumidLine !== null && {
+            ? minHumidLine !== null &&
+              minHumidLine !== undefined && {
                 y: minHumidLine,
                 borderColor: "#e74c3c",
                 borderWidth: 2,
@@ -74,7 +75,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
                   },
                 },
               }
-            : compare_min_line !== null && {
+            : compare_min_line !== null &&
+              compare_min_line !== undefined && {
                 y: compare_min_line,
                 borderColor: "#e74c3c",
                 borderWidth: 2,
@@ -91,7 +93,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
                 },
               },
           selectedDateHumid == Today
-            ? maxHumidLine !== null && {
+            ? maxHumidLine !== null &&
+              maxHumidLine !== undefined && {
                 y: maxHumidLine,
                 borderColor: "#27ae60",
                 borderWidth: 2,
@@ -108,7 +111,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
                 },
                 zIndex: 0,
               }
-            : compare_max_line !== null && {
+            : compare_max_line !== null &&
+              compare_max_line !== undefined && {
                 y: compare_max_line,
                 borderColor: "#27ae60",
                 borderWidth: 2,

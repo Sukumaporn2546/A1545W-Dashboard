@@ -24,14 +24,15 @@ export const useHumidityStore = create((set, get) => ({
   ws: null,
   minHumidLine: null,
   maxHumidLine: null,
-  compare_max_line_humid: null,
-  compare_min_line_humid: null,
+  compare_max_line: null,
+  compare_min_line: null,
   selectedDateHumid: dayjs().format("YYYY-MM-DD"),
   startPeriodHumid: null,
   endPeriodHumid: null,
+  selectedTypeHumid: null,
 
   setCompare_max_min_Line: (max, min) =>
-    set({ compare_max_line_humid: max, compare_min_line_humid: min }),
+    set({ compare_max_line: max, compare_min_line: min }),
   setSelectedDate: (date) => set({ selectedDateHumid: date }),
   setLoading: (loading) => set({ isLoading: loading }),
   setFetchLoading: (loading) => set({ fetchLoading: loading }),
@@ -180,7 +181,13 @@ export const useHumidityStore = create((set, get) => ({
       const formatted = dataHelpers.formatHumidityData(data.humidity);
       console.log("formatted", formatted);
       set({ seriesHumidity: formatted });
-      set({ selectedDateHumid: dayjs(selectDate).format("YYYY-MM-DD") });
+      set({
+        selectedDateHumid:
+          pickerType == "week"
+            ? selectDate
+            : dayjs(selectDate).format("YYYY-MM-DD"),
+      });
+      set({ selectedTypeHumid: pickerType });
     } catch (error) {
       console.error("Error fetching humidity data:", error);
       setError(error.message);

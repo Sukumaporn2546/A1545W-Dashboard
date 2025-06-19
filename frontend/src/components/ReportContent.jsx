@@ -4,8 +4,8 @@ import { Table, Card } from "antd";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { useHumidityStore } from "../store/useHumidityStore";
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { useMemo } from "react";
 import { dataReportHelper } from "../utils/dataReportHelper";
 
@@ -14,11 +14,29 @@ dayjs.extend(timezone);
 
 export const ReportContent = () => {
   //real data
-  const { startPeriodTemp, endPeriodTemp, seriesTemperature, compare_max_line, compare_min_line } = useTemperatureStore();
-  const { startPeriodHumid, endPeriodHumid, seriesHumidity, compare_max_line_humid, compare_min_line_humid} = useHumidityStore();
+  const {
+    startPeriodTemp,
+    endPeriodTemp,
+    seriesTemperature,
+    compare_max_line,
+    compare_min_line,
+  } = useTemperatureStore();
+  const {
+    startPeriodHumid,
+    endPeriodHumid,
+    seriesHumidity,
+    compare_max_line_humid,
+    compare_min_line_humid,
+  } = useHumidityStore();
 
-  const tempPeriod = dataReportHelper.convertDateTemp(startPeriodTemp, endPeriodTemp);
-  const humidPeriod = dataReportHelper.convertDateHumid(startPeriodHumid, endPeriodHumid);
+  const tempPeriod = dataReportHelper.convertDateTemp(
+    startPeriodTemp,
+    endPeriodTemp
+  );
+  const humidPeriod = dataReportHelper.convertDateHumid(
+    startPeriodHumid,
+    endPeriodHumid
+  );
   const timeFormatted = dataReportHelper.getTimeGenerate();
 
   const maxTemp = dataReportHelper.getStatValue(seriesTemperature, "max");
@@ -29,14 +47,20 @@ export const ReportContent = () => {
   const averageHumid = dataReportHelper.getStatValue(seriesHumidity, "avg");
 
   const comparedTempData = useMemo(() => {
-    return dataReportHelper.groupContinuousExceed(seriesTemperature, compare_max_line, compare_min_line);
+    return dataReportHelper.groupContinuousExceed(
+      seriesTemperature,
+      compare_max_line,
+      compare_min_line
+    );
   }, [seriesTemperature, compare_max_line, compare_min_line]);
 
-  const comparedHumidData = useMemo(() =>{
-    return dataReportHelper.groupContinuousExceed(seriesHumidity, compare_max_line_humid, compare_max_line_humid);
-  }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid])
-
-
+  const comparedHumidData = useMemo(() => {
+    return dataReportHelper.groupContinuousExceed(
+      seriesHumidity,
+      compare_max_line_humid,
+      compare_max_line_humid
+    );
+  }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid]);
 
   const columnSummary = [
     {
@@ -143,8 +167,8 @@ export const ReportContent = () => {
       dataIndex: "threshold",
       key: "threshold",
       align: "center",
-      width: 150 
-    }
+      width: 150,
+    },
   ];
   const columnAlertsHumid = [
     {
@@ -173,8 +197,8 @@ export const ReportContent = () => {
       dataIndex: "threshold",
       key: "threshold",
       align: "center",
-      width: 150 
-    }
+      width: 150,
+    },
   ];
 
   return (
@@ -228,7 +252,9 @@ export const ReportContent = () => {
       </div>
 
       <h3 className="text-xl font-bold mb-2">• Threshold Violations</h3>
-      <p className="mb-4 text-base">Data points collected at 5-minute intervals</p>
+      <p className="mb-4 text-base">
+        Data points collected at 5-minute intervals
+      </p>
       <p className="text-xl font-semibold mb-4">Temperature</p>
 
       <div className="inline-block mb-4">

@@ -2,31 +2,49 @@ import { Card, Table, Collapse } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
 import { useAlarmStore } from "../store/useAlarmStore";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { dateHelpers } from "../utils/dateHelper";
 import { Car } from "lucide-react";
 export const ReportAlertHumid = () => {
-  const { selectedDateHumid } = useHumidityStore();
+  const { selectedDateHumid, selectedTypeHumid } = useHumidityStore();
   const { alarmHistoricalHumid, getHistoricalAlarmHumid, tableHumidLoading } =
     useAlarmStore();
   const [sortedInfo, setSortedInfo] = useState({});
+  const formatTime = useCallback(
+    (rn) => {
+      switch (selectedTypeHumid) {
+        case "date":
+          return dateHelpers.formatThaiDate_day(rn);
+        case "week":
+          return dateHelpers.formatThaiDate_weekDay(rn);
+        case "month":
+          return dateHelpers.formatThaiDate_month(rn);
+        case "year":
+          return dateHelpers.formatThaiDate_year(rn);
+        default:
+          return rn;
+      }
+    },
+    [selectedTypeHumid]
+  );
   const logs_data = useMemo(() => {
     if (!alarmHistoricalHumid?.length) return [];
     return alarmHistoricalHumid
       .filter((rn) => rn.message.includes("Humidity"))
       .map((rn, index) => ({
         key: rn.id || index,
-        time: rn.time,
+        time: formatTime(rn.timeInTable),
         message: rn.message,
         value: typeof rn.value === "number" ? rn.value : Number(rn.value),
         threshold: rn.threshold,
       }));
-  }, [alarmHistoricalHumid]);
+  }, [formatTime, alarmHistoricalHumid]);
 
   useEffect(() => {
-    if (selectedDateHumid) {
-      getHistoricalAlarmHumid(selectedDateHumid);
+    if (selectedDateHumid && selectedTypeHumid) {
+      getHistoricalAlarmHumid(selectedTypeHumid, selectedDateHumid);
     }
-  }, [selectedDateHumid, getHistoricalAlarmHumid]);
+  }, [selectedTypeHumid, selectedDateHumid, getHistoricalAlarmHumid]);
 
   const columnAlerts = [
     {
