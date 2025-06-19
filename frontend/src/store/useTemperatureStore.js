@@ -28,11 +28,11 @@ export const useTemperatureStore = create((set, get) => ({
   selectedDateTemp: dayjs().format("YYYY-MM-DD"),
   showMessage: useMessageStore.getState().showMessage,
   startPeriodTemp: null,
-  endPeriodTemp: null,
 
   setCompare_max_min_Line: (max, min) =>
     set({ compare_max_line: max, compare_min_line: min }),
 
+  endPeriodTemp: null,
   setSelectedDate: (date) => set({ selectedDateTemp: date }),
   setLoading: (loading) => set({ isLoading: loading }),
   setFetchLoading: (loading) => set({ fetchLoading: loading }),
@@ -116,7 +116,7 @@ export const useTemperatureStore = create((set, get) => ({
     //console.log("min", min, "max", max);
     const finalMin = min ?? minTempLine;
     const finalMax = max ?? maxTempLine;
-    console.log("finalMin", finalMin, "finalMax", finalMax);
+    //console.log("finalMin", finalMin, "finalMax", finalMax);
     try {
       setLoading(true);
       clearError();

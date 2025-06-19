@@ -16,6 +16,8 @@ export const CompareTemp = () => {
   } = useTemperatureStore();
   const [selected, setSelected] = useState(1);
   const [sortedInfo, setSortedInfo] = useState({});
+
+
   const [isEmpty, setIsEmpty] = useState(false);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
   useEffect(() => {
@@ -181,10 +183,12 @@ export const CompareTemp = () => {
             columns={columnAlerts}
             size="small"
             dataSource={
+
               isEmpty
                 ? []
                 : selected === 1
                 ? CompareGeaterThanMax_data
+
                 : selected === 2
                 ? CompareLessThanMin_data
                 : CompareNormal_data

@@ -24,14 +24,14 @@ export const useHumidityStore = create((set, get) => ({
   ws: null,
   minHumidLine: null,
   maxHumidLine: null,
-  compare_max_line: null,
-  compare_min_line: null,
+  compare_max_line_humid: null,
+  compare_min_line_humid: null,
   selectedDateHumid: dayjs().format("YYYY-MM-DD"),
   startPeriodHumid: null,
   endPeriodHumid: null,
 
   setCompare_max_min_Line: (max, min) =>
-    set({ compare_max_line: max, compare_min_line: min }),
+    set({ compare_max_line_humid: max, compare_min_line_humid: min }),
   setSelectedDate: (date) => set({ selectedDateHumid: date }),
   setLoading: (loading) => set({ isLoading: loading }),
   setFetchLoading: (loading) => set({ fetchLoading: loading }),

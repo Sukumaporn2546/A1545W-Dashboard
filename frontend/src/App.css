@@ -119,7 +119,7 @@ body,
 .custom-table .ant-table-container,
 .custom-table .ant-table-cell,
 .custom-table .ant-table-thead>tr>th .custom-table .ant-table-tbody>tr>td {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 #report-content {

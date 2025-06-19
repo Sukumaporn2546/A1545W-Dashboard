@@ -12,8 +12,6 @@ import { ReportAlertHumid } from "../components/ReportAlertHumid";
 import { CompareTemp } from "../components/CompareTemp";
 import { CompareHumid } from "../components/CompareHumid";
 import { useSystemStore } from "../store/useSystemStore";
-// import { dateHelpers } from "../utils/dateHelper";
-// import { set } from "lodash";
 
 const { Header, Content } = Layout;
 
