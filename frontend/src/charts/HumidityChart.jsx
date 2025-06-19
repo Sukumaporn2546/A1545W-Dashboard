@@ -14,8 +14,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     minHumidLine,
     maxHumidLine,
     selectedDateHumid,
-    compare_max_line,
-    compare_min_line,
+    compare_max_line_humid,
+    compare_min_line_humid,
     fetchLoading,
   } = useHumidityStore();
 
@@ -75,15 +75,15 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
                   },
                 },
               }
-            : compare_min_line !== null &&
-              compare_min_line !== undefined && {
-                y: compare_min_line,
+            : compare_min_line_humid !== null &&
+              compare_min_line_humid !== undefined && {
+                y: compare_min_line_humid,
                 borderColor: "#e74c3c",
                 borderWidth: 2,
                 strokeDashArray: 5,
                 label: {
                   borderColor: "transparent",
-                  text: `Compare Min: ${compare_min_line}`,
+                  text: `Compare Min: ${compare_min_line_humid}`,
                   style: {
                     background: "rgba(255, 255, 255, 0)",
                     fontSize: "13px",
@@ -111,15 +111,15 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
                 },
                 zIndex: 0,
               }
-            : compare_max_line !== null &&
-              compare_max_line !== undefined && {
-                y: compare_max_line,
+            : compare_max_line_humid !== null &&
+              compare_max_line_humid !== undefined && {
+                y: compare_max_line_humid,
                 borderColor: "#27ae60",
                 borderWidth: 2,
                 strokeDashArray: 5,
                 label: {
                   borderColor: "transparent",
-                  text: `Compare Max: ${compare_max_line}`,
+                  text: `Compare Max: ${compare_max_line_humid}`,
                   style: {
                     background: "rgba(255, 255, 255, 0)",
                     fontSize: "13px",
@@ -180,8 +180,8 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
       minHumidLine,
       maxHumidLine,
       selectedDateHumid,
-      compare_max_line,
-      compare_min_line,
+      compare_max_line_humid,
+      compare_min_line_humid,
       Today,
     ]
   );

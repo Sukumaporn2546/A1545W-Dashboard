@@ -24,8 +24,8 @@ export const useHumidityStore = create((set, get) => ({
   ws: null,
   minHumidLine: null,
   maxHumidLine: null,
-  compare_max_line: null,
-  compare_min_line: null,
+  compare_max_line_humid: null,
+  compare_min_line_humid: null,
   selectedDateHumid: dayjs().format("YYYY-MM-DD"),
   startPeriodHumid: null,
   endPeriodHumid: null,
@@ -34,10 +34,10 @@ export const useHumidityStore = create((set, get) => ({
 setCompare_max_min_Line: (max, min) => {
     const {showMessage} = get();
     if (max <= min) {
-      showMessage("error", "Max temperature should be greater than min temperature!");
+      showMessage("error", "Max humidity should be greater than min temperature!");
     } else {
-      set({ compare_max_line: max, compare_min_line: min });
-      showMessage("success", "Set Min and Max Temperature successfully!");
+      set({ compare_max_line_humid: max, compare_min_line_humid: min });
+      showMessage("success", "Set Min and Max humidity successfully!");
     }
   },
 

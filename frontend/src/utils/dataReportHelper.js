@@ -41,49 +41,19 @@ export const dataReportHelper = {
     return result.toFixed(2);
   },
 
-  getComparedTemp: (series, compareMax, compareMin) => {
-    if (!series?.length) return [];
-    const maxSeries = series
-      .filter((rn) => rn[1] >= compareMax)
-      .map((rn, index) => ({
-        key: index,
-        timestamp: rn[0],
-        time: dateHelpers.formatThaiDate_day(rn[0]),
-        message: "High Temperature",
-        value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: compareMax,
-      }));
-    const minSeries = series
-      .filter((rn) => rn[1] <= compareMin)
-      .map((rn, index) => ({
-        key: index,
-        timestamp: rn[0],
-        time: dateHelpers.formatThaiDate_day(rn[0]),
-        message: "Low Temperature",
-        value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: compareMin,
-      }));
-
-    const combined = [...maxSeries, ...minSeries].sort(
-      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-    );
-
-    return combined;
-  },
-
-  groupContinuousExceed: (series, compareMax, compareMin) => {
+  groupContinuousExceed: (series, compareMax, compareMin, pickerType) => {
     if (!series?.length) return [];
 
     const result = [];
     let currentGroup = null;
 
-        for (let i = 0; i < series.length; i++) {
-            const [ts, rawVal] = series[i];
-            const value = parseFloat(rawVal);
-            const type =
-                value > compareMax ? "High" :
-                    value < compareMin ? "Low" :
-                        null;
+    for (let i = 0; i < series.length; i++) {
+      const [ts, rawVal] = series[i];
+      const value = parseFloat(rawVal);
+      const type =
+        value > compareMax ? "High" :
+          value < compareMin ? "Low" :
+            null;
 
       if (type) {
         if (!currentGroup) {
@@ -110,21 +80,76 @@ export const dataReportHelper = {
       result.push({ ...currentGroup });
     }
 
-    return result.map((g, i) => ({
-      key: i,
-      message: g.type,
-      timeRange:
-        dateHelpers.formatThaiDate_day(g.start) ==
-        dateHelpers.formatThaiDate_day(g.end)
-          ? dateHelpers.formatThaiDate_day(g.start)
-          : `${dateHelpers.formatThaiDate_day(
+
+    // return result.map((g, i) => ({
+    //   key: i,
+    //   message: g.type,
+    //   timeRange:
+    //     dateHelpers.formatThaiDate_day(g.start) ==
+    //     dateHelpers.formatThaiDate_day(g.end)
+    //       ? dateHelpers.formatThaiDate_day(g.start)
+    //       : `${dateHelpers.formatThaiDate_day(
+    //           g.start
+    //         )} - ${dateHelpers.formatThaiDate_day(g.end)}`,
+    //   avgValue: (g.values.reduce((a, b) => a + b, 0) / g.values.length).toFixed(
+    //     2
+    //   ),
+    //   threshold: g.type === "High" ? compareMax : compareMin,
+    // }));
+
+
+
+    return result.map((g, i) => {
+      let timeRange = "";
+
+      switch (pickerType) {
+
+        case "week":
+          timeRange = dateHelpers.formatThaiDate_weekDay(g.start) ==
+            dateHelpers.formatThaiDate_weekDay(g.end)
+            ? dateHelpers.formatThaiDate_weekDay(g.start)
+            : `${dateHelpers.formatThaiDate_weekDay(
               g.start
-            )} - ${dateHelpers.formatThaiDate_day(g.end)}`,
-      avgValue: (g.values.reduce((a, b) => a + b, 0) / g.values.length).toFixed(
-        2
-      ),
-      threshold: g.type === "High Temperature" ? compareMax : compareMin,
-    }));
+            )} - ${dateHelpers.formatThaiDate_weekDay(g.end)}`
+          break;
+        case "month":
+          timeRange = dateHelpers.formatThaiDate_month(g.start) ==
+            dateHelpers.formatThaiDate_month(g.end)
+            ? dateHelpers.formatThaiDate_month(g.start)
+            : `${dateHelpers.formatThaiDate_month(
+              g.start
+            )} - ${dateHelpers.formatThaiDate_month(g.end)}`
+          break;
+        case "year":
+          timeRange = dateHelpers.formatThaiDate_year(g.start) ==
+            dateHelpers.formatThaiDate_year(g.end)
+            ? dateHelpers.formatThaiDate_year(g.start)
+            : `${dateHelpers.formatThaiDate_year(
+              g.start
+            )} - ${dateHelpers.formatThaiDate_year(g.end)}`
+          break;
+        case "date":
+        default:
+          timeRange = dateHelpers.formatThaiDate_day(g.start) ==
+            dateHelpers.formatThaiDate_day(g.end)
+            ? dateHelpers.formatThaiDate_day(g.start)
+            : `${dateHelpers.formatThaiDate_day(
+              g.start
+            )} - ${dateHelpers.formatThaiDate_day(g.end)}`
+          break;
+      }
+
+      return {
+        key: i,
+        message: g.type,
+        timeRange,
+        avgValue: (
+          g.values.reduce((a, b) => a + b, 0) / g.values.length
+        ).toFixed(2),
+        threshold: g.type === "High" ? compareMax : compareMin,
+      };
+    });
+
 
     //console.log('result', result);
     //return result;

@@ -20,6 +20,7 @@ export const ReportContent = () => {
     seriesTemperature,
     compare_max_line,
     compare_min_line,
+    selectedTypeTemp
   } = useTemperatureStore();
   const {
     startPeriodHumid,
@@ -27,6 +28,7 @@ export const ReportContent = () => {
     seriesHumidity,
     compare_max_line_humid,
     compare_min_line_humid,
+    selectedTypeHumid
   } = useHumidityStore();
 
   const tempPeriod = dataReportHelper.convertDateTemp(
@@ -50,17 +52,19 @@ export const ReportContent = () => {
     return dataReportHelper.groupContinuousExceed(
       seriesTemperature,
       compare_max_line,
-      compare_min_line
+      compare_min_line,
+      selectedTypeTemp
     );
-  }, [seriesTemperature, compare_max_line, compare_min_line]);
+  }, [seriesTemperature, compare_max_line, compare_min_line, selectedTypeTemp]);
 
   const comparedHumidData = useMemo(() => {
     return dataReportHelper.groupContinuousExceed(
       seriesHumidity,
       compare_max_line_humid,
-      compare_max_line_humid
+      compare_min_line_humid,
+      selectedTypeHumid
     );
-  }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid]);
+  }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid,selectedTypeHumid]);
 
   const columnSummary = [
     {
@@ -107,60 +111,27 @@ export const ReportContent = () => {
     },
   ];
 
-  //table for alerts
-  // const columnAlerts = [
-  //   {
-  //     title: <div className="text-center font-bold ">Time</div>,
-  //     dataIndex: "time",
-  //     key: "time",
-  //     align: "center",
-  //     width: 250,
-  //   },
-  //   {
-  //     title: <div className="text-center font-bold">Alert Type</div>,
-  //     dataIndex: "message",
-  //     key: "message",
-  //     align: "center",
-  //     width: 210,
-  //   },
-  //   {
-  //     title: <div className="text-center font-bold">Value</div>,
-  //     dataIndex: "value",
-  //     key: "value",
-  //     align: "center",
-  //     render: (_, record) => `${record.value} ${record.unit}`,
-  //     width: 200,
-  //   },
-  //   {
-  //     title: <div className="text-center font-bold">Threshold Limit</div>,
-  //     dataIndex: "threshold",
-  //     key: "threshold",
-  //     align: "center",
-  //     width: 250,
-  //   },
-  // ];
-
   const columnAlertsTemp = [
     {
       title: <div className="text-center font-bold ">Time</div>,
       dataIndex: "timeRange",
       key: "timeRange",
       align: "center",
-      width: 200,
+      width: 250,
     },
     {
       title: <div className="text-center font-bold">Message Type</div>,
       dataIndex: "message",
       key: "message",
       align: "center",
-      width: 230,
+      width: 150,
     },
     {
       title: <div className="text-center font-bold">Value (°C)</div>,
       dataIndex: "avgValue",
       key: "avgValue",
       align: "center",
-      width: 190,
+      width: 150,
     },
     {
       title: <div className="text-center font-bold">Threshold</div>,
@@ -176,21 +147,21 @@ export const ReportContent = () => {
       dataIndex: "timeRange",
       key: "timeRange",
       align: "center",
-      width: 200,
+      width: 250,
     },
     {
       title: <div className="text-center font-bold">Message Type</div>,
       dataIndex: "message",
       key: "message",
       align: "center",
-      width: 230,
+      width: 150,
     },
     {
       title: <div className="text-center font-bold">Value (%)</div>,
       dataIndex: "avgValue",
       key: "avgValue",
       align: "center",
-      width: 190,
+      width: 150,
     },
     {
       title: <div className="text-center font-bold">Threshold</div>,
@@ -203,10 +174,10 @@ export const ReportContent = () => {
 
   return (
     <div>
-      <h2 className="text-3xl font-bold mb-6 text-center">
+      <h2 className="text-2xl font-bold mb-4 text-center">
         Temperature and Humidity Report
       </h2>
-      <div className="mb-8 text-base">
+      <div className="mb-4 text-sm">
         <p>
           <strong>Temperature Period:</strong> {tempPeriod}
         </p>
@@ -218,11 +189,11 @@ export const ReportContent = () => {
         </p>
       </div>
 
-      <h3 className="text-xl font-bold mb-4">• Trend Graphs</h3>
-      <div className="mb-22">
+      <h3 className="text-base font-bold mb-4">• Trend Graphs</h3>
+      <div className="mb-16">
         <div className="mb-4">
           <Card
-            title={<div className="py-4 text-xl">Temperature Chart (°C)</div>}
+            title={<div className="py-2 text-base">Temperature Chart (°C)</div>}
             variant="outlined"
           >
             <TemperatureChart />
@@ -230,7 +201,7 @@ export const ReportContent = () => {
         </div>
         <div>
           <Card
-            title={<div className="py-4 text-xl">Humidity Chart (%RH)</div>}
+            title={<div className="py-2 text-base">Humidity Chart (%RH)</div>}
             variant="outlined"
           >
             <HumidityChart />
@@ -238,8 +209,8 @@ export const ReportContent = () => {
         </div>
       </div>
 
-      <h3 className="text-xl font-bold mb-4">• Summary Statistics</h3>
-      <div className="inline-block mb-8">
+      <h3 className="text-base font-bold mb-4">• Summary Statistics</h3>
+      <div className="inline-block mb-6">
         <Table
           pagination={false}
           tableLayout="auto"
@@ -251,11 +222,11 @@ export const ReportContent = () => {
         />
       </div>
 
-      <h3 className="text-xl font-bold mb-2">• Threshold Violations</h3>
+      <h3 className="text-base font-bold mb-2">• Threshold Violations</h3>
       <p className="mb-4 text-base">
         Data points collected at 5-minute intervals
       </p>
-      <p className="text-xl font-semibold mb-4">Temperature</p>
+      <p className="text-base font-semibold mb-4">Temperature</p>
 
       <div className="inline-block mb-4">
         <Table
@@ -269,7 +240,7 @@ export const ReportContent = () => {
           className="custom-table"
         />
       </div>
-      <p className="text-xl font-semibold mb-4">Humidity</p>
+      <p className="text-base font-semibold mb-4">Humidity</p>
       <div className="inline-block mb-4">
         <Table
           columns={columnAlertsHumid}

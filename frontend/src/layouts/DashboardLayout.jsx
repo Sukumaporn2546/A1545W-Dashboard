@@ -164,7 +164,8 @@ const DashboardLayout = () => {
               position: "fixed",
               top: "-10000px",
               left: "-10000px",
-              padding: "60px",
+              padding: "50px",
+              paddingTop: "10px",
               backgroundColor: "white",
             }}
           >
