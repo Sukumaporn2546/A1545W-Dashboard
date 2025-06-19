@@ -2,10 +2,8 @@ import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
 import { useEffect } from "react";
 import { useTemperatureStore } from "../store/useTemperatureStore";
-
+import { Spin } from "antd";
 import dayjs from "dayjs";
-
-import { max, min } from "lodash";
 
 export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
@@ -17,14 +15,13 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     selectedDateTemp,
     compare_max_line,
     compare_min_line,
+    fetchLoading,
   } = useTemperatureStore();
   useEffect(() => {
     clearGraphTemp();
     fetchHistoricalTemp(pickerType, selectDate);
     console.log(compare_max_line, compare_min_line);
   }, [pickerType, selectDate]);
-
-
 
   //console.log("TempData", seriesTemperature);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
@@ -63,7 +60,6 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
   //     },
   //   }));
 
-
   // const minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
 
   // const minTimestamp = minTemp?.[0]
@@ -90,7 +86,6 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     },
     annotations: {
       yaxis: [
-
         selectedDateTemp == Today
           ? minTempLine !== null && {
               y: minTempLine,
@@ -156,11 +151,9 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
                   color: "#27ae60",
                 },
               },
-
-        },
+            },
       ].filter(Boolean),
       //points: maxPoints,
-      
     },
     tooltip: {
       enabled: true,
@@ -208,11 +201,24 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
   };
 
   return (
-    <ReactApexChart
-      options={options}
-      series={series}
-      type="line"
-      height={350}
-    />
+    <>
+      {fetchLoading ? (
+        <Spin size="middle">
+          <ReactApexChart
+            options={options}
+            series={series}
+            type="line"
+            height={350}
+          />
+        </Spin>
+      ) : (
+        <ReactApexChart
+          options={options}
+          series={series}
+          type="line"
+          height={350}
+        />
+      )}
+    </>
   );
 };

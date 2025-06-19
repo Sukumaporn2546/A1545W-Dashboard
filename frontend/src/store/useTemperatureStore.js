@@ -20,6 +20,7 @@ export const useTemperatureStore = create((set, get) => ({
   error: null,
   api: new ThingsBoardAPI(),
   ws: null,
+  fetchLoading: null,
   minTempLine: null,
   maxTempLine: null,
   compare_max_line: null,
@@ -34,6 +35,7 @@ export const useTemperatureStore = create((set, get) => ({
 
   setSelectedDate: (date) => set({ selectedDateTemp: date }),
   setLoading: (loading) => set({ isLoading: loading }),
+  setFetchLoading: (loading) => set({ fetchLoading: loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
   clearGraphTemp: () => set({ seriesTemperature: [] }),
@@ -72,11 +74,11 @@ export const useTemperatureStore = create((set, get) => ({
         realtimeTemp: temperature,
         seriesTemperature: isToday
           ? dataHelpers
-            .filterDuplicates([
-              ...state.seriesTemperature,
-              [timestamp, temperature],
-            ])
-            .slice(-288)
+              .filterDuplicates([
+                ...state.seriesTemperature,
+                [timestamp, temperature],
+              ])
+              .slice(-288)
           : state.seriesTemperature,
       }));
     } catch (error) {
@@ -118,8 +120,11 @@ export const useTemperatureStore = create((set, get) => ({
     try {
       setLoading(true);
       clearError();
-      if (finalMax <= finalMin ) {
-        showMessage("error", "Max temperature should be greater than min temperature!");
+      if (finalMax <= finalMin) {
+        showMessage(
+          "error",
+          "Max temperature should be greater than min temperature!"
+        );
       } else {
         const response = await api.postAttributeMaxMinTemp(min, max);
         if (response.status === 200) {
@@ -158,9 +163,9 @@ export const useTemperatureStore = create((set, get) => ({
   },
 
   fetchHistoricalTemp: async (pickerType, selectDate) => {
-    const { api, setLoading, setError, clearError } = get();
+    const { api, setFetchLoading, setError, clearError } = get();
     try {
-      setLoading(true);
+      setFetchLoading(true);
       clearError();
 
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
@@ -191,7 +196,7 @@ export const useTemperatureStore = create((set, get) => ({
       console.error("Error fetching temperature data:", error);
       setError(error.message);
     } finally {
-      setLoading(false);
+      setFetchLoading(false);
     }
   },
 }));

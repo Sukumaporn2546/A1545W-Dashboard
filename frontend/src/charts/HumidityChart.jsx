@@ -2,8 +2,10 @@
 import ReactApexChart from "react-apexcharts";
 import { getXAxisFormat } from "../utils/transformChartData";
 import dayjs from "dayjs";
+import { Spin } from "antd";
 import { useEffect } from "react";
 import { useHumidityStore } from "../store/useHumidityStore";
+import { useMemo } from "react";
 export const HumidityChart = ({ pickerType, selectDate }) => {
   const {
     seriesHumidity,
@@ -14,6 +16,7 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     selectedDateHumid,
     compare_max_line,
     compare_min_line,
+    fetchLoading,
   } = useHumidityStore();
 
   useEffect(() => {
@@ -27,153 +30,177 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
   const series = [
     {
       name: "Humidity",
-      data: seriesHumidity ?? [], 
+      data: seriesHumidity ?? [],
     },
   ];
 
-  const options = {
-    chart: {
-      id: "realtime",
-      width: 800,
-      height: 500,
-      type: "area",
-      animations: {
-        enabled: true,
-        easing: "linear",
-        dynamicAnimation: {
-          speed: 1000,
+  const options = useMemo(
+    () => ({
+      chart: {
+        id: "realtime",
+        width: 800,
+        height: 500,
+        type: "area",
+        animations: {
+          enabled: true,
+          easing: "linear",
+          dynamicAnimation: {
+            speed: 1000,
+          },
+        },
+        toolbar: {
+          show: true,
+        },
+        zoom: {
+          enabled: true,
         },
       },
-      toolbar: {
-        show: true,
+      annotations: {
+        yaxis: [
+          selectedDateHumid == Today
+            ? minHumidLine !== null && {
+                y: minHumidLine,
+                borderColor: "#e74c3c",
+                borderWidth: 2,
+                strokeDashArray: 5,
+                label: {
+                  borderColor: "transparent",
+                  text: `Min: ${minHumidLine}`,
+                  style: {
+                    background: "rgba(255, 255, 255, 0)",
+                    fontSize: "13px",
+                    fontWeight: "bold",
+                    color: "#e74c3c",
+                  },
+                },
+              }
+            : compare_min_line !== null && {
+                y: compare_min_line,
+                borderColor: "#e74c3c",
+                borderWidth: 2,
+                strokeDashArray: 5,
+                label: {
+                  borderColor: "transparent",
+                  text: `Compare Min: ${compare_min_line}`,
+                  style: {
+                    background: "rgba(255, 255, 255, 0)",
+                    fontSize: "13px",
+                    fontWeight: "bold",
+                    color: "#e74c3c",
+                  },
+                },
+              },
+          selectedDateHumid == Today
+            ? maxHumidLine !== null && {
+                y: maxHumidLine,
+                borderColor: "#27ae60",
+                borderWidth: 2,
+                strokeDashArray: 5,
+                label: {
+                  borderColor: "transparent",
+                  text: `Max: ${maxHumidLine}`,
+                  style: {
+                    background: "rgba(255, 255, 255, 0)",
+                    fontSize: "13px",
+                    fontWeight: "bold",
+                    color: "#27ae60",
+                  },
+                },
+                zIndex: 0,
+              }
+            : compare_max_line !== null && {
+                y: compare_max_line,
+                borderColor: "#27ae60",
+                borderWidth: 2,
+                strokeDashArray: 5,
+                label: {
+                  borderColor: "transparent",
+                  text: `Compare Max: ${compare_max_line}`,
+                  style: {
+                    background: "rgba(255, 255, 255, 0)",
+                    fontSize: "13px",
+                    fontWeight: "bold",
+                    color: "#27ae60",
+                  },
+                },
+                zIndex: 0,
+              },
+        ].filter(Boolean),
       },
-      zoom: {
+      tooltip: {
         enabled: true,
-      },
-    },
-    annotations: {
-      yaxis: [
-        selectedDateHumid == Today
-          ? minHumidLine !== null && {
-              y: minHumidLine,
-              borderColor: "#e74c3c",
-              borderWidth: 2,
-              strokeDashArray: 5,
-              label: {
-                borderColor: "transparent",
-                text: `Min: ${minHumidLine}`,
-                style: {
-                  background: "rgba(255, 255, 255, 0)",
-                  fontSize: "13px",
-                  fontWeight: "bold",
-                  color: "#e74c3c",
-                },
-              },
-            }
-          : compare_min_line !== null && {
-              y: compare_min_line,
-              borderColor: "#e74c3c",
-              borderWidth: 2,
-              strokeDashArray: 5,
-              label: {
-                borderColor: "transparent",
-                text: `Compare Min: ${compare_min_line}`,
-                style: {
-                  background: "rgba(255, 255, 255, 0)",
-                  fontSize: "13px",
-                  fontWeight: "bold",
-                  color: "#e74c3c",
-                },
-              },
-            },
-        selectedDateHumid == Today
-          ? maxHumidLine !== null && {
-              y: maxHumidLine,
-              borderColor: "#27ae60",
-              borderWidth: 2,
-              strokeDashArray: 5,
-              label: {
-                borderColor: "transparent",
-                text: `Max: ${maxHumidLine}`,
-                style: {
-                  background: "rgba(255, 255, 255, 0)",
-                  fontSize: "13px",
-                  fontWeight: "bold",
-                  color: "#27ae60",
-                },
-              },
-              zIndex: 0,
-            }
-          : compare_max_line !== null && {
-              y: compare_max_line,
-              borderColor: "#27ae60",
-              borderWidth: 2,
-              strokeDashArray: 5,
-              label: {
-                borderColor: "transparent",
-                text: `Compare Max: ${compare_max_line}`,
-                style: {
-                  background: "rgba(255, 255, 255, 0)",
-                  fontSize: "13px",
-                  fontWeight: "bold",
-                  color: "#27ae60",
-                },
-              },
-              zIndex: 0,
-            },
-      ].filter(Boolean),
-    },
-    tooltip: {
-      enabled: true,
-      x: {
-        format: getXAxisFormat(pickerType), 
-      },
-      y: {
-        formatter: function (val) {
-          return `${val.toFixed(2)} %`; 
+        x: {
+          format: getXAxisFormat(pickerType),
         },
+        y: {
+          formatter: function (val) {
+            return `${val.toFixed(2)} %`;
+          },
+          title: {
+            formatter: () => "Humidity",
+          },
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        //curve: 'smooth',
+        curve: ["straight"],
+      },
+      markers: {
+        size: 0,
+      },
+      xaxis: {
+        type: "datetime",
+        labels: {
+          datetimeUTC: false,
+          format: getXAxisFormat(pickerType),
+        },
+      },
+      yaxis: {
+        // max: 100,
+        // min: 0,
         title: {
-          formatter: () => "Humidity", 
+          // text: 'Temperature (°C)',
+          // style: { fontSize: '13px', color: '#666', fontWeight: 'semibold' }
         },
       },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      //curve: 'smooth',
-      curve: ["straight"],
-    },
-    markers: {
-      size: 0,
-    },
-    xaxis: {
-      type: "datetime",
-      labels: {
-        datetimeUTC: false,
-        format: getXAxisFormat(pickerType),
+      legend: {
+        show: false,
       },
-    },
-    yaxis: {
-      // max: 100,
-      // min: 0,
-      title: {
-        // text: 'Temperature (°C)',
-        // style: { fontSize: '13px', color: '#666', fontWeight: 'semibold' }
-      },
-    },
-    legend: {
-      show: false,
-    },
-    colors: ["#667eea"], // สีเส้น
-  };
+      colors: ["#667eea"], // สีเส้น
+    }),
+    [
+      pickerType,
+      minHumidLine,
+      maxHumidLine,
+      selectedDateHumid,
+      compare_max_line,
+      compare_min_line,
+      Today,
+    ]
+  );
 
   return (
-    <ReactApexChart
-      options={options}
-      series={series}
-      type="line"
-      height={350}
-    />
+    <>
+      {fetchLoading ? (
+        <Spin size="middle">
+          <ReactApexChart
+            options={options}
+            series={series}
+            type="line"
+            height={350}
+          />
+        </Spin>
+      ) : (
+        <ReactApexChart
+          options={options}
+          series={series}
+          type="line"
+          height={350}
+        />
+      )}
+    </>
   );
 };

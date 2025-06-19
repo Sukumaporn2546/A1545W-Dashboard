@@ -17,6 +17,7 @@ export const useHumidityStore = create((set, get) => ({
   realtimeHumid: null,
   seriesHumidity: [],
   isLoading: false,
+  fetchLoading: false,
   error: null,
   socket: null,
   api: new ThingsBoardAPI(),
@@ -33,6 +34,7 @@ export const useHumidityStore = create((set, get) => ({
     set({ compare_max_line: max, compare_min_line: min }),
   setSelectedDate: (date) => set({ selectedDateHumid: date }),
   setLoading: (loading) => set({ isLoading: loading }),
+  setFetchLoading: (loading) => set({ fetchLoading: loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
   clearGraphHumid: () =>
@@ -110,9 +112,12 @@ export const useHumidityStore = create((set, get) => ({
     try {
       setLoading(true);
       clearError();
-      if(max<min){
-        showMessage("error", "Max humidity should be greater than min humidity!");
-      }else{
+      if (max < min) {
+        showMessage(
+          "error",
+          "Max humidity should be greater than min humidity!"
+        );
+      } else {
         const response = await api.postAttributeMaxMinHumid(min, max);
         if (response.status == 200) {
           await getMinMaxHumidLine();
@@ -151,9 +156,9 @@ export const useHumidityStore = create((set, get) => ({
   },
 
   fetchHistoricalHumid: async (pickerType, selectDate) => {
-    const { api, setLoading, setError, clearError } = get();
+    const { api, setFetchLoading, setError, clearError } = get();
     try {
-      setLoading(true);
+      setFetchLoading(true);
       clearError();
 
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
@@ -180,7 +185,7 @@ export const useHumidityStore = create((set, get) => ({
       console.error("Error fetching humidity data:", error);
       setError(error.message);
     } finally {
-      setLoading(false);
+      setFetchLoading(false);
     }
   },
 }));

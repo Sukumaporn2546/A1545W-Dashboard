@@ -4,12 +4,22 @@ import { useHumidityStore } from "../store/useHumidityStore";
 import { useAlarmStore } from "../store/useAlarmStore";
 import MessagePanel from "./MessageRanel";
 import AlertRealtime from "../components/AlertRealtime";
-
+import { Spin } from "antd";
 export const RealTimeCard = () => {
-  const { realtimeTemp, setupWebSocketTempTelemetry, closeWebSocketTemp } =
-    useTemperatureStore();
-  const { realtimeHumid, setupWebSocketHumid, closeWebSocketHumid } =
-    useHumidityStore();
+  const {
+    realtimeTemp,
+    setupWebSocketTempTelemetry,
+    closeWebSocketTemp,
+    minTempLine,
+    maxTempLine,
+  } = useTemperatureStore();
+  const {
+    realtimeHumid,
+    setupWebSocketHumid,
+    closeWebSocketHumid,
+    minHumidLine,
+    maxHumidLine,
+  } = useHumidityStore();
 
   // Use refs to track if WebSockets are initialized to prevent multiple setups
   const tempSocketInitialized = useRef(false);
@@ -96,15 +106,15 @@ export const RealTimeCard = () => {
 
   const getTemperatureStatus = (temperature) => {
     if (temperature == 0 || temperature == null) return "default";
-    else if (temperature > 35) return "critical";
-    else if (temperature > 28) return "warning";
+    else if (temperature > maxTempLine) return "high";
+    else if (temperature < minTempLine) return "low";
     else return "normal";
   };
 
   const getHumidityStatus = (humidity) => {
     if (humidity == 0 || humidity == null) return "default";
-    else if (humidity < 30) return "low";
-    else if (humidity > 65) return "high";
+    else if (humidity < minHumidLine) return "low";
+    else if (humidity > maxHumidLine) return "high";
     else return "normal";
   };
 
@@ -132,14 +142,14 @@ export const RealTimeCard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         <StatCard
           title="Current Temperature"
-          value={realtimeTemp ?? "--"}
-          unit="°C"
+          value={realtimeTemp ?? <Spin size="middle" />}
+          unit={realtimeTemp ? "°C" : null}
           status={getTemperatureStatus(realtimeTemp)}
         />
         <StatCard
           title="Current Humidity"
-          value={realtimeHumid ?? "--"}
-          unit="%"
+          value={realtimeHumid ?? <Spin size="middle" />}
+          unit={realtimeHumid ? "%" : null}
           status={getHumidityStatus(realtimeHumid)}
         />
       </div>

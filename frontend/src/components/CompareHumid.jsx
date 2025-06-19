@@ -1,50 +1,99 @@
 import { Card, Table, Radio } from "antd";
 import { BellOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import { useHumidityStore } from "../store/useHumidityStore";
 import { ArrowLeftRight } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { dateHelpers } from "../utils/dateHelper";
 export const CompareHumid = () => {
-  const { seriesHumidity, compare_max_line, compare_min_line } =
-    useHumidityStore();
+  const {
+    seriesHumidity,
+    compare_max_line,
+    compare_min_line,
+    selectedDateHumid,
+    minHumidLine,
+    maxHumidLine,
+  } = useHumidityStore();
   const [selected, setSelected] = useState(1);
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
+  const [isEmpty, setIsEmpty] = useState(false);
   const [sortedInfo, setSortedInfo] = useState({});
+  useEffect(() => {
+    const noCompareSet =
+      !compare_max_line && !compare_min_line && Today !== selectedDateHumid;
+    setIsEmpty(noCompareSet);
+  }, [compare_max_line, compare_min_line, selectedDateHumid, Today]);
   const CompareGreaterThanMax_data = useMemo(() => {
     if (!seriesHumidity?.length) return [];
     return seriesHumidity
-      .filter((rn) => rn[1] >= compare_max_line)
+      .filter(
+        (rn) =>
+          rn[1] >=
+          (selectedDateHumid == Today ? maxHumidLine : compare_max_line)
+      )
       .map((rn, index) => ({
         key: index,
         time: dateHelpers.formatThaiDate(rn[0]),
         message: "High Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: compare_max_line,
+        threshold: selectedDateHumid == Today ? maxHumidLine : compare_max_line,
       }));
-  }, [seriesHumidity, compare_max_line]);
+  }, [
+    seriesHumidity,
+    compare_max_line,
+    Today,
+    maxHumidLine,
+    selectedDateHumid,
+  ]);
   const CompareLessThanMin_data = useMemo(() => {
     if (!seriesHumidity?.length) return [];
     return seriesHumidity
-      .filter((rn) => rn[1] <= compare_min_line)
+      .filter(
+        (rn) =>
+          rn[1] <=
+          (selectedDateHumid == Today ? minHumidLine : compare_min_line)
+      )
       .map((rn, index) => ({
         key: index,
         time: dateHelpers.formatThaiDate(rn[0]),
         message: "Low Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: compare_min_line,
+        threshold: selectedDateHumid == Today ? minHumidLine : compare_min_line,
       }));
-  }, [seriesHumidity, compare_min_line]);
+  }, [
+    seriesHumidity,
+    Today,
+    compare_min_line,
+    minHumidLine,
+    selectedDateHumid,
+  ]);
   const CompareNormal_data = useMemo(() => {
     if (!seriesHumidity?.length) return [];
     return seriesHumidity
-      .filter((rn) => rn[1] < compare_max_line && rn[1] > compare_min_line)
+      .filter(
+        (rn) =>
+          rn[1] <
+            (selectedDateHumid == Today ? maxHumidLine : compare_max_line) &&
+          rn[1] > (selectedDateHumid == Today ? minHumidLine : compare_min_line)
+      )
       .map((rn, index) => ({
         key: index,
         time: dateHelpers.formatThaiDate(rn[0]),
         message: "Normal Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: `${compare_min_line},${compare_max_line}`,
+        threshold: `${
+          selectedDateHumid == Today ? minHumidLine : compare_min_line
+        },${selectedDateHumid == Today ? maxHumidLine : compare_max_line}`,
       }));
-  }, [seriesHumidity, compare_max_line, compare_min_line]);
+  }, [
+    seriesHumidity,
+    compare_max_line,
+    compare_min_line,
+    Today,
+    maxHumidLine,
+    minHumidLine,
+    selectedDateHumid,
+  ]);
 
   useEffect(() => {}, [compare_max_line, compare_min_line, seriesHumidity]);
 
@@ -131,7 +180,9 @@ export const CompareHumid = () => {
             columns={columnAlerts}
             size="small"
             dataSource={
-              selected === 1
+              isEmpty
+                ? []
+                : selected === 1
                 ? CompareGreaterThanMax_data
                 : selected === 2
                 ? CompareLessThanMin_data
@@ -141,6 +192,11 @@ export const CompareHumid = () => {
             scroll={{ y: 66 * 5 }}
             tableLayout="auto"
             onChange={handleChange}
+            locale={{
+              emptyText: isEmpty
+                ? "⚠️ Please select min and max humidity for comparison"
+                : "No data within the specified humidity range",
+            }}
           />
         </div>
       </Card>
