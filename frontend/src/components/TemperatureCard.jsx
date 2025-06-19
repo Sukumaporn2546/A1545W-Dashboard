@@ -88,6 +88,11 @@ export const TemperatureCard = () => {
     }
   }, [selectedDateTemp, Today]);
 
+  useEffect(()=>{
+    console.log('pickerType', pickerType);
+    console.log('selectDate', selectDate);
+  },[pickerType, selectDate])
+
   return (
     <Card
       type="inner"
@@ -120,7 +125,7 @@ export const TemperatureCard = () => {
               ) : (
                 <DatePicker
                   disabled={pickerType == null}
-                  defaultValue={dayjs(new Date())}
+                  //defaultValue={dayjs(new Date())}
                   disabledDate={disableFutureDates}
                   onChange={onDateChange}
                   picker={pickerType}

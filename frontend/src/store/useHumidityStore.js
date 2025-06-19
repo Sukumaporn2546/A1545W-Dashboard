@@ -30,8 +30,17 @@ export const useHumidityStore = create((set, get) => ({
   startPeriodHumid: null,
   endPeriodHumid: null,
 
-  setCompare_max_min_Line: (max, min) =>
-    set({ compare_max_line_humid: max, compare_min_line_humid: min }),
+setCompare_max_min_Line: (max, min) => {
+    const {showMessage} = get();
+    if (max <= min) {
+      showMessage("error", "Max temperature should be greater than min temperature!");
+    } else {
+      set({ compare_max_line: max, compare_min_line: min });
+      showMessage("success", "Set Min and Max Temperature successfully!");
+    }
+  },
+
+  
   setSelectedDate: (date) => set({ selectedDateHumid: date }),
   setLoading: (loading) => set({ isLoading: loading }),
   setFetchLoading: (loading) => set({ fetchLoading: loading }),
@@ -109,10 +118,12 @@ export const useHumidityStore = create((set, get) => ({
       setError,
       clearError,
     } = get();
+    const finalMin = min ?? minTempLine;
+    const finalMax = max ?? maxTempLine;
     try {
       setLoading(true);
       clearError();
-      if (max < min) {
+      if (finalMax <= finalMin) {
         showMessage(
           "error",
           "Max humidity should be greater than min humidity!"

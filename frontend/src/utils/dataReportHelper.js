@@ -82,8 +82,8 @@ export const dataReportHelper = {
             const [ts, rawVal] = series[i];
             const value = parseFloat(rawVal);
             const type =
-                value > compareMax ? "High Temperature" :
-                    value < compareMin ? "Low Temperature" :
+                value > compareMax ? "High" :
+                    value < compareMin ? "Low" :
                         null;
 
             if (type) {
@@ -116,7 +116,7 @@ export const dataReportHelper = {
             message: g.type,
             timeRange: dateHelpers.formatThaiDate(g.start) == dateHelpers.formatThaiDate(g.end) ? dateHelpers.formatThaiDate(g.start) : `${dateHelpers.formatThaiDate(g.start)} - ${dateHelpers.formatThaiDate(g.end)}`,
             avgValue: (g.values.reduce((a, b) => a + b, 0) / g.values.length).toFixed(2),
-            threshold: g.type === "High Temperature" ? compareMax : compareMin,
+            threshold: g.type === "High" ? compareMax : compareMin,
         }));
         
         //console.log('result', result);
