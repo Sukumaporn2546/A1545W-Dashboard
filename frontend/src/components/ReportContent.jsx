@@ -6,41 +6,39 @@ import { useHumidityStore } from "../store/useHumidityStore";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { useMemo } from "react";
+import { dataReportHelper } from "../utils/dataReportHelper";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const ReportContent = () => {
   //real data
-  const { startPeriodTemp, endPeriodTemp, seriesTemperature } = useTemperatureStore();
-  const { startPeriodHumid, endPeriodHumid, seriesHumidity } = useHumidityStore();
-  const convertDateTemp = () => {
-    if (startPeriodTemp === endPeriodTemp) {
-      return startPeriodTemp;
-    } else {
-      return `${startPeriodTemp} to ${endPeriodTemp}`;
-    }
-  };
-  const convertDateHumid = () =>
-    startPeriodHumid === endPeriodHumid
-      ? startPeriodHumid
-      : `${startPeriodHumid} to ${endPeriodHumid}`;
+  const { startPeriodTemp, endPeriodTemp, seriesTemperature, compare_max_line, compare_min_line } = useTemperatureStore();
+  const { startPeriodHumid, endPeriodHumid, seriesHumidity, compare_max_line_humid, compare_min_line_humid} = useHumidityStore();
 
-  const tempPeriod = convertDateTemp();
-  const humidPeriod = convertDateHumid();
+  const tempPeriod = dataReportHelper.convertDateTemp(startPeriodTemp, endPeriodTemp);
+  const humidPeriod = dataReportHelper.convertDateHumid(startPeriodHumid, endPeriodHumid);
+  const timeFormatted = dataReportHelper.getTimeGenerate();
 
-  const timeFormatted = dayjs().tz('Asia/Bangkok').format("YYYY-MM-DD, hh:mm");
+  const maxTemp = dataReportHelper.getStatValue(seriesTemperature, "max");
+  const minTemp = dataReportHelper.getStatValue(seriesTemperature, "min");
+  const averageTemp = dataReportHelper.getStatValue(seriesTemperature, "avg");
+  const maxHumid = dataReportHelper.getStatValue(seriesHumidity, "max");
+  const minHumid = dataReportHelper.getStatValue(seriesHumidity, "min");
+  const averageHumid = dataReportHelper.getStatValue(seriesHumidity, "avg");
 
-  const maxTemp = (Math.max(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
-  const minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
-  const averageTemp = (seriesTemperature.reduce((acc, curr) => acc + parseFloat(curr[1]), 0) / seriesTemperature.length).toFixed(2);
-  const maxHumid = (Math.max(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
-  const minHumid = (Math.min(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
-  const averageHumid = (seriesHumidity.reduce((acc, curr) => acc + parseFloat(curr[1]), 0) / seriesHumidity.length).toFixed(2);
+  const comparedTempData = useMemo(() => {
+    return dataReportHelper.groupContinuousExceed(seriesTemperature, compare_max_line, compare_min_line);
+  }, [seriesTemperature, compare_max_line, compare_min_line]);
 
-  //table for statistics mock data
+  const comparedHumidData = useMemo(() =>{
+    return dataReportHelper.groupContinuousExceed(seriesHumidity, compare_max_line_humid, compare_max_line_humid);
+  }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid])
 
-  const columns = [
+
+
+  const columnSummary = [
     {
       title: <div className="text-center font-bold">Metrics</div>,
       dataIndex: "metrics",
@@ -86,83 +84,97 @@ export const ReportContent = () => {
   ];
 
   //table for alerts
-  const columnAlerts = [
+  // const columnAlerts = [
+  //   {
+  //     title: <div className="text-center font-bold ">Time</div>,
+  //     dataIndex: "time",
+  //     key: "time",
+  //     align: "center",
+  //     width: 250,
+  //   },
+  //   {
+  //     title: <div className="text-center font-bold">Alert Type</div>,
+  //     dataIndex: "message",
+  //     key: "message",
+  //     align: "center",
+  //     width: 210,
+  //   },
+  //   {
+  //     title: <div className="text-center font-bold">Value</div>,
+  //     dataIndex: "value",
+  //     key: "value",
+  //     align: "center",
+  //     render: (_, record) => `${record.value} ${record.unit}`,
+  //     width: 200,
+  //   },
+  //   {
+  //     title: <div className="text-center font-bold">Threshold Limit</div>,
+  //     dataIndex: "threshold",
+  //     key: "threshold",
+  //     align: "center",
+  //     width: 250,
+  //   },
+  // ];
+
+  const columnAlertsTemp = [
     {
       title: <div className="text-center font-bold ">Time</div>,
-      dataIndex: "time",
-      key: "time",
+      dataIndex: "timeRange",
+      key: "timeRange",
       align: "center",
-      width: 250,
-    },
-    {
-      title: <div className="text-center font-bold">Alert Type</div>,
-      dataIndex: "message",
-      key: "message",
-      align: "center",
-      width: 210,
-    },
-    {
-      title: <div className="text-center font-bold">Value</div>,
-      dataIndex: "value",
-      key: "value",
-      align: "center",
-      render: (_, record) => `${record.value} ${record.unit}`,
       width: 200,
     },
     {
-      title: <div className="text-center font-bold">Threshold Limit</div>,
+      title: <div className="text-center font-bold">Message Type</div>,
+      dataIndex: "message",
+      key: "message",
+      align: "center",
+      width: 230,
+    },
+    {
+      title: <div className="text-center font-bold">Value (°C)</div>,
+      dataIndex: "avgValue",
+      key: "avgValue",
+      align: "center",
+      width: 190,
+    },
+    {
+      title: <div className="text-center font-bold">Threshold</div>,
       dataIndex: "threshold",
       key: "threshold",
       align: "center",
-      width: 250,
-    },
+      width: 150 
+    }
   ];
-
-  const alerts = [
+  const columnAlertsHumid = [
     {
-      id: "1", // ไว้สำหรับระบุรายการแต่ละอัน
-      type: "temperature", // ประเภทแจ้งเตือน
-      message: "High Temperature", // ข้อความเตือนหลัก
-      value: 85, // ค่าที่ตรวจพบ
-      threshold: 80, // ค่ากำหนด (threshold)
-      unit: "°C", // หน่วย
-      time: "2025-06-10 14:30", // เวลาที่เกิดเหตุ
-      deviceId: "sensor-01", // อุปกรณ์ที่ตรวจพบ
-      resolved: false, // แสดงว่ายังไม่ได้รับการยืนยันหรือแก้ไข
+      title: <div className="text-center font-bold ">Time</div>,
+      dataIndex: "timeRange",
+      key: "timeRange",
+      align: "center",
+      width: 200,
     },
     {
-      id: "2", // ไว้สำหรับระบุรายการแต่ละอัน
-      type: "humidity", // ประเภทแจ้งเตือน
-      message: "Low Humidity", // ข้อความเตือนหลัก
-      value: 12, // ค่าที่ตรวจพบ
-      threshold: 20, // ค่ากำหนด (threshold)
-      unit: "%", // หน่วย
-      time: "2025-06-10 14:30", // เวลาที่เกิดเหตุ
-      deviceId: "sensor-01", // อุปกรณ์ที่ตรวจพบ
-      resolved: false, // แสดงว่ายังไม่ได้รับการยืนยันหรือแก้ไข
+      title: <div className="text-center font-bold">Message Type</div>,
+      dataIndex: "message",
+      key: "message",
+      align: "center",
+      width: 230,
     },
     {
-      id: "3", // ไว้สำหรับระบุรายการแต่ละอัน
-      type: "humidity", // ประเภทแจ้งเตือน
-      message: "Low Humidity", // ข้อความเตือนหลัก
-      value: 19.69, // ค่าที่ตรวจพบ
-      threshold: 20, // ค่ากำหนด (threshold)
-      unit: "%", // หน่วย
-      time: "2025-06-10 15:30", // เวลาที่เกิดเหตุ
-      deviceId: "sensor-01", // อุปกรณ์ที่ตรวจพบ
-      resolved: false, // แสดงว่ายังไม่ได้รับการยืนยันหรือแก้ไข
+      title: <div className="text-center font-bold">Value (%)</div>,
+      dataIndex: "avgValue",
+      key: "avgValue",
+      align: "center",
+      width: 190,
     },
     {
-      id: "4", // ไว้สำหรับระบุรายการแต่ละอัน
-      type: "humidity", // ประเภทแจ้งเตือน
-      message: "Low Humidity", // ข้อความเตือนหลัก
-      value: 19.69, // ค่าที่ตรวจพบ
-      threshold: 20, // ค่ากำหนด (threshold)
-      unit: "%", // หน่วย
-      time: "2025-06-10 15:30", // เวลาที่เกิดเหตุ
-      deviceId: "sensor-01", // อุปกรณ์ที่ตรวจพบ
-      resolved: false, // แสดงว่ายังไม่ได้รับการยืนยันหรือแก้ไข
-    },
+      title: <div className="text-center font-bold">Threshold</div>,
+      dataIndex: "threshold",
+      key: "threshold",
+      align: "center",
+      width: 150 
+    }
   ];
 
   return (
@@ -183,7 +195,7 @@ export const ReportContent = () => {
       </div>
 
       <h3 className="text-xl font-bold mb-4">• Trend Graphs</h3>
-      <div className="mb-66">
+      <div className="mb-22">
         <div className="mb-4">
           <Card
             title={<div className="py-4 text-xl">Temperature Chart (°C)</div>}
@@ -209,21 +221,21 @@ export const ReportContent = () => {
           tableLayout="auto"
           size="small"
           bordered
-          columns={columns}
+          columns={columnSummary}
           dataSource={data}
           className="custom-table"
         />
       </div>
 
-      <h3 className="text-xl font-bold mb-6">• Threshold Violations</h3>
-
+      <h3 className="text-xl font-bold mb-2">• Threshold Violations</h3>
+      <p className="mb-4 text-base">Data points collected at 5-minute intervals</p>
       <p className="text-xl font-semibold mb-4">Temperature</p>
 
       <div className="inline-block mb-4">
         <Table
-          columns={columnAlerts}
+          columns={columnAlertsTemp}
           size="small"
-          dataSource={alerts}
+          dataSource={comparedTempData}
           rowKey="id"
           pagination={false}
           tableLayout="auto"
@@ -234,9 +246,9 @@ export const ReportContent = () => {
       <p className="text-xl font-semibold mb-4">Humidity</p>
       <div className="inline-block mb-4">
         <Table
-          columns={columnAlerts}
+          columns={columnAlertsHumid}
           size="small"
-          dataSource={alerts}
+          dataSource={comparedHumidData}
           rowKey="id"
           pagination={false}
           tableLayout="auto"

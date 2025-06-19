@@ -9,7 +9,7 @@ export const CompareTemp = () => {
     useTemperatureStore();
   const [selected, setSelected] = useState(1);
   const [sortedInfo, setSortedInfo] = useState({});
-  const CompareGeaterThanMax_data = useMemo(() => {
+  const CompareGreaterThanMax_data = useMemo(() => {
     if (!seriesTemperature?.length) return [];
     return seriesTemperature
       .filter((rn) => rn[1] >= compare_max_line)
@@ -132,7 +132,7 @@ export const CompareTemp = () => {
             size="small"
             dataSource={
               selected === 1
-                ? CompareGeaterThanMax_data
+                ? CompareGreaterThanMax_data
                 : selected === 2
                 ? CompareLessThanMin_data
                 : CompareNormal_data

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Modal } from "antd";
+import { Button, Modal, Tooltip } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { useHumidityStore } from "../store/useHumidityStore";
@@ -13,13 +13,13 @@ export const DownloadReportButton = () => {
   const [pdfInstance, setPdfInstance] = useState(null);
   //   const [images, setImages] = useState([]);
 
-  const { startPeriodTemp, endPeriodTemp } = useTemperatureStore();
-  const { startPeriodHumid, endPeriodHumid } = useHumidityStore();
+  const { compare_max_line, compare_min_line } = useTemperatureStore();
+  const { compare_max_line_humid, compare_min_line_humid } = useHumidityStore();
   const disabledButton = [
-    startPeriodTemp,
-    endPeriodTemp,
-    startPeriodHumid,
-    endPeriodHumid,
+    compare_max_line,
+    compare_min_line,
+    compare_max_line_humid,
+    compare_min_line_humid
   ].some((val) => val === null);
 
   const generatePdfPreview = async () => {
@@ -82,12 +82,25 @@ export const DownloadReportButton = () => {
   return (
     <>
       {/* Responsive */}
-      <Button
-        shape="circle"
-        onClick={() => generatePdfPreview()}
-        icon={<DownloadOutlined />}
-        disabled={disabledButton}
-      ></Button>
+      {disabledButton ? (
+        <Tooltip title="Set comparison limits for temperature and humidity historical data">
+          <span>
+            <Button
+              shape="circle"
+              onClick={generatePdfPreview}
+              icon={<DownloadOutlined />}
+              disabled
+            />
+          </span>
+        </Tooltip>
+      ) : (
+        <Button
+          shape="circle"
+          onClick={generatePdfPreview}
+          icon={<DownloadOutlined />}
+        />
+      )}
+
 
       <Modal
         title={<span className="text-xl font-bold">Download Report</span>}

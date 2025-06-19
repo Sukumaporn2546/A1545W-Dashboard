@@ -5,8 +5,6 @@ import { useTemperatureStore } from "../store/useTemperatureStore";
 
 import dayjs from "dayjs";
 
-import { max, min } from "lodash";
-
 export const TemperatureChart = ({ pickerType, selectDate }) => {
   const {
     seriesTemperature,
