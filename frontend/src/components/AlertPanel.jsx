@@ -15,7 +15,7 @@ import {
   WarningOutlined,
   SyncOutlined,
   EditOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { useAlarmStore } from "../store/useAlarmStore";
 import { useSystemStore } from "../store/useSystemStore";
@@ -83,7 +83,13 @@ export const AlertPanel = () => {
   }, [alarm]);
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <Badge dot={hasAlerts} size="default">
         <Button shape="circle" onClick={showDrawer} icon={<AlertOutlined />} />
       </Badge>
@@ -102,13 +108,13 @@ export const AlertPanel = () => {
         closable={{ "aria-label": "Close Button" }}
         onClose={onClose}
         open={open}
-      // extra={
-      //   <Space>
-      //     <Button type="primary" onClick={onClose}>
-      //       <EditOutlined />
-      //     </Button>
-      //   </Space>
-      // }
+        // extra={
+        //   <Space>
+        //     <Button type="primary" onClick={onClose}>
+        //       <EditOutlined />
+        //     </Button>
+        //   </Space>
+        // }
       >
         <>
           <Radio.Group onChange={handleSelected} block defaultValue="all">
@@ -125,18 +131,23 @@ export const AlertPanel = () => {
                   placement="left"
                   title={
                     <>
-                      <span className="mr-2"><InfoCircleOutlined /></span>
+                      <span className="mr-2">
+                        <InfoCircleOutlined />
+                      </span>
                       <span>{alert.message}</span>
                     </>
                   }
                   content={
                     <div>
                       <p>{alert.description} </p>
-                      <p>Detected : {alert.value} {alert.unit}
+                      <p>
+                        Detected : {alert.value} {alert.unit}
                       </p>
                       {!alert.message.includes("Normal") ? (
                         <>
-                          <p>Threshold : {alert.threshold} {alert.unit}</p>
+                          <p>
+                            Threshold : {alert.threshold} {alert.unit}
+                          </p>
                           <p>Started : {alert.startAt}</p>
                           <p>
                             Clear : {alert.cleared ? "Yes " : "No"}
@@ -149,12 +160,15 @@ export const AlertPanel = () => {
                         </>
                       ) : (
                         <>
-                          <p>Min : {alert.min} {alert.unit}</p>
-                          <p>Max : {alert.max} {alert.unit}</p>
+                          <p>
+                            Min : {alert.min} {alert.unit}
+                          </p>
+                          <p>
+                            Max : {alert.max} {alert.unit}
+                          </p>
                           <p>Resolved : {alert.startAt}</p>
                         </>
                       )}
-
                     </div>
                   }
                 >
@@ -231,11 +245,11 @@ export const AlertPanel = () => {
                 </Popover>
               ))
             ) : (
-              <p className="text-gray-500">No alerts</p>
+              <p className="text-gray-500 ">No alerts</p>
             )}
           </Flex>
         </>
       </Drawer>
-    </>
+    </div>
   );
 };

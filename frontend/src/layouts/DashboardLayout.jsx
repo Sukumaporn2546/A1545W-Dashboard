@@ -21,10 +21,9 @@ const DashboardLayout = () => {
   // } = theme.useToken();
 
   // forSelect
-  const [dateFormatted, setDateFormatted] = useState();
-  const [timeFormatted, setTimeFormatted] = useState();
+  // const [dateFormatted, setDateFormatted] = useState();
+  // const [timeFormatted, setTimeFormatted] = useState();
 
-  
   const {
     compareTemp_mode,
     setCompareTempMode,
@@ -68,29 +67,29 @@ const DashboardLayout = () => {
     }
   }, [compareHumid_mode]);
 
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const dateOptions = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      };
-      const timeOptions = {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      };
-      setDateFormatted(now.toLocaleString("en-US", dateOptions));
-      setTimeFormatted(now.toLocaleString("th-TH", timeOptions));
-    };
+  // useEffect(() => {
+  //   const updateTime = () => {
+  //     const now = new Date();
+  //     const dateOptions = {
+  //       year: "numeric",
+  //       month: "short",
+  //       day: "numeric",
+  //     };
+  //     const timeOptions = {
+  //       hour: "2-digit",
+  //       minute: "2-digit",
+  //       second: "2-digit",
+  //       hour12: false,
+  //     };
+  //     setDateFormatted(now.toLocaleString("en-US", dateOptions));
+  //     setTimeFormatted(now.toLocaleString("th-TH", timeOptions));
+  //   };
 
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
+  //   updateTime();
+  //   const interval = setInterval(updateTime, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -126,7 +125,9 @@ const DashboardLayout = () => {
           </div>
 
           <div className="header-right">
-            <span className="time">{dateFormatted} {timeFormatted}</span>
+            <span className="time">
+              {/* {dateFormatted} {timeFormatted} */}
+            </span>
             <span>
               <DownloadReportButton />
             </span>

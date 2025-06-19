@@ -1,50 +1,102 @@
 import { Card, Table, Radio } from "antd";
 import { BellOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { ArrowLeftRight } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { dateHelpers } from "../utils/dateHelper";
 export const CompareTemp = () => {
-  const { seriesTemperature, compare_max_line, compare_min_line } =
-    useTemperatureStore();
+  const {
+    seriesTemperature,
+    compare_max_line,
+    compare_min_line,
+    maxTempLine,
+    minTempLine,
+    selectedDateTemp,
+  } = useTemperatureStore();
   const [selected, setSelected] = useState(1);
   const [sortedInfo, setSortedInfo] = useState({});
-  const CompareGreaterThanMax_data = useMemo(() => {
+
+
+  const [isEmpty, setIsEmpty] = useState(false);
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
+  useEffect(() => {
+    const noCompareSet =
+      !compare_max_line && !compare_min_line && Today !== selectedDateTemp;
+    setIsEmpty(noCompareSet);
+  }, [compare_max_line, compare_min_line, selectedDateTemp, Today]);
+
+  const CompareGeaterThanMax_data = useMemo(() => {
     if (!seriesTemperature?.length) return [];
+
     return seriesTemperature
-      .filter((rn) => rn[1] >= compare_max_line)
+      .filter(
+        (rn) =>
+          rn[1] >= (selectedDateTemp == Today ? maxTempLine : compare_max_line)
+      )
       .map((rn, index) => ({
         key: index,
         time: dateHelpers.formatThaiDate(rn[0]),
         message: "High Temperature",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: compare_max_line,
+        threshold: selectedDateTemp == Today ? maxTempLine : compare_max_line,
       }));
-  }, [seriesTemperature, compare_max_line]);
+  }, [
+    seriesTemperature,
+    compare_max_line,
+    selectedDateTemp,
+    Today,
+    maxTempLine,
+  ]);
   const CompareLessThanMin_data = useMemo(() => {
     if (!seriesTemperature?.length) return [];
+
     return seriesTemperature
-      .filter((rn) => rn[1] <= compare_min_line)
+      .filter(
+        (rn) =>
+          rn[1] <= (selectedDateTemp == Today ? minTempLine : compare_min_line)
+      )
       .map((rn, index) => ({
         key: index,
         time: dateHelpers.formatThaiDate(rn[0]),
         message: "Low Temperature",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: compare_min_line,
+        threshold: selectedDateTemp == Today ? minTempLine : compare_min_line,
       }));
-  }, [seriesTemperature, compare_min_line]);
+  }, [
+    seriesTemperature,
+    compare_min_line,
+    selectedDateTemp,
+    Today,
+    minTempLine,
+  ]);
   const CompareNormal_data = useMemo(() => {
     if (!seriesTemperature?.length) return [];
     return seriesTemperature
-      .filter((rn) => rn[1] < compare_max_line && rn[1] > compare_min_line)
+      .filter(
+        (rn) =>
+          rn[1] <
+            (selectedDateTemp == Today ? maxTempLine : compare_max_line) &&
+          rn[1] > (selectedDateTemp == Today ? minTempLine : compare_min_line)
+      )
       .map((rn, index) => ({
         key: index,
         time: dateHelpers.formatThaiDate(rn[0]),
         message: "Normal Temperature",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: `${compare_min_line},${compare_max_line}`,
+        threshold: `${
+          selectedDateTemp == Today ? minTempLine : compare_min_line
+        },${selectedDateTemp == Today ? maxTempLine : compare_max_line}`,
       }));
-  }, [seriesTemperature, compare_max_line, compare_min_line]);
+  }, [
+    seriesTemperature,
+    compare_max_line,
+    compare_min_line,
+    Today,
+    maxTempLine,
+    minTempLine,
+    selectedDateTemp,
+  ]);
 
   useEffect(() => {}, [compare_max_line, compare_min_line, seriesTemperature]);
 
@@ -131,8 +183,12 @@ export const CompareTemp = () => {
             columns={columnAlerts}
             size="small"
             dataSource={
-              selected === 1
-                ? CompareGreaterThanMax_data
+
+              isEmpty
+                ? []
+                : selected === 1
+                ? CompareGeaterThanMax_data
+
                 : selected === 2
                 ? CompareLessThanMin_data
                 : CompareNormal_data
@@ -141,6 +197,11 @@ export const CompareTemp = () => {
             scroll={{ y: 66 * 5 }}
             tableLayout="auto"
             onChange={handleChange}
+            locale={{
+              emptyText: isEmpty
+                ? "⚠️ Please select min and max temperature for comparison"
+                : "No data within the specified temperature range",
+            }}
           />
         </div>
       </Card>

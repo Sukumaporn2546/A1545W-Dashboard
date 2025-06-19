@@ -32,6 +32,7 @@ export const HumidityCard = () => {
   const disableFutureDates = (current) => {
     return current && current > dayjs().endOf("day");
   };
+  const [open, setOpen] = useState(true);
 
   //for input
   const {
@@ -40,19 +41,25 @@ export const HumidityCard = () => {
     setMinMaxHumidLine,
     getMinMaxHumidLine,
     setCompare_max_min_Line,
-    seriesHumidity
+    seriesHumidity,
+    selectedDateHumid,
   } = useHumidityStore();
 
   //for inputNumber
   const { setCompareHumidMode } = useSystemStore();
 
-
   //for inputNumber
 
-let maxHumid = 0
-  if (seriesHumidity.length > 0) maxHumid = (Math.max(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
-  let   minHumid = 0
-  if (seriesHumidity.length > 0) minHumid = (Math.min(...seriesHumidity.map(item => parseFloat(item[1])))).toFixed(2);
+  let maxHumid = 0;
+  if (seriesHumidity.length > 0)
+    maxHumid = Math.max(
+      ...seriesHumidity.map((item) => parseFloat(item[1]))
+    ).toFixed(2);
+  let minHumid = 0;
+  if (seriesHumidity.length > 0)
+    minHumid = Math.min(
+      ...seriesHumidity.map((item) => parseFloat(item[1]))
+    ).toFixed(2);
 
   const [humidMin, setMinHumid] = useState(null);
   const [humidMax, setMaxHumid] = useState(null);
@@ -81,6 +88,11 @@ let maxHumid = 0
   useEffect(() => {
     getMinMaxHumidLine();
   }, [humidMax, humidMin]);
+  useEffect(() => {
+    if (selectedDateHumid !== Today) {
+      setOpen(true);
+    }
+  }, [selectedDateHumid, Today]);
 
   return (
     <Card
@@ -125,6 +137,7 @@ let maxHumid = 0
             {selectDate !== Today ? (
               <Popconfirm
                 icon={null}
+                open={open}
                 title="Set Min Max to Compare"
                 description={
                   <div className="flex flex-col gap-2">
@@ -147,12 +160,24 @@ let maxHumid = 0
                     </div>
                   </div>
                 }
-                onConfirm={confirmCompare}
+                onConfirm={() => {
+                  confirmCompare();
+                  setOpen(false);
+                }}
                 okText="Save"
                 cancelText="Cancel"
+                onCancel={() => setOpen(false)}
+                okButtonProps={{
+                  style: {
+                    backgroundColor: "#F5C45E",
+                    borderColor: "#F5C45E",
+                    color: "#fff",
+                  },
+                }}
               >
                 <Button
                   type="primary"
+                  onClick={() => setOpen(true)}
                   icon={<ArrowLeftRight size={16} />}
                   disabled={!pickerType || !selectDate}
                   style={{
@@ -202,7 +227,7 @@ let maxHumid = 0
       }
     >
       <HumidityChart pickerType={pickerType} selectDate={selectDate} />
-        <div className="flex flex-row gap-4 justify-center">
+      <div className="flex flex-row gap-4 justify-center">
         <p>
           <span className="font-bold text-red-500">Maximum : </span>
           <span className="font-semibold">{`${maxHumid} %`}</span>

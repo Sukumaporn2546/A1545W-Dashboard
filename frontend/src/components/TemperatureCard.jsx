@@ -18,6 +18,7 @@ export const TemperatureCard = () => {
   const [selectDate, setSelectDate] = useState(
     dayjs(new Date()).format("YYYY-MM-DD")
   );
+  const [open, setOpen] = useState(true);
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
   };
@@ -37,21 +38,28 @@ export const TemperatureCard = () => {
     setMinMaxTempLine,
     setCompare_max_min_Line,
     getMinMaxTempLine,
-    seriesTemperature
+    seriesTemperature,
+    selectedDateTemp,
   } = useTemperatureStore();
   const { setCompareTempMode } = useSystemStore();
 
-
-  let maxTemp = 0
-  if(seriesTemperature.length > 0)  maxTemp = (Math.max(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
-  let minTemp = 0
-  if(seriesTemperature.length > 0)  minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
+  let maxTemp = 0;
+  if (seriesTemperature.length > 0)
+    maxTemp = Math.max(
+      ...seriesTemperature.map((item) => parseFloat(item[1]))
+    ).toFixed(2);
+  let minTemp = 0;
+  if (seriesTemperature.length > 0)
+    minTemp = Math.min(
+      ...seriesTemperature.map((item) => parseFloat(item[1]))
+    ).toFixed(2);
 
   const [tempMin, setMinTemp] = useState(null);
   const [tempMax, setMaxTemp] = useState(null);
   const [compareMax, setCompareMax] = useState(null);
   const [compareMin, setCompareMin] = useState(null);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
+
   const onMinChange = (value) => {
     setMinTemp(value);
   };
@@ -74,6 +82,11 @@ export const TemperatureCard = () => {
   useEffect(() => {
     getMinMaxTempLine();
   }, [tempMax, tempMin]);
+  useEffect(() => {
+    if (selectedDateTemp !== Today) {
+      setOpen(true);
+    }
+  }, [selectedDateTemp, Today]);
 
   return (
     <Card
@@ -118,6 +131,7 @@ export const TemperatureCard = () => {
               {selectDate !== Today ? (
                 <Popconfirm
                   icon={null}
+                  open={open}
                   title="Set Min Max to Compare"
                   description={
                     <div className="flex flex-col gap-2">
@@ -140,12 +154,24 @@ export const TemperatureCard = () => {
                       </div>
                     </div>
                   }
-                  onConfirm={confirmCompare}
+                  onConfirm={() => {
+                    confirmCompare();
+                    setOpen(false);
+                  }}
                   okText="Save"
                   cancelText="Cancel"
+                  onCancel={() => setOpen(false)}
+                  okButtonProps={{
+                    style: {
+                      backgroundColor: "#F5C45E",
+                      borderColor: "#F5C45E",
+                      color: "#fff",
+                    },
+                  }}
                 >
                   <Button
                     type="primary"
+                    onClick={() => setOpen(true)}
                     icon={<ArrowLeftRight size={16} />}
                     disabled={!pickerType || !selectDate}
                     style={{
