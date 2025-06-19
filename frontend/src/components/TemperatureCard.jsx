@@ -99,6 +99,11 @@ export const TemperatureCard = () => {
     }
   }, [selectedDateTemp, Today, selectDate, pickerType]);
 
+  useEffect(() => {
+    console.log("pickerType", pickerType);
+    console.log("selectDate", selectDate);
+  }, [pickerType, selectDate]);
+
   return (
     <Card
       type="inner"

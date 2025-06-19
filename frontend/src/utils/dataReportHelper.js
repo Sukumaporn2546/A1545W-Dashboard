@@ -77,15 +77,13 @@ export const dataReportHelper = {
     const result = [];
     let currentGroup = null;
 
-    for (let i = 0; i < series.length; i++) {
-      const [ts, rawVal] = series[i];
-      const value = parseFloat(rawVal);
-      const type =
-        value > compareMax
-          ? "High Temperature"
-          : value < compareMin
-          ? "Low Temperature"
-          : null;
+        for (let i = 0; i < series.length; i++) {
+            const [ts, rawVal] = series[i];
+            const value = parseFloat(rawVal);
+            const type =
+                value > compareMax ? "High" :
+                    value < compareMin ? "Low" :
+                        null;
 
       if (type) {
         if (!currentGroup) {

@@ -30,10 +30,23 @@ export const useTemperatureStore = create((set, get) => ({
   showMessage: useMessageStore.getState().showMessage,
   startPeriodTemp: null,
 
-  setCompare_max_min_Line: (max, min) =>
-    set({ compare_max_line: max, compare_min_line: min }),
+  // setCompare_max_min_Line: (max, min) =>
+  //   set({ compare_max_line: max, compare_min_line: min }),
 
   endPeriodTemp: null,
+
+  setCompare_max_min_Line: (max, min) => {
+    const {showMessage} = get();
+    if (max <= min) {
+      showMessage("error", "Max temperature should be greater than min temperature!");
+    } else {
+      set({ compare_max_line: max, compare_min_line: min });
+      showMessage("success", "Set Min and Max Temperature successfully!");
+    }
+  },
+
+
+
   setSelectedDate: (date) => set({ selectedDateTemp: date }),
   setLoading: (loading) => set({ isLoading: loading }),
   setFetchLoading: (loading) => set({ fetchLoading: loading }),
@@ -75,11 +88,11 @@ export const useTemperatureStore = create((set, get) => ({
         realtimeTemp: temperature,
         seriesTemperature: isToday
           ? dataHelpers
-              .filterDuplicates([
-                ...state.seriesTemperature,
-                [timestamp, temperature],
-              ])
-              .slice(-288)
+            .filterDuplicates([
+              ...state.seriesTemperature,
+              [timestamp, temperature],
+            ])
+            .slice(-288)
           : state.seriesTemperature,
       }));
     } catch (error) {
@@ -114,10 +127,8 @@ export const useTemperatureStore = create((set, get) => ({
       maxTempLine,
     } = get();
 
-    //console.log("min", min, "max", max);
     const finalMin = min ?? minTempLine;
     const finalMax = max ?? maxTempLine;
-    //console.log("finalMin", finalMin, "finalMax", finalMax);
     try {
       setLoading(true);
       clearError();
