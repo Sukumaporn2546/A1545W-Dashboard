@@ -30,6 +30,8 @@ export const AlertPanel = () => {
     clearAlarm,
     isAckLoading,
     isClearLoading,
+    setIsDot,
+    isDot,
   } = useAlarmStore();
   const { openAlertPanel, setOpenAlertPanel } = useSystemStore();
   const [alerts, setAlerts] = useState([]);
@@ -73,6 +75,7 @@ export const AlertPanel = () => {
   useEffect(() => {
     if (open) {
       getAlarm();
+      setIsDot(false);
     }
   }, [open]);
 
@@ -90,7 +93,7 @@ export const AlertPanel = () => {
         alignItems: "center",
       }}
     >
-      <Badge dot={hasAlerts} size="default">
+      <Badge dot={isDot} size="default">
         <Button shape="circle" onClick={showDrawer} icon={<AlertOutlined />} />
       </Badge>
       <Drawer
