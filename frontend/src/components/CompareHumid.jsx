@@ -3,7 +3,7 @@ import { BellOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useHumidityStore } from "../store/useHumidityStore";
 import { ArrowLeftRight } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { dateHelpers } from "../utils/dateHelper";
 export const CompareHumid = () => {
   const {
@@ -13,6 +13,7 @@ export const CompareHumid = () => {
     selectedDateHumid,
     minHumidLine,
     maxHumidLine,
+    selectedTypeHumid,
   } = useHumidityStore();
   const [selected, setSelected] = useState(1);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
@@ -23,6 +24,23 @@ export const CompareHumid = () => {
       !compare_max_line && !compare_min_line && Today !== selectedDateHumid;
     setIsEmpty(noCompareSet);
   }, [compare_max_line, compare_min_line, selectedDateHumid, Today]);
+  const formatTime = useCallback(
+    (rn) => {
+      switch (selectedTypeHumid) {
+        case "date":
+          return dateHelpers.formatThaiDate_day(rn);
+        case "week":
+          return dateHelpers.formatThaiDate_weekDay(rn);
+        case "month":
+          return dateHelpers.formatThaiDate_month(rn);
+        case "year":
+          return dateHelpers.formatThaiDate_year(rn);
+        default:
+          return rn;
+      }
+    },
+    [selectedTypeHumid]
+  );
   const CompareGreaterThanMax_data = useMemo(() => {
     if (!seriesHumidity?.length) return [];
     return seriesHumidity
@@ -33,12 +51,13 @@ export const CompareHumid = () => {
       )
       .map((rn, index) => ({
         key: index,
-        time: dateHelpers.formatThaiDate(rn[0]),
+        time: formatTime(rn[0]),
         message: "High Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
         threshold: selectedDateHumid == Today ? maxHumidLine : compare_max_line,
       }));
   }, [
+    formatTime,
     seriesHumidity,
     compare_max_line,
     Today,
@@ -55,12 +74,13 @@ export const CompareHumid = () => {
       )
       .map((rn, index) => ({
         key: index,
-        time: dateHelpers.formatThaiDate(rn[0]),
+        time: formatTime(rn[0]),
         message: "Low Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
         threshold: selectedDateHumid == Today ? minHumidLine : compare_min_line,
       }));
   }, [
+    formatTime,
     seriesHumidity,
     Today,
     compare_min_line,
@@ -78,7 +98,7 @@ export const CompareHumid = () => {
       )
       .map((rn, index) => ({
         key: index,
-        time: dateHelpers.formatThaiDate(rn[0]),
+        time: formatTime(rn[0]),
         message: "Normal Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
         threshold: `${
@@ -86,6 +106,7 @@ export const CompareHumid = () => {
         },${selectedDateHumid == Today ? maxHumidLine : compare_max_line}`,
       }));
   }, [
+    formatTime,
     seriesHumidity,
     compare_max_line,
     compare_min_line,
@@ -155,7 +176,7 @@ export const CompareHumid = () => {
             <div className="flex justify-between items-center">
               <div className=" font-semibold flex items-center">
                 <ArrowLeftRight className="mr-2" size={16} />
-                Historical Comparison Temperature
+                Historical Comparison Humidity
               </div>
             </div>
           </div>

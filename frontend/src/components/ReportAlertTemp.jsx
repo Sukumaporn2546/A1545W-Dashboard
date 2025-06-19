@@ -2,31 +2,48 @@ import { Card, Table, Collapse } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { useAlarmStore } from "../store/useAlarmStore";
-import { useEffect, useState, useMemo } from "react";
-
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { dateHelpers } from "../utils/dateHelper";
 export const ReportAlertTemp = () => {
-  const { selectedDateTemp } = useTemperatureStore();
+  const { selectedDateTemp, selectedTypeTemp } = useTemperatureStore();
   const { alarmHistoricalTemp, getHistoricalAlarmTemp, tableTempLoading } =
     useAlarmStore();
   const [sortedInfo, setSortedInfo] = useState({});
+  const formatTime = useCallback(
+    (rn) => {
+      switch (selectedTypeTemp) {
+        case "date":
+          return dateHelpers.formatThaiDate_day(rn);
+        case "week":
+          return dateHelpers.formatThaiDate_weekDay(rn);
+        case "month":
+          return dateHelpers.formatThaiDate_month(rn);
+        case "year":
+          return dateHelpers.formatThaiDate_year(rn);
+        default:
+          return rn;
+      }
+    },
+    [selectedTypeTemp]
+  );
   const logs_data = useMemo(() => {
     if (!alarmHistoricalTemp?.length) return [];
     return alarmHistoricalTemp
       .filter((rn) => rn.message.includes("Temperature"))
       .map((rn, index) => ({
         key: rn.id || index,
-        time: rn.time,
+        time: formatTime(rn.timeInTable),
         message: rn.message,
         value: typeof rn.value === "number" ? rn.value : Number(rn.value),
         threshold: rn.threshold,
       }));
-  }, [alarmHistoricalTemp]);
+  }, [formatTime, alarmHistoricalTemp]);
 
   useEffect(() => {
-    if (selectedDateTemp) {
-      getHistoricalAlarmTemp(selectedDateTemp);
+    if (selectedDateTemp && selectedDateTemp) {
+      getHistoricalAlarmTemp(selectedTypeTemp, selectedDateTemp);
     }
-  }, [selectedDateTemp, getHistoricalAlarmTemp]);
+  }, [selectedTypeTemp, selectedDateTemp, getHistoricalAlarmTemp]);
 
   const columnAlerts = [
     {

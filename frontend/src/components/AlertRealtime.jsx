@@ -20,7 +20,7 @@ const AlertRealtime = ({ alarm }) => {
         description: alarm.description ?? "no details",
         type: getNotificationType(alarm.type),
         placement: "topRight",
-        btn,
+        actions: btn,
         duration: 5, // sec
       });
     }

@@ -3,7 +3,7 @@ import { BellOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useTemperatureStore } from "../store/useTemperatureStore";
 import { ArrowLeftRight } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { dateHelpers } from "../utils/dateHelper";
 export const CompareTemp = () => {
   const {
@@ -13,19 +13,36 @@ export const CompareTemp = () => {
     maxTempLine,
     minTempLine,
     selectedDateTemp,
+    selectedTypeTemp,
   } = useTemperatureStore();
   const [selected, setSelected] = useState(1);
   const [sortedInfo, setSortedInfo] = useState({});
-
 
   const [isEmpty, setIsEmpty] = useState(false);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
   useEffect(() => {
     const noCompareSet =
-      !compare_max_line && !compare_min_line && Today !== selectedDateTemp;
+      (!compare_max_line || !compare_min_line) && Today !== selectedDateTemp;
     setIsEmpty(noCompareSet);
   }, [compare_max_line, compare_min_line, selectedDateTemp, Today]);
 
+  const formatTime = useCallback(
+    (rn) => {
+      switch (selectedTypeTemp) {
+        case "date":
+          return dateHelpers.formatThaiDate_day(rn);
+        case "week":
+          return dateHelpers.formatThaiDate_weekDay(rn);
+        case "month":
+          return dateHelpers.formatThaiDate_month(rn);
+        case "year":
+          return dateHelpers.formatThaiDate_year(rn);
+        default:
+          return rn;
+      }
+    },
+    [selectedTypeTemp]
+  );
   const CompareGeaterThanMax_data = useMemo(() => {
     if (!seriesTemperature?.length) return [];
 
@@ -36,12 +53,13 @@ export const CompareTemp = () => {
       )
       .map((rn, index) => ({
         key: index,
-        time: dateHelpers.formatThaiDate(rn[0]),
+        time: formatTime(rn[0]),
         message: "High Temperature",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
         threshold: selectedDateTemp == Today ? maxTempLine : compare_max_line,
       }));
   }, [
+    formatTime,
     seriesTemperature,
     compare_max_line,
     selectedDateTemp,
@@ -58,12 +76,13 @@ export const CompareTemp = () => {
       )
       .map((rn, index) => ({
         key: index,
-        time: dateHelpers.formatThaiDate(rn[0]),
+        time: formatTime(rn[0]),
         message: "Low Temperature",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
         threshold: selectedDateTemp == Today ? minTempLine : compare_min_line,
       }));
   }, [
+    formatTime,
     seriesTemperature,
     compare_min_line,
     selectedDateTemp,
@@ -81,7 +100,7 @@ export const CompareTemp = () => {
       )
       .map((rn, index) => ({
         key: index,
-        time: dateHelpers.formatThaiDate(rn[0]),
+        time: formatTime(rn[0]),
         message: "Normal Temperature",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
         threshold: `${
@@ -89,6 +108,7 @@ export const CompareTemp = () => {
         },${selectedDateTemp == Today ? maxTempLine : compare_max_line}`,
       }));
   }, [
+    formatTime,
     seriesTemperature,
     compare_max_line,
     compare_min_line,
@@ -106,7 +126,7 @@ export const CompareTemp = () => {
       dataIndex: "time",
       key: "time",
       align: "center",
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.time.localeCompare(b.time),
       sortOrder: sortedInfo.columnKey === "time" ? sortedInfo.order : null,
       ellipsis: true,
@@ -183,12 +203,10 @@ export const CompareTemp = () => {
             columns={columnAlerts}
             size="small"
             dataSource={
-
               isEmpty
                 ? []
                 : selected === 1
                 ? CompareGeaterThanMax_data
-
                 : selected === 2
                 ? CompareLessThanMin_data
                 : CompareNormal_data

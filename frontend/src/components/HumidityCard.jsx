@@ -14,7 +14,7 @@ import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
 import { useSystemStore } from "../store/useSystemStore";
 export const HumidityCard = () => {
-  const [pickerType, setPickerType] = useState("date"); // เก็บ picker type
+  const [pickerType, setPickerType] = useState("date");
   const [selectDate, setSelectDate] = useState(
     dayjs(new Date()).format("YYYY-MM-DD")
   );

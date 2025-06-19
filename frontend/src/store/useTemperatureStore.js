@@ -26,6 +26,7 @@ export const useTemperatureStore = create((set, get) => ({
   compare_max_line: null,
   compare_min_line: null,
   selectedDateTemp: dayjs().format("YYYY-MM-DD"),
+  selectedTypeTemp: null,
   showMessage: useMessageStore.getState().showMessage,
   startPeriodTemp: null,
 
@@ -178,7 +179,7 @@ export const useTemperatureStore = create((set, get) => ({
     try {
       setFetchLoading(true);
       clearError();
-
+      console.log(pickerType, selectDate);
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
       if (!timeConfig) throw new Error("Invalid picker type or date");
       const { start, end, interval, limit } = timeConfig;
@@ -200,8 +201,13 @@ export const useTemperatureStore = create((set, get) => ({
       const formatted = dataHelpers.formatTemperatureData(data.temperature);
       console.log("Formatted:", formatted);
       set({ seriesTemperature: formatted });
-
-      set({ selectedDateTemp: dayjs(selectDate).format("YYYY-MM-DD") });
+      set({ selectedTypeTemp: pickerType });
+      set({
+        selectedDateTemp:
+          pickerType == "week"
+            ? selectDate
+            : dayjs(selectDate).format("YYYY-MM-DD"),
+      });
       return formatted;
     } catch (error) {
       console.error("Error fetching temperature data:", error);

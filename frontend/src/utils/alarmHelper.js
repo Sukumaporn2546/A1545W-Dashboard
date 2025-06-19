@@ -13,13 +13,14 @@ export const alarmHelper = {
         ? `${item.details.min},${item.details.max}`
         : parseInt(item.details.threshold),
       unit: item.name.includes("Humidity") ? " %" : " °C",
-      time: dateHelpers.formatThaiDate(item.createdTime),
+      time: dateHelpers.formatThaiDate_day(item.createdTime),
+      timeInTable: item.createdTime,
       acknowledged: item.acknowledged,
       cleared: item.cleared,
-      startAt: dateHelpers.formatThaiDate(item.startTs) ?? 0,
-      endAt: dateHelpers.formatThaiDate(item.endTs) ?? 0,
-      ackAt: dateHelpers.formatThaiDate(item.ackTs) ?? 0,
-      clearAt: dateHelpers.formatThaiDate(item.clearTs) ?? 0,
+      startAt: dateHelpers.formatThaiDate_day(item.startTs) ?? 0,
+      endAt: dateHelpers.formatThaiDate_day(item.endTs) ?? 0,
+      ackAt: dateHelpers.formatThaiDate_day(item.ackTs) ?? 0,
+      clearAt: dateHelpers.formatThaiDate_day(item.clearTs) ?? 0,
     }));
   },
   formatAlarmLatestData: (alarm) => {
@@ -32,7 +33,7 @@ export const alarmHelper = {
       max: alarm.details.max ?? 0,
       min: alarm.details.min ?? 0,
       unit: alarm.name.includes("Humidity") ? " %" : " °C",
-      time: dateHelpers.formatThaiDate(alarm.createdTime),
+      time: dateHelpers.formatThaiDate_day(alarm.createdTime),
       acknowledged: alarm.acknowledged,
       cleared: alarm.cleared,
     };
