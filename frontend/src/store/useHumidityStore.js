@@ -31,8 +31,8 @@ export const useHumidityStore = create((set, get) => ({
   endPeriodHumid: null,
   selectedTypeHumid: null,
 
-setCompare_max_min_Line: (max, min) => {
-    const {showMessage} = get();
+  setCompare_max_min_Line: (max, min) => {
+    const { showMessage } = get();
     if (max <= min) {
       showMessage("error", "Max humidity should be greater than min temperature!");
     } else {
@@ -41,7 +41,6 @@ setCompare_max_min_Line: (max, min) => {
     }
   },
 
-  
   setSelectedDate: (date) => set({ selectedDateHumid: date }),
   setLoading: (loading) => set({ isLoading: loading }),
   setFetchLoading: (loading) => set({ fetchLoading: loading }),
@@ -118,6 +117,8 @@ setCompare_max_min_Line: (max, min) => {
       setLoading,
       setError,
       clearError,
+      minTempLine,
+      maxTempLine,
     } = get();
     const finalMin = min ?? minTempLine;
     const finalMax = max ?? maxTempLine;
@@ -172,7 +173,7 @@ setCompare_max_min_Line: (max, min) => {
     try {
       setFetchLoading(true);
       clearError();
-
+      console.log(pickerType, selectDate);
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
       if (!timeConfig) throw new Error("Invalid picker type or date");
       const { start, end, interval, limit } = timeConfig;
@@ -195,6 +196,8 @@ setCompare_max_min_Line: (max, min) => {
       set({
         selectedDateHumid:
           pickerType == "week"
+            ? selectDate
+            : pickerType == "period"
             ? selectDate
             : dayjs(selectDate).format("YYYY-MM-DD"),
       });

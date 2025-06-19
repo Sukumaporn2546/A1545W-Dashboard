@@ -37,6 +37,8 @@ export const CompareTemp = () => {
           return dateHelpers.formatThaiDate_month(rn);
         case "year":
           return dateHelpers.formatThaiDate_year(rn);
+        case "period":
+          return dateHelpers.formatThaiDate_weekDay(rn);
         default:
           return rn;
       }

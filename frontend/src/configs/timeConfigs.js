@@ -8,7 +8,7 @@ export const getTimeConfiguration = (pickerType, selectDate) => {
       return {
         start,
         end,
-        interval: CONFIG.INTERVALS.FIVE_MINUTES,
+        interval: CONFIG.INTERVALS.HOUR,
         limit: CONFIG.LIMITS.DAILY,
       };
     }

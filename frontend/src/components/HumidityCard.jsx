@@ -18,15 +18,18 @@ export const HumidityCard = () => {
   const [selectDate, setSelectDate] = useState(
     dayjs(new Date()).format("YYYY-MM-DD")
   );
+  const [datePickerValue, setDatePickerValue] = useState(dayjs());
 
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
+    setDatePickerValue(date);
   };
 
   const handlePickerTypeChange = (value) => {
     console.log("value", value);
     setPickerType(value.value);
     setSelectDate(null);
+    setDatePickerValue(null);
   };
 
   const disableFutureDates = (current) => {
@@ -89,10 +92,12 @@ export const HumidityCard = () => {
     getMinMaxHumidLine();
   }, [humidMax, humidMin]);
   useEffect(() => {
-    if (selectedDateHumid !== Today) {
+    if (selectedDateHumid !== Today && selectDate && pickerType) {
       setOpen(true);
+    } else {
+      setOpen(false);
     }
-  }, [selectedDateHumid, Today]);
+  }, [selectedDateHumid, Today, selectDate, pickerType]);
 
   return (
     <Card
@@ -120,13 +125,14 @@ export const HumidityCard = () => {
               <DatePicker.RangePicker
                 disabledDate={disableFutureDates}
                 disabled={pickerType == null}
+                value={datePickerValue}
                 onChange={onDateChange}
                 size="middle"
               />
             ) : (
               <DatePicker
                 disabled={pickerType == null}
-                defaultValue={dayjs(new Date())}
+                value={datePickerValue}
                 disabledDate={disableFutureDates}
                 onChange={onDateChange}
                 picker={pickerType} // date, week, month, year ตาม pickerType

@@ -20,8 +20,10 @@ export const ReportAlertTemp = () => {
           return dateHelpers.formatThaiDate_month(rn);
         case "year":
           return dateHelpers.formatThaiDate_year(rn);
+        case "period":
+          return dateHelpers.formatThaiDate_weekDay(rn);
         default:
-          return rn;
+          return dateHelpers.formatThaiDate_weekDay(rn);
       }
     },
     [selectedTypeTemp]
@@ -95,7 +97,10 @@ export const ReportAlertTemp = () => {
             <div className="flex justify-between items-center">
               <div className=" font-semibold flex items-center">
                 <BellOutlined className="mr-2" />
-                Temperature Logs : {selectedDateTemp}
+                Temperature Logs :{" "}
+                {selectedTypeTemp === "period"
+                  ? `${selectedDateTemp[0]} to ${selectedDateTemp[1]}`
+                  : selectedDateTemp}
               </div>
             </div>
           </div>
