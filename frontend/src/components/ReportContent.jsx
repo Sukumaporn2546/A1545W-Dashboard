@@ -23,7 +23,7 @@ export const ReportContent = () => {
     selectedTypeTemp,
     maxTempLine,
     minTempLine,
-    selectedDateTemp
+    selectedDateTemp,
   } = useTemperatureStore();
   const {
     startPeriodHumid,
@@ -57,6 +57,13 @@ export const ReportContent = () => {
   const minHumid = dataReportHelper.getStatValue(seriesHumidity, "min");
   const averageHumid = dataReportHelper.getStatValue(seriesHumidity, "avg");
 
+  const isCompareReady = [
+    compare_max_line,
+    compare_min_line,
+    compare_max_line_humid,
+    compare_min_line_humid
+  ].some((val) => val !== null && val !== undefined);
+
   const comparedTempData = useMemo(() => {
     return dataReportHelper.groupContinuousExceed(
       seriesTemperature,
@@ -82,7 +89,7 @@ export const ReportContent = () => {
       compare_min_line_humid,
       selectedTypeHumid
     );
-  }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid,selectedTypeHumid]);
+  }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid, selectedTypeHumid]);
 
   const comparedHumidRealtimeData = useMemo(() => {
     return dataReportHelper.groupContinuousExceed(
@@ -92,7 +99,7 @@ export const ReportContent = () => {
       compare_min_line_humid,
       selectedTypeHumid
     );
-  }, [seriesHumidity, maxHumidLine, minHumidLine,selectedTypeHumid]);
+  }, [seriesHumidity, maxHumidLine, minHumidLine, selectedTypeHumid]);
 
   const columnSummary = [
     {
@@ -224,7 +231,7 @@ export const ReportContent = () => {
             title={<div className="py-2 text-base">Temperature Chart (°C)</div>}
             variant="outlined"
           >
-            <TemperatureChart />
+            <TemperatureChart pickerType={selectedTypeTemp} selectDate={selectedDateTemp} />
           </Card>
         </div>
         <div>
@@ -232,7 +239,7 @@ export const ReportContent = () => {
             title={<div className="py-2 text-base">Humidity Chart (%RH)</div>}
             variant="outlined"
           >
-            <HumidityChart />
+            <HumidityChart pickerType={selectedTypeHumid} selectDate={selectedDateHumid} />
           </Card>
         </div>
       </div>
@@ -257,29 +264,38 @@ export const ReportContent = () => {
       <p className="text-base font-semibold mb-4">Temperature</p>
 
       <div className="inline-block mb-4">
-        <Table
-          columns={columnAlertsTemp}
-          size="small"
-          dataSource={checkedNotToday ? comparedTempData : comparedTempRealtimeData}
-          rowKey="id"
-          pagination={false}
-          tableLayout="auto"
-          bordered
-          className="custom-table"
-        />
+        {!isCompareReady ? (
+          <p className="text-center">No data available, you don't select compare max and min</p>
+        ) : (
+
+          <Table
+            columns={columnAlertsTemp}
+            size="small"
+            dataSource={checkedNotToday ? comparedTempData : comparedTempRealtimeData}
+            rowKey="id"
+            pagination={false}
+            tableLayout="auto"
+            bordered
+            className="custom-table"
+          />
+        )}
       </div>
       <p className="text-base font-semibold mb-4">Humidity</p>
       <div className="inline-block mb-4">
-        <Table
-          columns={columnAlertsHumid}
-          size="small"
-          dataSource={checkedNotToday ? comparedHumidData : comparedHumidRealtimeData}
-          rowKey="id"
-          pagination={false}
-          tableLayout="auto"
-          bordered
-          className="custom-table"
-        />
+        {!isCompareReady ? (
+          <p className="text-center">No data available, you don't select compare max and min </p>
+        ) : (
+          <Table
+            columns={columnAlertsHumid}
+            size="small"
+            dataSource={checkedNotToday ? comparedHumidData : comparedHumidRealtimeData}
+            rowKey="id"
+            pagination={false}
+            tableLayout="auto"
+            bordered
+            className="custom-table"
+          />
+        )}
       </div>
     </div>
   );
