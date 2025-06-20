@@ -5,7 +5,8 @@ import { useAlarmStore } from "../store/useAlarmStore";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { dateHelpers } from "../utils/dateHelper";
 export const ReportAlertTemp = () => {
-  const { selectedDateTemp, selectedTypeTemp } = useTemperatureStore();
+  const { realtimeTemp, selectedDateTemp, selectedTypeTemp } =
+    useTemperatureStore();
   const { alarmHistoricalTemp, getHistoricalAlarmTemp, tableTempLoading } =
     useAlarmStore();
   const [sortedInfo, setSortedInfo] = useState({});
@@ -45,7 +46,12 @@ export const ReportAlertTemp = () => {
     if (selectedDateTemp && selectedDateTemp) {
       getHistoricalAlarmTemp(selectedTypeTemp, selectedDateTemp);
     }
-  }, [selectedTypeTemp, selectedDateTemp, getHistoricalAlarmTemp]);
+  }, [
+    selectedTypeTemp,
+    selectedDateTemp,
+    getHistoricalAlarmTemp,
+    realtimeTemp,
+  ]);
 
   const columnAlerts = [
     {

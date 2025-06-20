@@ -90,7 +90,16 @@ export const RealTimeCard = () => {
     if (realtimeTemp !== undefined || realtimeHumid !== undefined) {
       checkAlarmChanges();
     }
-  }, [realtimeHumid || realtimeTemp]);
+  }, [
+    realtimeHumid,
+    realtimeTemp,
+    lastProcessedAlarmId,
+    prevAlarmRef,
+    alarm,
+    getLatestAlarm,
+    latestAlerts,
+    setIsDot,
+  ]);
 
   const getBorderColor = (status) => {
     switch (status) {
