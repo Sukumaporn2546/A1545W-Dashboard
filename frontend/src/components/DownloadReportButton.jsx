@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button, Modal, Tooltip } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
-import { useTemperatureStore } from "../store/useTemperatureStore";
-import { useHumidityStore } from "../store/useHumidityStore";
+// import { useTemperatureStore } from "../store/useTemperatureStore";
+// import { useHumidityStore } from "../store/useHumidityStore";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -83,12 +83,12 @@ export const DownloadReportButton = () => {
     <>
       {/* Responsive */}
 
-        <Button
-          shape="circle"
-          onClick={generatePdfPreview}
-          icon={<DownloadOutlined />}
-        />
-      
+      <Button
+        shape="circle"
+        onClick={generatePdfPreview}
+        icon={<DownloadOutlined />}
+      />
+
       <Modal
         title={<span className="text-xl font-bold">Download Report</span>}
         centered

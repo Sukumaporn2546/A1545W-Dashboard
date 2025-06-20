@@ -21,8 +21,6 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
     clearGraphTemp();
     fetchHistoricalTemp(pickerType, selectDate);
   }, [pickerType, selectDate]);
-
-  //console.log("TempData", seriesTemperature);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
   const series = [
     {
@@ -30,38 +28,6 @@ export const TemperatureChart = ({ pickerType, selectDate }) => {
       data: seriesTemperature ?? [], // fallback to empty array
     },
   ];
-
-  // const maxTemp = (Math.max(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
-  // const maxTimestamp = seriesTemperature
-  //   .filter(item => parseFloat(item[1]) == maxTemp)
-  //   .map(item => item[0]);
-
-  // console.log('maxTemp', maxTemp);
-  // console.log('maxTimestamp', maxTimestamp);
-
-  // const maxPoints = seriesTemperature
-  //   .filter(d => parseFloat(d[1]) == maxTemp)
-  //   .map(d => ({
-  //     x: d[0],           // ✅ timestamp เป็น number
-  //     y: maxTemp,        // ✅ ค่าตัวเลข
-  //     marker: {
-  //       size: 6,
-  //       fillColor: '#fff',
-  //       strokeColor: 'red',
-  //       radius: 2,
-  //     },
-  //     label: {
-  //       //text: `Max: ${maxTemp}`,
-  //       style: {
-  //         background: 'red',
-  //         color: '#fff',
-  //       },
-  //     },
-  //   }));
-
-  // const minTemp = (Math.min(...seriesTemperature.map(item => parseFloat(item[1])))).toFixed(2);
-
-  // const minTimestamp = minTemp?.[0]
 
   const options = {
     chart: {
