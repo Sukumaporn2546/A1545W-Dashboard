@@ -82,11 +82,11 @@ export const useHumidityStore = create((set, get) => ({
         realtimeHumid: humidity,
         seriesHumidity: isToday
           ? dataHelpers
-              .filterDuplicates([
-                ...state.seriesHumidity,
-                [timestamp, humidity],
-              ])
-              .slice(-288)
+            .filterDuplicates([
+              ...state.seriesHumidity,
+              [timestamp, humidity],
+            ])
+            .slice(-288)
           : state.seriesHumidity,
       }));
     } catch (error) {
@@ -117,28 +117,18 @@ export const useHumidityStore = create((set, get) => ({
       setLoading,
       setError,
       clearError,
-      minTempLine,
-      maxTempLine,
     } = get();
-    const finalMin = min ?? minTempLine;
-    const finalMax = max ?? maxTempLine;
+
     try {
       setLoading(true);
       clearError();
-      if (finalMax <= finalMin) {
-        showMessage(
-          "error",
-          "Max humidity should be greater than min humidity!"
-        );
+      const response = await api.postAttributeMaxMinHumid(min, max);
+      if (response.status == 200) {
+        await getMinMaxHumidLine();
+        showMessage("success", "Set Min and Max Humidity successfully!");
+        console.log("post attribute successfully");
       } else {
-        const response = await api.postAttributeMaxMinHumid(min, max);
-        if (response.status == 200) {
-          await getMinMaxHumidLine();
-          showMessage("success", "Set Min and Max Humidity successfully!");
-          console.log("post attribute successfully");
-        } else {
-          console.error("can't post attribute  : ", response.status);
-        }
+        console.error("can't post attribute  : ", response.status);
       }
     } catch (error) {
       console.error("Error post attribute data:", error);
@@ -198,8 +188,8 @@ export const useHumidityStore = create((set, get) => ({
           pickerType == "week"
             ? selectDate
             : pickerType == "period"
-            ? selectDate
-            : dayjs(selectDate).format("YYYY-MM-DD"),
+              ? selectDate
+              : dayjs(selectDate).format("YYYY-MM-DD"),
       });
       set({ selectedTypeHumid: pickerType });
     } catch (error) {

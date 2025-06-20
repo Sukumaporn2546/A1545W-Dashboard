@@ -5,8 +5,9 @@ import {
   Button,
   Popconfirm,
   InputNumber,
+  Form
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useForm } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import { TemperatureChart } from "../charts/TemperatureChart";
 import dayjs from "dayjs";
@@ -22,6 +23,9 @@ export const TemperatureCard = () => {
   const [datePickerValue, setDatePickerValue] = useState(dayjs()); // เพิ่ม state สำหรับ DatePicker value
 
   const [open, setOpen] = useState(true);
+  const [openRealtime, setOpenRealtime] = useState(false);
+
+  const [form] = Form.useForm();
 
   const onDateChange = (date, dateString) => {
     console.log(dateString);
@@ -61,8 +65,8 @@ export const TemperatureCard = () => {
       ...seriesTemperature.map((item) => parseFloat(item[1]))
     ).toFixed(2);
 
-  const [tempMin, setMinTemp] = useState(null);
-  const [tempMax, setMaxTemp] = useState(null);
+  const [tempMin, setMinTemp] = useState(minTempLine);
+  const [tempMax, setMaxTemp] = useState(maxTempLine);
   const [compareMax, setCompareMax] = useState(null);
   const [compareMin, setCompareMin] = useState(null);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
@@ -79,12 +83,20 @@ export const TemperatureCard = () => {
   const onMinCompareChange = (value) => {
     setCompareMin(value);
   };
-  const confirmCompare = () => {
+  const confirmCompare = (max, min) => {
+    setCompareMax(max);
+    setCompareMin(min)
     setCompare_max_min_Line(compareMax, compareMin);
     setCompareTempMode(true);
   };
-  const confirmSetMaxMin = () => {
-    setMinMaxTempLine(tempMin, tempMax);
+  const confirmSetMaxMin = (max, min) => {
+    const finalMax = max != null ? max : maxTempLine;
+    const finalMin = min != null ? min : minTempLine;
+    setMaxTemp(finalMax);
+    setMinTemp(finalMin);
+    setMinMaxTempLine(finalMin, finalMax);
+    console.log('tempMax', tempMax)
+    console.log('tempMin', tempMin);
   };
 
   useEffect(() => {
@@ -100,8 +112,6 @@ export const TemperatureCard = () => {
   }, [selectedDateTemp, Today, selectDate, pickerType]);
 
   useEffect(() => {
-    console.log("pickerType", pickerType);
-    console.log("selectDate", selectDate);
   }, [pickerType, selectDate]);
 
   return (
@@ -151,29 +161,54 @@ export const TemperatureCard = () => {
                   open={open}
                   title="Set Min Max to Compare"
                   description={
-                    <div className="flex flex-col gap-2">
-                      <div>
-                        <span className="mr-2">Max</span>
-                        <InputNumber
-                          // value={compareMax}
-                          // defaultValue={maxTempLine}
-                          onChange={onMaxCompareChange}
-                        />
-                      </div>
-                      <div>
-                        <span className="mr-2">Min</span>
+                    <Form
+                      form={form}
+                      //layout="vertical"
+                      initialValues={{
+                        compareMax: compareMax,
+                        compareMin: compareMin,
+                      }}
+                    >
+                      <Form.Item
+                        label="Max"
+                        name="compareMax"
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              const min = getFieldValue("compareMin");
+                              if (min == null || value == null) {
+                                return Promise.resolve(); // ยังไม่ต้อง validate
+                              }
+                              if (value <= min) {
+                                return Promise.reject(
+                                  new Error("Max must be greater than Min")
+                                );
+                              }
+                              return Promise.resolve();
+                            },
+                          }),
+                        ]}
+                      >
+                        <InputNumber onChange={onMaxCompareChange} />
+                      </Form.Item>
 
-                        <InputNumber
-                          // value={compareMin}
-                          // defaultValue={minTempLine}
-                          onChange={onMinCompareChange}
-                        />
-                      </div>
-                    </div>
+                      <Form.Item
+                        label="Min"
+                        name="compareMin"
+                      // rules={[{ required: true, message: "Please enter min temperature" }]}
+                      >
+                        <InputNumber onChange={onMinCompareChange} />
+                      </Form.Item>
+                    </Form>
                   }
-                  onConfirm={() => {
-                    confirmCompare();
-                    setOpen(false);
+                  onConfirm={async () => {
+                    try {
+                      const values = await form.validateFields();
+                      confirmCompare(values.compareMax, values.compareMin);
+                      setOpen(false);
+                    } catch (e) {
+
+                    }
                   }}
                   okText="Save"
                   cancelText="Cancel"
@@ -201,41 +236,81 @@ export const TemperatureCard = () => {
                 <Popconfirm
                   icon={null}
                   title="Set Min and Max Temperature"
+                  open={openRealtime}
                   description={
-                    <div className="flex flex-col gap-2">
-                      <div>
-                        <span className="mr-2">Max</span>
-                        <InputNumber
-                          value={tempMax}
+                    <Form
+                      form={form}
+                      //layout="vertical"
+                      initialValues={{
+                        tempMax: maxTempLine,
+                        tempMin: minTempLine,
+                      }}
+                    >
+                      <Form.Item
+                        label="Max"
+                        name="tempMax"
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value <= getFieldValue("tempMin")) {
+                                return Promise.reject(
+                                  new Error("Max must be greater than Min")
+                                );
+                              }
+                              return Promise.resolve();
+                            }
+                          })
+                        ]}
+                      >
+                        <InputNumber onChange={onMaxChange}
                           defaultValue={maxTempLine}
-                          onChange={onMaxChange}
                         />
-                      </div>
-                      <div>
-                        <span className="mr-2">Min</span>
+                      </Form.Item>
 
-                        <InputNumber
-                          value={tempMin}
-                          defaultValue={minTempLine}
-                          onChange={onMinChange}
-                        />
-                      </div>
-                    </div>
+                      <Form.Item
+                        label="Min"
+                        name="tempMin"
+                      // rules={[
+                      //   ({ getFieldValue }) => ({
+                      //     validator(_, value) {
+                      //       if (value >= getFieldValue("maxTempLine")) {
+                      //         return Promise.reject(
+                      //           new Error("Min must be less than than Max")
+                      //         );
+                      //       }
+                      //       return Promise.resolve();
+                      //     }
+                      //   })
+                      // ]}
+                      >
+                        <InputNumber onChange={onMinChange}
+                          defaultValue={minTempLine} />
+                      </Form.Item>
+                    </Form>
                   }
-                  onConfirm={confirmSetMaxMin}
+                  onConfirm={async () => {
+                    try {
+                      const values = await form.validateFields();
+                      confirmSetMaxMin(values.tempMax, values.tempMin);
+                      setOpenRealtime(false);
+                    } catch (e) {
+                    }
+                  }}
                   okText="Save"
                   cancelText="Cancel"
+                  onCancel={() => setOpenRealtime(false)}
                 >
                   <Button
                     type="primary"
+                    onClick={() => setOpenRealtime(true)}
                     icon={<EditOutlined />}
                     disabled={!pickerType || !selectDate}
                   />
                 </Popconfirm>
               )}
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
       }
     >
       <TemperatureChart pickerType={pickerType} selectDate={selectDate} />
@@ -249,6 +324,6 @@ export const TemperatureCard = () => {
           <span className="font-semibold">{`${minTemp} °C`}</span>
         </p>
       </div>
-    </Card>
+    </Card >
   );
 };

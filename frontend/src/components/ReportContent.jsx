@@ -20,7 +20,10 @@ export const ReportContent = () => {
     seriesTemperature,
     compare_max_line,
     compare_min_line,
-    selectedTypeTemp
+    selectedTypeTemp,
+    maxTempLine,
+    minTempLine,
+    selectedDateTemp
   } = useTemperatureStore();
   const {
     startPeriodHumid,
@@ -28,8 +31,14 @@ export const ReportContent = () => {
     seriesHumidity,
     compare_max_line_humid,
     compare_min_line_humid,
-    selectedTypeHumid
+    selectedTypeHumid,
+    maxHumidLine,
+    minHumidLine,
+    selectedDateHumid
   } = useHumidityStore();
+
+  const Today = dayjs(new Date()).format("YYYY-MM-DD");
+  const checkedNotToday = Today !== selectedDateTemp
 
   const tempPeriod = dataReportHelper.convertDateTemp(
     startPeriodTemp,
@@ -57,6 +66,15 @@ export const ReportContent = () => {
     );
   }, [seriesTemperature, compare_max_line, compare_min_line, selectedTypeTemp]);
 
+  const comparedTempRealtimeData = useMemo(() => {
+    return dataReportHelper.groupContinuousExceed(
+      seriesTemperature,
+      maxTempLine,
+      minTempLine,
+      selectedTypeTemp
+    );
+  }, [seriesTemperature, minTempLine, maxTempLine, selectedTypeTemp]);
+
   const comparedHumidData = useMemo(() => {
     return dataReportHelper.groupContinuousExceed(
       seriesHumidity,
@@ -65,6 +83,16 @@ export const ReportContent = () => {
       selectedTypeHumid
     );
   }, [seriesHumidity, compare_max_line_humid, compare_min_line_humid,selectedTypeHumid]);
+
+  const comparedHumidRealtimeData = useMemo(() => {
+    return dataReportHelper.groupContinuousExceed(
+      seriesHumidity,
+      maxHumidLine,
+      minHumidLine,
+      compare_min_line_humid,
+      selectedTypeHumid
+    );
+  }, [seriesHumidity, maxHumidLine, minHumidLine,selectedTypeHumid]);
 
   const columnSummary = [
     {
@@ -190,7 +218,7 @@ export const ReportContent = () => {
       </div>
 
       <h3 className="text-base font-bold mb-4">• Trend Graphs</h3>
-      <div className="mb-16">
+      <div className="mb-12">
         <div className="mb-4">
           <Card
             title={<div className="py-2 text-base">Temperature Chart (°C)</div>}
@@ -232,7 +260,7 @@ export const ReportContent = () => {
         <Table
           columns={columnAlertsTemp}
           size="small"
-          dataSource={comparedTempData}
+          dataSource={checkedNotToday ? comparedTempData : comparedTempRealtimeData}
           rowKey="id"
           pagination={false}
           tableLayout="auto"
@@ -245,7 +273,7 @@ export const ReportContent = () => {
         <Table
           columns={columnAlertsHumid}
           size="small"
-          dataSource={comparedHumidData}
+          dataSource={checkedNotToday ? comparedHumidData : comparedHumidRealtimeData}
           rowKey="id"
           pagination={false}
           tableLayout="auto"

@@ -5,8 +5,9 @@ import {
   Button,
   Popconfirm,
   InputNumber,
+  Form
 } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useForm } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import { HumidityChart } from "../charts/HumidityChart";
 import dayjs from "dayjs";
@@ -14,11 +15,14 @@ import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useHumidityStore } from "../store/useHumidityStore";
 import { useSystemStore } from "../store/useSystemStore";
 export const HumidityCard = () => {
+
   const [pickerType, setPickerType] = useState("date");
   const [selectDate, setSelectDate] = useState(
     dayjs(new Date()).format("YYYY-MM-DD")
   );
   const [datePickerValue, setDatePickerValue] = useState(dayjs());
+
+  const [form] = Form.useForm();
 
   const onDateChange = (date, dateString) => {
     setSelectDate(dateString);
@@ -36,6 +40,7 @@ export const HumidityCard = () => {
     return current && current > dayjs().endOf("day");
   };
   const [open, setOpen] = useState(true);
+  const [openRealtime, setOpenRealtime] = useState(false);
 
   //for input
   const {
@@ -64,8 +69,8 @@ export const HumidityCard = () => {
       ...seriesHumidity.map((item) => parseFloat(item[1]))
     ).toFixed(2);
 
-  const [humidMin, setMinHumid] = useState(null);
-  const [humidMax, setMaxHumid] = useState(null);
+  const [humidMin, setMinHumid] = useState(minHumidLine);
+  const [humidMax, setMaxHumid] = useState(maxHumidLine);
   const [compareMax, setCompareMax] = useState(null);
   const [compareMin, setCompareMin] = useState(null);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
@@ -81,12 +86,19 @@ export const HumidityCard = () => {
   const onMinCompareChange = (value) => {
     setCompareMin(value);
   };
-  const confirmCompare = () => {
+  const confirmCompare = (max, min) => {
+    setCompareMax(max);
+    setCompareMin(min);
     setCompare_max_min_Line(compareMax, compareMin);
     setCompareHumidMode(true);
   };
-  const confirmSetMaxMin = () => {
-    setMinMaxHumidLine(humidMin, humidMax);
+  const confirmSetMaxMin = (max, min) => {
+    const finalMax = max != null ? max : maxHumidLine;
+    const finalMin = min != null ? min : minHumidLine;
+    setMaxHumid(finalMax);
+    setMinHumid(finalMin);
+    setMinMaxHumidLine(finalMin, finalMax);
+
   };
   useEffect(() => {
     getMinMaxHumidLine();
@@ -146,29 +158,55 @@ export const HumidityCard = () => {
                 open={open}
                 title="Set Min Max to Compare"
                 description={
-                  <div className="flex flex-col gap-2">
-                    <div>
-                      <span className="mr-2">Max</span>
-                      <InputNumber
-                        value={compareMax}
-                        // defaultValue={maxTempLine}
-                        onChange={onMaxCompareChange}
-                      />
-                    </div>
-                    <div>
-                      <span className="mr-2">Min</span>
+                  <Form
+                    form={form}
+                    //layout="vertical"
+                    initialValues={{
+                      compareMax: compareMax,
+                      compareMin: compareMin,
+                    }}
+                  >
+                    <Form.Item
+                      label="Max"
+                      name="compareMax"
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            const min = getFieldValue("compareMin");
+                            if (min == null || value == null) {
+                              return Promise.resolve(); // ยังไม่ต้อง validate
+                            }
+                            if (value <= min) {
+                              return Promise.reject(
+                                new Error("Max must be greater than Min")
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        }),
+                      ]}
+                    >
+                      <InputNumber onChange={onMaxCompareChange} />
+                    </Form.Item>
 
-                      <InputNumber
-                        value={compareMin}
-                        // defaultValue={minTempLine}
-                        onChange={onMinCompareChange}
-                      />
-                    </div>
-                  </div>
+                    <Form.Item
+                      label="Min"
+                      name="compareMin"
+                    // rules={[{ required: true, message: "Please enter min temperature" }]}
+                    >
+                      <InputNumber onChange={onMinCompareChange} />
+                    </Form.Item>
+                  </Form>
+
                 }
-                onConfirm={() => {
-                  confirmCompare();
-                  setOpen(false);
+                onConfirm={async () => {
+                  try {
+                    const values = await form.validateFields();
+                    confirmCompare(values.compareMax, values.compareMin);
+                    setOpen(false);
+                  } catch (e) {
+
+                  }
                 }}
                 okText="Save"
                 cancelText="Cancel"
@@ -195,34 +233,62 @@ export const HumidityCard = () => {
             ) : (
               <Popconfirm
                 icon={null}
+                open={openRealtime}
                 title="Set Min and Max Temperature"
                 description={
-                  <div className="flex flex-col gap-2">
-                    <div>
-                      <span className="mr-2">Max</span>
-                      <InputNumber
-                        value={humidMax}
-                        defaultValue={maxHumidLine}
-                        onChange={onMaxChange}
-                      />
-                    </div>
-                    <div>
-                      <span className="mr-2">Min</span>
+                    <Form
+                      form={form}
+                      //layout="vertical"
+                      initialValues={{
+                        humidMax: maxHumidLine,
+                        humidMin: minHumidLine,
+                      }}
+                    >
+                      <Form.Item
+                        label="Max"
+                        name="humidMax"
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value <= getFieldValue("humidMin")) {
+                                return Promise.reject(
+                                  new Error("Max must be greater than Min")
+                                );
+                              }
+                              return Promise.resolve();
+                            }
+                          })
+                        ]}
+                      >
+                        <InputNumber onChange={onMaxChange}
+                          defaultValue={maxHumidLine}
+                        />
+                      </Form.Item>
 
-                      <InputNumber
-                        value={humidMin}
-                        defaultValue={minHumidLine}
-                        onChange={onMinChange}
-                      />
-                    </div>
-                  </div>
+                      <Form.Item
+                        label="Min"
+                        name="humidMin"
+                      >
+                        <InputNumber onChange={onMinChange}
+                          defaultValue={minHumidLine} />
+                      </Form.Item>
+                    </Form>
                 }
-                onConfirm={confirmSetMaxMin}
+                 onConfirm={async () => {
+                    try {
+                      const values = await form.validateFields();
+                      confirmSetMaxMin(values.humidMax, values.humidMin);
+                      setOpenRealtime(false);
+                    } catch (e) {
+                    }
+                  }}
                 okText="Save"
                 cancelText="Cancel"
+                onCancel={() => setOpenRealtime(false)}
               >
                 <Button
                   type="primary"
+                  onClick={() => setOpenRealtime(true)}
                   icon={<EditOutlined />}
                   disabled={!pickerType || !selectDate}
                 />

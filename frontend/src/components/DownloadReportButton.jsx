@@ -13,14 +13,14 @@ export const DownloadReportButton = () => {
   const [pdfInstance, setPdfInstance] = useState(null);
   //   const [images, setImages] = useState([]);
 
-  const { compare_max_line, compare_min_line } = useTemperatureStore();
-  const { compare_max_line_humid, compare_min_line_humid } = useHumidityStore();
-  const disabledButton = [
-    compare_max_line,
-    compare_min_line,
-    compare_max_line_humid,
-    compare_min_line_humid
-  ].some((val) => val === null);
+  // const { compare_max_line, compare_min_line } = useTemperatureStore();
+  // const { compare_max_line_humid, compare_min_line_humid } = useHumidityStore();
+  // const disabledButton = [
+  //   compare_max_line,
+  //   compare_min_line,
+  //   compare_max_line_humid,
+  //   compare_min_line_humid
+  // ].some((val) => val === null);
 
   const generatePdfPreview = async () => {
     setOpenResponsive(true);
@@ -82,26 +82,13 @@ export const DownloadReportButton = () => {
   return (
     <>
       {/* Responsive */}
-      {disabledButton ? (
-        <Tooltip title="Set comparison limits for temperature and humidity historical data">
-          <span>
-            <Button
-              shape="circle"
-              onClick={generatePdfPreview}
-              icon={<DownloadOutlined />}
-              disabled
-            />
-          </span>
-        </Tooltip>
-      ) : (
+
         <Button
           shape="circle"
           onClick={generatePdfPreview}
           icon={<DownloadOutlined />}
         />
-      )}
-
-
+      
       <Modal
         title={<span className="text-xl font-bold">Download Report</span>}
         centered

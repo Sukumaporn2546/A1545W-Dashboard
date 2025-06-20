@@ -36,7 +36,7 @@ export const useTemperatureStore = create((set, get) => ({
   endPeriodTemp: null,
 
   setCompare_max_min_Line: (max, min) => {
-    const {showMessage} = get();
+    const { showMessage } = get();
     if (max <= min) {
       showMessage("error", "Max temperature should be greater than min temperature!");
     } else {
@@ -123,29 +123,21 @@ export const useTemperatureStore = create((set, get) => ({
       setLoading,
       setError,
       clearError,
-      minTempLine,
-      maxTempLine,
     } = get();
 
-    const finalMin = min ?? minTempLine;
-    const finalMax = max ?? maxTempLine;
+
     try {
       setLoading(true);
       clearError();
-      if (finalMax <= finalMin) {
-        showMessage(
-          "error",
-          "Max temperature should be greater than min temperature!"
-        );
+
+      const response = await api.postAttributeMaxMinTemp(min, max);
+      if (response.status === 200) {
+        await getMinMaxTempLine();
+        showMessage("success", "Set Min and Max Temperature successfully!");
       } else {
-        const response = await api.postAttributeMaxMinTemp(min, max);
-        if (response.status === 200) {
-          await getMinMaxTempLine();
-          showMessage("success", "Set Min and Max Temperature successfully!");
-        } else {
-          console.error("Can't post attribute:", response.status);
-        }
+        console.error("Can't post attribute:", response.status);
       }
+
     } catch (error) {
       console.error("Error posting attribute data:", error);
       setError(error.message);
@@ -207,8 +199,8 @@ export const useTemperatureStore = create((set, get) => ({
           pickerType == "week"
             ? selectDate
             : pickerType == "period"
-            ? selectDate
-            : dayjs(selectDate).format("YYYY-MM-DD"),
+              ? selectDate
+              : dayjs(selectDate).format("YYYY-MM-DD"),
       });
       return formatted;
     } catch (error) {
