@@ -59,7 +59,7 @@ export const RealTimeCard = () => {
   }, []);
 
   const [alarm, setAlarm] = useState(null);
-  const { getLatestAlarm, latestAlerts } = useAlarmStore();
+  const { getLatestAlarm, latestAlerts, setIsDot } = useAlarmStore();
 
   const prevAlarmRef = useRef(null);
   const lastProcessedAlarmId = useRef(null);
@@ -79,6 +79,7 @@ export const RealTimeCard = () => {
           setAlarm(latestAlerts);
           prevAlarmRef.current = latestAlerts;
           lastProcessedAlarmId.current = latestAlerts.id;
+          setIsDot(true);
         }
       } else {
         if (alarm !== null) {
@@ -89,7 +90,16 @@ export const RealTimeCard = () => {
     if (realtimeTemp !== undefined || realtimeHumid !== undefined) {
       checkAlarmChanges();
     }
-  }, [realtimeHumid || realtimeTemp]);
+  }, [
+    realtimeHumid,
+    realtimeTemp,
+    lastProcessedAlarmId,
+    prevAlarmRef,
+    alarm,
+    getLatestAlarm,
+    latestAlerts,
+    setIsDot,
+  ]);
 
   const getBorderColor = (status) => {
     switch (status) {

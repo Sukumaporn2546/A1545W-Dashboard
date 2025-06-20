@@ -6,7 +6,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { dateHelpers } from "../utils/dateHelper";
 import { Car } from "lucide-react";
 export const ReportAlertHumid = () => {
-  const { selectedDateHumid, selectedTypeHumid } = useHumidityStore();
+  const { realtimeHumid, selectedDateHumid, selectedTypeHumid } =
+    useHumidityStore();
   const { alarmHistoricalHumid, getHistoricalAlarmHumid, tableHumidLoading } =
     useAlarmStore();
   const [sortedInfo, setSortedInfo] = useState({});
@@ -46,7 +47,12 @@ export const ReportAlertHumid = () => {
     if (selectedDateHumid && selectedTypeHumid) {
       getHistoricalAlarmHumid(selectedTypeHumid, selectedDateHumid);
     }
-  }, [selectedTypeHumid, selectedDateHumid, getHistoricalAlarmHumid]);
+  }, [
+    selectedTypeHumid,
+    selectedDateHumid,
+    getHistoricalAlarmHumid,
+    realtimeHumid,
+  ]);
 
   const columnAlerts = [
     {
