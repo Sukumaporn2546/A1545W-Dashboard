@@ -155,7 +155,7 @@ export const TemperatureCard = () => {
                 <Popconfirm
                   icon={null}
                   open={open}
-                  title="Set Min Max to Compare"
+                  title="Set Threshold to Compare"
                   description={
                     <Form
                       form={form}
@@ -231,7 +231,7 @@ export const TemperatureCard = () => {
               ) : (
                 <Popconfirm
                   icon={null}
-                  title="Set Min and Max Temperature"
+                  title="Set Threshold to Alert "
                   open={openRealtime}
                   description={
                     <Form

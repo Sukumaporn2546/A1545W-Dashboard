@@ -153,7 +153,7 @@ export const HumidityCard = () => {
               <Popconfirm
                 icon={null}
                 open={open}
-                title="Set Min Max to Compare"
+                title="Set Threshold to Compare"
                 description={
                   <Form
                     form={form}
@@ -230,7 +230,7 @@ export const HumidityCard = () => {
               <Popconfirm
                 icon={null}
                 open={openRealtime}
-                title="Set Min and Max Temperature"
+                title="Set Threshold to Alert"
                 description={
                   <Form
                     form={form}
