@@ -5,9 +5,9 @@ import {
   Button,
   Popconfirm,
   InputNumber,
-  Form
+  Form,
 } from "antd";
-import { useEffect, useState, useForm } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import { TemperatureChart } from "../charts/TemperatureChart";
 import dayjs from "dayjs";
@@ -28,7 +28,6 @@ export const TemperatureCard = () => {
   const [form] = Form.useForm();
 
   const onDateChange = (date, dateString) => {
-    console.log(dateString);
     setSelectDate(dateString);
     setDatePickerValue(date); // อัพเดต DatePicker value
   };
@@ -85,7 +84,7 @@ export const TemperatureCard = () => {
   };
   const confirmCompare = (max, min) => {
     setCompareMax(max);
-    setCompareMin(min)
+    setCompareMin(min);
     setCompare_max_min_Line(compareMax, compareMin);
     setCompareTempMode(true);
   };
@@ -95,8 +94,6 @@ export const TemperatureCard = () => {
     setMaxTemp(finalMax);
     setMinTemp(finalMin);
     setMinMaxTempLine(finalMin, finalMax);
-    console.log('tempMax', tempMax)
-    console.log('tempMin', tempMin);
   };
 
   useEffect(() => {
@@ -111,8 +108,7 @@ export const TemperatureCard = () => {
     }
   }, [selectedDateTemp, Today, selectDate, pickerType]);
 
-  useEffect(() => {
-  }, [pickerType, selectDate]);
+  useEffect(() => {}, [pickerType, selectDate]);
 
   return (
     <Card
@@ -195,7 +191,7 @@ export const TemperatureCard = () => {
                       <Form.Item
                         label="Min"
                         name="compareMin"
-                      // rules={[{ required: true, message: "Please enter min temperature" }]}
+                        // rules={[{ required: true, message: "Please enter min temperature" }]}
                       >
                         <InputNumber onChange={onMinCompareChange} />
                       </Form.Item>
@@ -207,7 +203,7 @@ export const TemperatureCard = () => {
                       confirmCompare(values.compareMax, values.compareMin);
                       setOpen(false);
                     } catch (e) {
-
+                      console.error(e);
                     }
                   }}
                   okText="Save"
@@ -258,11 +254,12 @@ export const TemperatureCard = () => {
                                 );
                               }
                               return Promise.resolve();
-                            }
-                          })
+                            },
+                          }),
                         ]}
                       >
-                        <InputNumber onChange={onMaxChange}
+                        <InputNumber
+                          onChange={onMaxChange}
                           defaultValue={maxTempLine}
                         />
                       </Form.Item>
@@ -270,21 +267,23 @@ export const TemperatureCard = () => {
                       <Form.Item
                         label="Min"
                         name="tempMin"
-                      // rules={[
-                      //   ({ getFieldValue }) => ({
-                      //     validator(_, value) {
-                      //       if (value >= getFieldValue("maxTempLine")) {
-                      //         return Promise.reject(
-                      //           new Error("Min must be less than than Max")
-                      //         );
-                      //       }
-                      //       return Promise.resolve();
-                      //     }
-                      //   })
-                      // ]}
+                        // rules={[
+                        //   ({ getFieldValue }) => ({
+                        //     validator(_, value) {
+                        //       if (value >= getFieldValue("maxTempLine")) {
+                        //         return Promise.reject(
+                        //           new Error("Min must be less than than Max")
+                        //         );
+                        //       }
+                        //       return Promise.resolve();
+                        //     }
+                        //   })
+                        // ]}
                       >
-                        <InputNumber onChange={onMinChange}
-                          defaultValue={minTempLine} />
+                        <InputNumber
+                          onChange={onMinChange}
+                          defaultValue={minTempLine}
+                        />
                       </Form.Item>
                     </Form>
                   }
@@ -294,6 +293,7 @@ export const TemperatureCard = () => {
                       confirmSetMaxMin(values.tempMax, values.tempMin);
                       setOpenRealtime(false);
                     } catch (e) {
+                      console.error(e);
                     }
                   }}
                   okText="Save"
@@ -309,8 +309,8 @@ export const TemperatureCard = () => {
                 </Popconfirm>
               )}
             </div>
-          </div >
-        </div >
+          </div>
+        </div>
       }
     >
       <TemperatureChart pickerType={pickerType} selectDate={selectDate} />
@@ -324,6 +324,6 @@ export const TemperatureCard = () => {
           <span className="font-semibold">{`${minTemp} °C`}</span>
         </p>
       </div>
-    </Card >
+    </Card>
   );
 };

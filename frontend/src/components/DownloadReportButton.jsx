@@ -59,7 +59,7 @@ export const DownloadReportButton = () => {
       }
 
       const dataUri = pdf.output("bloburl");
-      console.log("Generated PDF data URI:", dataUri.slice(0, 100)); // ดูแค่ 100 ตัวแรก
+      // ดูแค่ 100 ตัวแรก
       setPdfUrl(dataUri);
       setPdfInstance(pdf);
       setOpenResponsive(true);
@@ -71,8 +71,6 @@ export const DownloadReportButton = () => {
   };
 
   const handleDownload = () => {
-    console.log("PDF instance:", pdfInstance);
-    console.log("Number of pages:", pdfInstance.internal.getNumberOfPages());
     if (pdfInstance) {
       pdfInstance.save("report.pdf");
       setOpenResponsive(false);

@@ -25,7 +25,6 @@ export const HumidityChart = ({ pickerType, selectDate }) => {
     fetchHistoricalHumid(pickerType, selectDate);
   }, [pickerType, selectDate]);
 
-  //console.log("HumidData", seriesHumidity);
   const Today = dayjs(new Date()).format("YYYY-MM-DD");
   const series = [
     {

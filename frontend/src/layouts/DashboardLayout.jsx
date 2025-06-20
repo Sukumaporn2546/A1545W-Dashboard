@@ -32,9 +32,7 @@ const DashboardLayout = () => {
     compareHumid_mode,
     setCompareHumidMode,
   } = useSystemStore();
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  const handleChange = () => {};
 
   const [selectedTableTemp, setSelectedTableTemp] = useState("tempLogs");
   const [selectedTableHumid, setSelectedTableHumid] = useState("humidLogs");
