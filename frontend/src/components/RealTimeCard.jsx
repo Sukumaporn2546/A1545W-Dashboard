@@ -67,6 +67,7 @@ export const RealTimeCard = () => {
   useEffect(() => {
     const checkAlarmChanges = async () => {
       await getLatestAlarm();
+
       if (latestAlerts && latestAlerts.id) {
         const isNewAlarm = latestAlerts.id !== lastProcessedAlarmId.current;
         const isAlarmChanged =
@@ -87,19 +88,11 @@ export const RealTimeCard = () => {
         }
       }
     };
+
     if (realtimeTemp !== undefined || realtimeHumid !== undefined) {
       checkAlarmChanges();
     }
-  }, [
-    realtimeHumid,
-    realtimeTemp,
-    lastProcessedAlarmId,
-    prevAlarmRef,
-    alarm,
-    getLatestAlarm,
-    latestAlerts,
-    setIsDot,
-  ]);
+  }, [realtimeTemp, realtimeHumid]);
 
   const getBorderColor = (status) => {
     switch (status) {
@@ -148,7 +141,7 @@ export const RealTimeCard = () => {
     <>
       {/* Current Values */}
       <MessagePanel />
-      <AlertRealtime alarm={alarm} />
+      {/* <AlertRealtime alarm={alarm} /> */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         <StatCard
           title="Current Temperature"

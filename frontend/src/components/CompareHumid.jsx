@@ -21,14 +21,21 @@ export const CompareHumid = () => {
   const [sortedInfo, setSortedInfo] = useState({});
   useEffect(() => {
     const noCompareSet =
-      !compare_max_line_humid && !compare_min_line_humid && Today !== selectedDateHumid;
+      !compare_max_line_humid &&
+      !compare_min_line_humid &&
+      Today !== selectedDateHumid;
     setIsEmpty(noCompareSet);
-  }, [compare_max_line_humid, compare_min_line_humid, selectedDateHumid, Today]);
+  }, [
+    compare_max_line_humid,
+    compare_min_line_humid,
+    selectedDateHumid,
+    Today,
+  ]);
   const formatTime = useCallback(
     (rn) => {
       switch (selectedTypeHumid) {
         case "date":
-          return dateHelpers.formatThaiDate_weekDay(rn);
+          return dateHelpers.formatThaiDate_day(rn);
         case "week":
           return dateHelpers.formatThaiDate_weekDay(rn);
         case "month":
@@ -56,7 +63,8 @@ export const CompareHumid = () => {
         time: formatTime(rn[0]),
         message: "High Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: selectedDateHumid == Today ? maxHumidLine : compare_max_line_humid,
+        threshold:
+          selectedDateHumid == Today ? maxHumidLine : compare_max_line_humid,
       }));
   }, [
     formatTime,
@@ -79,7 +87,8 @@ export const CompareHumid = () => {
         time: formatTime(rn[0]),
         message: "Low Humidity",
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
-        threshold: selectedDateHumid == Today ? minHumidLine : compare_min_line_humid,
+        threshold:
+          selectedDateHumid == Today ? minHumidLine : compare_min_line_humid,
       }));
   }, [
     formatTime,
@@ -95,8 +104,11 @@ export const CompareHumid = () => {
       .filter(
         (rn) =>
           rn[1] <
-            (selectedDateHumid == Today ? maxHumidLine : compare_max_line_humid) &&
-          rn[1] > (selectedDateHumid == Today ? minHumidLine : compare_min_line_humid)
+            (selectedDateHumid == Today
+              ? maxHumidLine
+              : compare_max_line_humid) &&
+          rn[1] >
+            (selectedDateHumid == Today ? minHumidLine : compare_min_line_humid)
       )
       .map((rn, index) => ({
         key: index,
@@ -105,7 +117,9 @@ export const CompareHumid = () => {
         value: typeof rn.value === "number" ? rn[1] : Number(rn[1]),
         threshold: `${
           selectedDateHumid == Today ? minHumidLine : compare_min_line_humid
-        },${selectedDateHumid == Today ? maxHumidLine : compare_max_line_humid}`,
+        },${
+          selectedDateHumid == Today ? maxHumidLine : compare_max_line_humid
+        }`,
       }));
   }, [
     formatTime,
@@ -118,7 +132,11 @@ export const CompareHumid = () => {
     selectedDateHumid,
   ]);
 
-  useEffect(() => {}, [compare_max_line_humid, compare_min_line_humid, seriesHumidity]);
+  useEffect(() => {}, [
+    compare_max_line_humid,
+    compare_min_line_humid,
+    seriesHumidity,
+  ]);
 
   const columnAlerts = [
     {

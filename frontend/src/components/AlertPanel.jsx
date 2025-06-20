@@ -7,7 +7,7 @@ import {
   Popover,
   Radio,
   Flex,
-  Skeleton,
+  Spin,
 } from "antd";
 import { useEffect, useState } from "react";
 import {
@@ -248,7 +248,16 @@ export const AlertPanel = () => {
                 </Popover>
               ))
             ) : (
-              <p className="text-gray-500 ">No alerts</p>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "500px",
+                }}
+              >
+                <Spin tip="Loading alerts..." />
+              </div>
             )}
           </Flex>
         </>
