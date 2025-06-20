@@ -29,12 +29,10 @@ export const RealTimeCard = () => {
     const setupConnections = async () => {
       try {
         if (!humidSocketInitialized.current) {
-          console.log("Setting up humidity WebSocket...");
           await setupWebSocketHumid("telemetry");
           humidSocketInitialized.current = true;
         }
         if (!tempSocketInitialized.current) {
-          console.log("Setting up temperature WebSocket...");
           await setupWebSocketTempTelemetry();
           tempSocketInitialized.current = true;
         }
@@ -44,8 +42,6 @@ export const RealTimeCard = () => {
     };
     setupConnections();
     return () => {
-      console.log("Cleaning up WebSocket connections...");
-
       if (humidSocketInitialized.current) {
         closeWebSocketHumid();
         humidSocketInitialized.current = false;

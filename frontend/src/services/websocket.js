@@ -22,7 +22,7 @@ export class SetupWebSocket {
       const token = await this.api.login();
       return `${this.baseURL}/api/ws/plugins/telemetry?token=${token}`;
     } catch (error) {
-      console.log("can't build URL websocket", error);
+      console.error("can't build URL websocket", error);
     }
   }
   async connect() {
@@ -43,7 +43,6 @@ export class SetupWebSocket {
   }
   onOpen() {
     try {
-      console.log("WebSocket connected successfully.");
       this.isConnected = true;
       this.lastReceiveTime = Date.now();
       const subscribeMessage = JSON.stringify({
@@ -64,7 +63,6 @@ export class SetupWebSocket {
   }
 
   handleMessage(message) {
-    console.log(message);
     this.lastReceiveTime = Date.now();
     try {
       if (!message || !message.data) {
@@ -106,7 +104,7 @@ export class SetupWebSocket {
     }
 
     const waitTime = this.config.reconnectInterval * (this.connectNum + 1);
-    console.log(`Reconnecting after ${waitTime} seconds...`);
+
     this.connectNum++;
     setTimeout(() => this.connect(), waitTime * 1000);
   }
@@ -116,7 +114,7 @@ export class SetupWebSocket {
       return false;
     }
     this.ws.send(message);
-    console.log("Message sent:", message);
+
     return true;
   }
   startHeartBeat() {
@@ -144,44 +142,3 @@ export class SetupWebSocket {
     console.warn("WebSocket closed.");
   }
 }
-
-//     socket.onopen = () => {
-//       console.log("WebSocket connection opened");
-
-//       const subscribeMessage = JSON.stringify({
-//         tsSubCmds: [
-//           {
-//             entityType: "DEVICE",
-//             entityId: CONFIG.DEVICE_ID,
-//             scope: "LATEST_TELEMETRY",
-//             cmdId: 1,
-//           },
-//         ],
-//         historyCmds: [],
-//         attrSubCmds: [],
-//       });
-
-//       socket.send(subscribeMessage);
-//     };
-//     socket.onmessage = (event) => {
-//       const message = JSON.parse(event.data);
-//       if (!message.data) return;
-//       const humidityEntry = message.data.humidity?.[0];
-//       const timestamp = parseInt(humidityEntry?.[0] ?? Date.now());
-//       const humidity = parseFloat(humidityEntry?.[1] ?? 0).toFixed(2);
-
-//     };
-//  set((state) => ({
-//         realtimeHumid: humidity,
-//         seriesHumidity: dataHelpers
-//           .filterDuplicates([...state.seriesHumidity, [timestamp, humidity]])
-//           .slice(-288),
-//       }));
-
-//     set({ socket });
-//   },
-//   closeWebSocketHumid: () => {
-//     const socket = get().socket;
-//     socket?.close();
-//     set({ socket: null }); // clear it
-//   },

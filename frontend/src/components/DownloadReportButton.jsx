@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button, Modal, Spin } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
-import { useTemperatureStore } from "../store/useTemperatureStore";
-import { useHumidityStore } from "../store/useHumidityStore";
+// import { useTemperatureStore } from "../store/useTemperatureStore";
+// import { useHumidityStore } from "../store/useHumidityStore";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -48,7 +48,7 @@ export const DownloadReportButton = () => {
       }
 
       const dataUri = pdf.output("bloburl");
-      console.log("Generated PDF data URI:", dataUri.slice(0, 100)); // ดูแค่ 100 ตัวแรก
+      // ดูแค่ 100 ตัวแรก
       setPdfUrl(dataUri);
       setPdfInstance(pdf);
       setOpenResponsive(true);
@@ -60,8 +60,6 @@ export const DownloadReportButton = () => {
   };
 
   const handleDownload = () => {
-    console.log("PDF instance:", pdfInstance);
-    console.log("Number of pages:", pdfInstance.internal.getNumberOfPages());
     if (pdfInstance) {
       pdfInstance.save("report.pdf");
       setOpenResponsive(false);

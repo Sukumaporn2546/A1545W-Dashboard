@@ -114,7 +114,7 @@ export class ThingsBoardAPI {
           "X-Authorization": `Bearer ${this.token}`,
         },
       });
-      console.log(response);
+
       return response;
     } catch (error) {
       console.error("Error get attribute max min:", error.message);
@@ -132,7 +132,7 @@ export class ThingsBoardAPI {
           "X-Authorization": `Bearer ${this.token}`,
         },
       });
-      console.log(response);
+
       return response;
     } catch (error) {
       console.error("Error get attribute max min:", error.message);

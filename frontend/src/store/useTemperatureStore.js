@@ -38,14 +38,15 @@ export const useTemperatureStore = create((set, get) => ({
   setCompare_max_min_Line: (max, min) => {
     const { showMessage } = get();
     if (max <= min) {
-      showMessage("error", "Max temperature should be greater than min temperature!");
+      showMessage(
+        "error",
+        "Max temperature should be greater than min temperature!"
+      );
     } else {
       set({ compare_max_line: max, compare_min_line: min });
       showMessage("success", "Set Min and Max Temperature successfully!");
     }
   },
-
-
 
   setSelectedDate: (date) => set({ selectedDateTemp: date }),
   setLoading: (loading) => set({ isLoading: loading }),
@@ -74,7 +75,7 @@ export const useTemperatureStore = create((set, get) => ({
     try {
       setLoading(true);
       clearError();
-      console.log(message);
+
       const data =
         typeof message.data === "string"
           ? JSON.parse(message.data)
@@ -88,11 +89,11 @@ export const useTemperatureStore = create((set, get) => ({
         realtimeTemp: temperature,
         seriesTemperature: isToday
           ? dataHelpers
-            .filterDuplicates([
-              ...state.seriesTemperature,
-              [timestamp, temperature],
-            ])
-            .slice(-288)
+              .filterDuplicates([
+                ...state.seriesTemperature,
+                [timestamp, temperature],
+              ])
+              .slice(-288)
           : state.seriesTemperature,
       }));
     } catch (error) {
@@ -125,7 +126,6 @@ export const useTemperatureStore = create((set, get) => ({
       clearError,
     } = get();
 
-
     try {
       setLoading(true);
       clearError();
@@ -137,7 +137,6 @@ export const useTemperatureStore = create((set, get) => ({
       } else {
         console.error("Can't post attribute:", response.status);
       }
-
     } catch (error) {
       console.error("Error posting attribute data:", error);
       setError(error.message);
@@ -171,7 +170,7 @@ export const useTemperatureStore = create((set, get) => ({
     try {
       setFetchLoading(true);
       clearError();
-      console.log(pickerType, selectDate);
+
       const timeConfig = getTimeConfiguration(pickerType, selectDate);
       if (!timeConfig) throw new Error("Invalid picker type or date");
       const { start, end, interval, limit } = timeConfig;
@@ -191,7 +190,7 @@ export const useTemperatureStore = create((set, get) => ({
       }
 
       const formatted = dataHelpers.formatTemperatureData(data.temperature);
-      console.log("Formatted:", formatted);
+
       set({ seriesTemperature: formatted });
       set({ selectedTypeTemp: pickerType });
       set({
@@ -199,8 +198,8 @@ export const useTemperatureStore = create((set, get) => ({
           pickerType == "week"
             ? selectDate
             : pickerType == "period"
-              ? selectDate
-              : dayjs(selectDate).format("YYYY-MM-DD"),
+            ? selectDate
+            : dayjs(selectDate).format("YYYY-MM-DD"),
       });
       return formatted;
     } catch (error) {

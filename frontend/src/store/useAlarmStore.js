@@ -39,7 +39,7 @@ export const useAlarmStore = create((set, get) => ({
       const formatted = alarmHelper.formatAlarmLatestData(latest);
       set({ latestAlerts: formatted });
     } catch (error) {
-      console.log("get latest alarm error : ", error);
+      console.error("get latest alarm error : ", error);
     }
   },
   getAlarm: async () => {
@@ -51,7 +51,7 @@ export const useAlarmStore = create((set, get) => ({
       const formatted = alarmHelper.formatAlarmData(alarmData);
       set({ alarm: formatted });
     } catch (error) {
-      console.log("get alarm error : ", error);
+      console.error("get alarm error : ", error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -65,18 +65,15 @@ export const useAlarmStore = create((set, get) => ({
       if (!selectedDate && !pickerType) {
         throw new Error("No selected and pickerType date provided");
       }
-      console.log(pickerType, selectedDate);
       const timeConfig = getTimeConfiguration(pickerType, selectedDate);
       if (!timeConfig) throw new Error("Invalid data");
       const { start, end } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);
       const endTs = dateHelpers.createTimestamp(end, true);
-      console.log(start, end);
       const alarmHistoricalData = await api.getHistoricalAlarm({
         startTs,
         endTs,
       });
-      console.log(alarmHistoricalData);
       const formatted = alarmHelper.formatAlarmData(alarmHistoricalData);
       set({ alarmHistoricalTemp: formatted });
     } catch (error) {
@@ -94,18 +91,16 @@ export const useAlarmStore = create((set, get) => ({
       if (!selectedDate && pickerType) {
         throw new Error("No selected and pickerType date provided");
       }
-      console.log(pickerType, selectedDate);
       const timeConfig = getTimeConfiguration(pickerType, selectedDate);
       if (!timeConfig) throw new Error("Invalid data");
       const { start, end } = timeConfig;
       const startTs = dateHelpers.createTimestamp(start);
       const endTs = dateHelpers.createTimestamp(end, true);
-      console.log(start, end);
       const alarmHistoricalData = await api.getHistoricalAlarm({
         startTs,
         endTs,
       });
-      console.log(alarmHistoricalData);
+
       const formatted = alarmHelper.formatAlarmData(alarmHistoricalData);
       set({ alarmHistoricalHumid: formatted });
     } catch (error) {
@@ -128,7 +123,6 @@ export const useAlarmStore = create((set, get) => ({
         showMessage("success", "Alarm acknowledged successfully!");
       }
     } catch (error) {
-      console.log("acknowledge failed : ", error);
       showMessage("error", "Failed to acknowledge alarm.");
       setError(error.message);
     } finally {
@@ -150,7 +144,6 @@ export const useAlarmStore = create((set, get) => ({
         showMessage("success", "Alarm cleared successfully!");
       }
     } catch (error) {
-      console.log("clear alarm failed : ", error);
       showMessage("error", "Failed to cleared alarm.");
       setError(error.message);
     } finally {
