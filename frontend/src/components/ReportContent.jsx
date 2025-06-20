@@ -264,10 +264,7 @@ export const ReportContent = () => {
       <p className="text-base font-semibold mb-4">Temperature</p>
 
       <div className="inline-block mb-4">
-        {!isCompareReady ? (
-          <p className="text-center">No data available, you don't select compare max and min</p>
-        ) : (
-
+        
           <Table
             columns={columnAlertsTemp}
             size="small"
@@ -278,13 +275,11 @@ export const ReportContent = () => {
             bordered
             className="custom-table"
           />
-        )}
+        
       </div>
       <p className="text-base font-semibold mb-4">Humidity</p>
       <div className="inline-block mb-4">
-        {!isCompareReady ? (
-          <p className="text-center">No data available, you don't select compare max and min </p>
-        ) : (
+        
           <Table
             columns={columnAlertsHumid}
             size="small"
@@ -295,7 +290,7 @@ export const ReportContent = () => {
             bordered
             className="custom-table"
           />
-        )}
+        
       </div>
     </div>
   );
