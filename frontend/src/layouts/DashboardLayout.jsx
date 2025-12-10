@@ -107,7 +107,7 @@ const DashboardLayout = () => {
               style={{ fontSize: "24px", fontWeight: "bold" }}
               className="room"
             >
-              QA Room
+              QA Room (Quality Assurance)
             </span>
             <Select
               className="select"
