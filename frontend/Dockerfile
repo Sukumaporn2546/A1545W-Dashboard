@@ -10,9 +10,11 @@ RUN npm run build
 
 # --- Stage 2: Serve with Nginx ---
 FROM nginx:alpine
+
+# copy build result
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# ใช้ config nginx แบบ custom (รองรับ SPA)
+# copy custom nginx config for SPA
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

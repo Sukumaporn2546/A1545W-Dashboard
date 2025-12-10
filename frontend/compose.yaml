@@ -1,5 +1,7 @@
 services:
   frontend:
     build: .
+    container_name: fe-container
     ports:
-      - "8080:80"
+      - "81:80"
+    restart: unless-stopped
