@@ -59,7 +59,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
-          source: "./frontend/compose.yml"
+          source: "./frontend/compose.yaml"
           target: "~/frontend-app"
 
       # 6. deploy on VM
