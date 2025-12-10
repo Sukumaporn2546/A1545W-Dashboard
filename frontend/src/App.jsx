@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import DashboardLayout from './layouts/DashboardLayOut'
+import DashboardLayout from './layouts/DashboardLayout'
 
 function App() {
 
