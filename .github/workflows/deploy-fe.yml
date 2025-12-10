@@ -84,6 +84,7 @@ jobs:
             VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}
             EOF
 
+            cd ~/frontend-app/frontend
             docker compose -f compose.yaml pull
             docker compose -f compose.yaml up -d --remove-orphans
 
