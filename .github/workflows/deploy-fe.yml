@@ -85,7 +85,7 @@ jobs:
             EOF
 
             docker compose -f compose.yaml pull
-            docker compose up -f compose.yaml up -d --remove-orphans
+            docker compose -f compose.yaml up -d --remove-orphans
 
             docker image prune -af --filter "until=24h"
 
