@@ -1,6 +1,6 @@
 services:
   frontend:
-    build: .
+    image: ghcr.io/sukumaporn2546/aw5145-dashboard:latest
     container_name: fe-container
     ports:
       - "81:80"
