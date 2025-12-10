@@ -38,16 +38,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug — list frontend files
+        run: ls -R frontend
+
       # 4. build & push FE image
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./frontend
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/aw5145-dashboard:latest
-            ghcr.io/aw5145-dashboard:${{ github.sha }}
+            ghcr.io/sukumaporn2546/aw5145-dashboard:latest
+            ghcr.io/sukumaporn2546/aw5145-dashboard:${{ github.sha }}
 
       # 5. copy compose to VM
       - name: Copy docker-compose to VM
@@ -56,7 +59,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
-          source: "./frontend/compose.yml"
+          source: "./frontend/compose.yaml"
           target: "~/frontend-app"
 
       # 6. deploy on VM
