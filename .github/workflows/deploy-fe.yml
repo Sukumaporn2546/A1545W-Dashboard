@@ -38,6 +38,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug — list frontend files
+        run: ls -R frontend
+
       # 4. build & push FE image
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
