@@ -49,8 +49,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ghcr.io/aw5145-dashboard:latest
-            ghcr.io/aw5145-dashboard:${{ github.sha }}
+            ghcr.io/sukumaporn2546/aw5145-dashboard:latest
+            ghcr.io/sukumaporn2546/aw5145-dashboard:${{ github.sha }}
 
       # 5. copy compose to VM
       - name: Copy docker-compose to VM
